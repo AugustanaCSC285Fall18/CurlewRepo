@@ -1,4 +1,6 @@
 
+package datamodel;
+
 import java.util.List;
 
 public class ProjectData {
