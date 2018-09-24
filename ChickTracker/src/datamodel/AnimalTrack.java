@@ -3,6 +3,7 @@ package datamodel;
 
 import java.util.ArrayList;
 import java.util.List;
+import javafx.scene.paint.Color;
 
 
 public class AnimalTrack {
@@ -10,6 +11,7 @@ public class AnimalTrack {
 	private String animalID = UNAMED_ID;
 	
 	private List<TimePoint> positions;
+	private Color ptColor;
 	
 	public AnimalTrack() {
 		positions = new ArrayList<TimePoint>();
