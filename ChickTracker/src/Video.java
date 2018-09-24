@@ -2,6 +2,7 @@
 public class Video {
 	
 	private String videoFileName;
-	private int totalNumFrames;
+	private Double xPixelsPerCm;
+	private Double yPixelsPerCm;
 
 }
