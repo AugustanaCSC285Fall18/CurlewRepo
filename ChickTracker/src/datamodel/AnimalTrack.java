@@ -25,6 +25,10 @@ public class AnimalTrack {
 		return positions;
 	}
 	
+	public Color getPtColor() {
+		return ptColor;
+	}
+
 	@Override
 	public String toString() {
 		return "AnimalTrack[id=" + animalID + ",len=" + positions.size()+"]";
