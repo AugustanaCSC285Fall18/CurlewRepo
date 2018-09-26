@@ -33,49 +33,20 @@ public class Grid {
 		this.pixelRowWidth = pixelRowWidth;
 	}
 
-
-
-
-
-
 	public double getGridHeight() {
 		return gridHeight;
 	}
-
-
-
-
-
 
 	public void setGridHeight(double gridHeight) {
 		this.gridHeight = gridHeight;
 	}
 
-
-
-
-
-
 	public double getGridWidth() {
 		return gridWidth;
 	}
-
-
-
-
-
 
 	public void setGridWidth(double gridWidth) {
 		this.gridWidth = gridWidth;
 	}
 
-	
-	
-	
-	
-	
-	
-	
-	
-	
 }
