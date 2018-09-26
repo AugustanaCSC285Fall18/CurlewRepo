@@ -4,6 +4,7 @@ package datamodel;
 import java.awt.Rectangle;
 import java.io.FileNotFoundException;
 
+import org.opencv.core.Mat;
 import org.opencv.videoio.VideoCapture;
 import org.opencv.videoio.Videoio;
 
@@ -32,6 +33,9 @@ public class Video {
 		if (!vidCap.isOpened()) {
 			throw new FileNotFoundException("Unable to open video file: " + filePath);
 		}
+		
+	
+		
 	}
 
 	/**
@@ -45,6 +49,7 @@ public class Video {
 
 	public String getVideoFileName() {
 		return filePath;
+		
 	}
 
 	
