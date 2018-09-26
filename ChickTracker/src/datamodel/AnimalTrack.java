@@ -1,37 +1,50 @@
-
 package datamodel;
 
 import java.util.ArrayList;
 import java.util.List;
-import javafx.scene.paint.Color;
-
 
 public class AnimalTrack {
-	public static final String UNAMED_ID = "<<unassigned>>";
-	private String animalID = UNAMED_ID;
+	private String animalID;
 	
 	private List<TimePoint> positions;
-	private Color ptColor;
 	
-	public AnimalTrack() {
+	public AnimalTrack(String id) {
+		this.animalID = id;
 		positions = new ArrayList<TimePoint>();
 	}
 	
-	public boolean hasIDAssigned() {
-		return !animalID.equals(UNAMED_ID);
+	public void add(TimePoint pt) {
+		positions.add(pt);
 	}
 	
-	public List<TimePoint> getPositions() {
-		return positions;
-	}
-	
-	public Color getPtColor() {
-		return ptColor;
+	public TimePoint getTimePointAtIndex(int index) {
+		return positions.get(index);
 	}
 
-	@Override
-	public String toString() {
-		return "AnimalTrack[id=" + animalID + ",len=" + positions.size()+"]";
+	/**
+	 * Returns the TimePoint at the specified time, or null
+	 * @param frameNum
+	 * @return
+	 */
+	
+	public TimePoint getTimePointAtTime(int frameNum) {
+		//TODO: This method's implementation is inefficient [linear search is O(N)]
+		//      Replace this with binary search (O(log n)] or use a Map for fast access
+		for (TimePoint pt : positions) {
+			if (pt.getFrameNum() == frameNum) {
+				return pt;
+			}
+		}
+		return null;
 	}
 	
+	public TimePoint getFinalTimePoint() {
+		return positions.get(positions.size()-1);
+	}
+	
+	public String toString() {
+		int startFrame = positions.get(0).getFrameNum();
+		int endFrame = getFinalTimePoint().getFrameNum();
+		return "AnimalTrack[id="+ animalID + ",numPts=" + positions.size()+" start=" + startFrame + " end=" + endFrame +"]"; 
+	}
 }
