@@ -19,6 +19,16 @@ public class Video {
 	private int startFrameNum;
 	private int endFrameNum;
 	private Rectangle arenaBounds;
+	private int currentFrameNum;
+	private int emptyFrameNum;
+
+	public int getEmptyFrameNum() {
+		return emptyFrameNum;
+	}
+
+	public void setEmptyFrameNum(int emptyFrameNum) {
+		this.emptyFrameNum = emptyFrameNum;
+	}
 
 	private VideoCapture vidCap;
 
@@ -33,6 +43,8 @@ public class Video {
 		if (!vidCap.isOpened()) {
 			throw new FileNotFoundException("Unable to open video file: " + filePath);
 		}
+		this.emptyFrameNum = 0;
+		this.startFrameNum = 0;
 		
 	
 		
@@ -45,6 +57,13 @@ public class Video {
 	public double getDurationInSeconds() {
 		return totalNumFrames/frameRate;
 
+	}
+	
+	public Mat readFrame() {
+		Mat frame = new Mat();
+		vidCap.read(frame);
+		return frame;
+		
 	}
 
 	public String getVideoFileName() {
@@ -117,6 +136,14 @@ public class Video {
 
 	public void setArenaBounds(Rectangle arenaBounds) {
 		this.arenaBounds = arenaBounds;
+	}
+	
+	public void setCurrentFrameNum(int currentFrameNum) {
+		this.currentFrameNum = currentFrameNum;
+	}
+	
+	public int getCurrentFrameNum() {
+		return currentFrameNum;
 	}
 
 }
