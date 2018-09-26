@@ -1,15 +1,22 @@
 package datamodel;
 
+import java.util.ArrayList;
+
 public class Grid {
 	
 	private double pixelColumnWidth;
 	private double pixelRowWidth;
 	private double gridHeight;
 	private double gridWidth;
+	private ArrayList<Double> columnNumbers;
+	private ArrayList<Double> rowNumbers;
 
 	public Grid(double xPixelsPerCm, double yPixelsPerCm, int numRows, int numColumns) {
 		setPixelColumnWidth((gridWidth/numColumns) * xPixelsPerCm);
 		setPixelRowWidth((gridHeight/numRows) * yPixelsPerCm);
+		
+		
+		
 	}
 
 	
