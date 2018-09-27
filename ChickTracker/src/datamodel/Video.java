@@ -29,6 +29,10 @@ public class Video {
 	public void setEmptyFrameNum(int emptyFrameNum) {
 		this.emptyFrameNum = emptyFrameNum;
 	}
+	
+	public double averagePixelsPerCm() {
+		
+	}
 
 	private VideoCapture vidCap;
 
