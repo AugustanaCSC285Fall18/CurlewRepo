@@ -30,7 +30,7 @@ public class Video {
 		this.emptyFrameNum = emptyFrameNum;
 	}
 	
-	public double averagePixelsPerCm() {
+	public double getAvgPixelsPerCm() {
 		
 	}
 
