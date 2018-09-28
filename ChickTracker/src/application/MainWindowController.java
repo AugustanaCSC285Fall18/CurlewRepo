@@ -3,6 +3,7 @@ package application;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.opencv.core.Mat;
@@ -16,11 +17,13 @@ import datamodel.Video;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
@@ -43,11 +46,15 @@ public class MainWindowController implements AutoTrackListener {
 	@FXML private TextField textfieldEndFrame;
 	@FXML private Button btnAutotrack;
 	@FXML private ProgressBar progressAutoTrack;
+	
+	@FXML private ChoiceBox choiceBoxAnimals;
+	@FXML private Button btnAddAnimal;
 
 	
 	private AutoTracker autotracker;
 	private ProjectData project;
 	private Stage stage;
+	private ArrayList<AnimalTrack> animalList = new ArrayList<AnimalTrack>();
 	
 	@FXML public void initialize() {
 		
@@ -160,5 +167,19 @@ public class MainWindowController implements AutoTrackListener {
 	}
 	
 	
+//	@FXML
+//	public void handleChoiceBoxAnimal() {
+//		choiceBoxAnimals.setItems(FXCollections.observableArrayList(animalList));
+//	}
+//	
+//	@FXML
+//	public void handleBtnAddAnimal() {
+//		//animalList.add(new AnimalTrack("Animal" + (animalList.size() + 1)));
+//		animalList.add(new AnimalTrack("bob"));
+//		animalList.add(new AnimalTrack("rob"));
+//		for (AnimalTrack track: animalList) {
+//			System.out.println(track);
+//		}
+//	}
 	
 }
