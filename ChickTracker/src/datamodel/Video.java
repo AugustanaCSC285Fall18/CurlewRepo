@@ -1,5 +1,6 @@
 package datamodel;
 
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.io.FileNotFoundException;
 
@@ -8,6 +9,8 @@ import org.opencv.videoio.VideoCapture;
 import org.opencv.videoio.Videoio;
 
 public class Video {
+	
+	private Point origin; 
 	
 	private String filePath;
 	private VideoCapture vidCap;
@@ -120,6 +123,14 @@ public class Video {
 
 	public int convertSecondsToFrameNums(double numSecs) {
 		return (int) Math.round(numSecs * getFrameRate());
+	}
+	
+	public Point getOrigin() {
+		return origin;
+	}
+	
+	public void setOrigin (double x, double y) {
+		origin.setLocation(x, y);	
 	}
 
 }
