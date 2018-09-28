@@ -1,4 +1,3 @@
-
 package datamodel;
 
 import java.awt.Rectangle;
@@ -9,18 +8,59 @@ import org.opencv.videoio.VideoCapture;
 import org.opencv.videoio.Videoio;
 
 public class Video {
-
+	
+	private String filePath;
+	private VideoCapture vidCap;
+	private int emptyFrameNum;
+	private int startFrameNum;
+	private int endFrameNum;
 	
 	private double xPixelsPerCm;
 	private double yPixelsPerCm;
-	private double frameRate;
-	private int totalNumFrames;
-	private String filePath;
-	private int startFrameNum;
-	private int endFrameNum;
-	private Rectangle arenaBounds;
-	private int currentFrameNum;
-	private int emptyFrameNum;
+	private Rectangle arenaBounds; 
+	
+		
+	public Video(String filePath) throws FileNotFoundException {
+		this.filePath = filePath;
+		this.vidCap = new VideoCapture(filePath);
+		if (!vidCap.isOpened()) {
+			throw new FileNotFoundException("Unable to open video file: " + filePath);
+		}
+		//fill in some reasonable default/starting values for several fields
+		this.emptyFrameNum = 0;
+		this.startFrameNum = 0;
+		this.endFrameNum = this.getTotalNumFrames()-1;
+		
+		int frameWidth = (int)vidCap.get(Videoio.CAP_PROP_FRAME_WIDTH);
+		int frameHeight = (int)vidCap.get(Videoio.CAP_PROP_FRAME_HEIGHT);
+		this.arenaBounds = new Rectangle(0,0,frameWidth,frameHeight);
+	}
+	
+	public void setCurrentFrameNum(int seekFrame) {
+		vidCap.set(Videoio.CV_CAP_PROP_POS_FRAMES, (double) seekFrame);
+	}
+	public int getCurrentFrameNum() {
+		return (int) vidCap.get(Videoio.CV_CAP_PROP_POS_FRAMES);
+	}
+	
+	public Mat readFrame() {
+		Mat frame = new Mat();
+		vidCap.read(frame);
+		return frame;
+	}
+	
+	public String getFilePath() {
+		return this.filePath;
+	}
+	/** 
+	 * @return frames per second
+	 */
+	public double getFrameRate() {
+		return vidCap.get(Videoio.CAP_PROP_FPS);
+	}
+	public int getTotalNumFrames() {
+		return (int) vidCap.get(Videoio.CAP_PROP_FRAME_COUNT);
+	}
 
 	public int getEmptyFrameNum() {
 		return emptyFrameNum;
@@ -29,53 +69,22 @@ public class Video {
 	public void setEmptyFrameNum(int emptyFrameNum) {
 		this.emptyFrameNum = emptyFrameNum;
 	}
-	
-	public double getAvgPixelsPerCm() {
 		
-	}
-
-	private VideoCapture vidCap;
-
-	/**
-	 * Code from "SharedProjectCode" repository
-	 * @param filePath
-	 * @throws FileNotFoundException
-	 */
-	public Video(String filePath) throws FileNotFoundException {
-		this.filePath = filePath;
-		this.vidCap = new VideoCapture(filePath);
-		if (!vidCap.isOpened()) {
-			throw new FileNotFoundException("Unable to open video file: " + filePath);
-		}
-		this.emptyFrameNum = 0;
-		this.startFrameNum = 0;
-		
-	
-		
-	}
-
-	/**
-	 * finds duration of video using frame rate and the total number of frames
-	 * @return duration in seconds
-	 */
-	public double getDurationInSeconds() {
-		return totalNumFrames/frameRate;
-
+	public int getStartFrameNum() {
+		return startFrameNum;
 	}
 	
-	public Mat readFrame() {
-		Mat frame = new Mat();
-		vidCap.read(frame);
-		return frame;
-		
+	public void setStartFrameNum(int startFrameNum) {
+		this.startFrameNum = startFrameNum;
 	}
 
-	public String getVideoFileName() {
-		return filePath;
-		
+	public int getEndFrameNum() {
+		return endFrameNum;
 	}
 
-	
+	public void setEndFrameNum(int endFrameNum) {
+		this.endFrameNum = endFrameNum;
+	}
 
 	public double getxPixelsPerCm() {
 		return xPixelsPerCm;
@@ -93,45 +102,8 @@ public class Video {
 		this.yPixelsPerCm = yPixelsPerCm;
 	}
 
-	public double getFrameRate() {
-		return frameRate;
-	}
-
-	public void setFrameRate() {
-		this.frameRate = vidCap.get(Videoio.CV_CAP_PROP_FPS);
-		
-	}
-
-	public int getTotalNumFrames() {
-		return totalNumFrames;
-	}
-
-	public void setTotalNumFrames() {
-		this.totalNumFrames = (int) vidCap.get(Videoio.CV_CAP_PROP_FRAME_COUNT);
-	}
-
-	public String getFilePath() {
-		return filePath;
-	}
-
-	public void setFilePath(String filePath) {
-		this.filePath = filePath;
-	}
-
-	public int getStartFrameNum() {
-		return startFrameNum;
-	}
-
-	public void setStartFrameNum(int startFrameNum) {
-		this.startFrameNum = startFrameNum;
-	}
-
-	public int getEndFrameNum() {
-		return endFrameNum;
-	}
-
-	public void setEndFrameNum(int endFrameNum) {
-		this.endFrameNum = endFrameNum;
+	public double getAvgPixelsPerCm() {
+		return (xPixelsPerCm + yPixelsPerCm)/2;
 	}
 
 	public Rectangle getArenaBounds() {
@@ -142,12 +114,12 @@ public class Video {
 		this.arenaBounds = arenaBounds;
 	}
 	
-	public void setCurrentFrameNum(int currentFrameNum) {
-		this.currentFrameNum = currentFrameNum;
+	public double convertFrameNumsToSeconds(int numFrames) {
+		return numFrames / getFrameRate();
 	}
-	
-	public int getCurrentFrameNum() {
-		return currentFrameNum;
+
+	public int convertSecondsToFrameNums(double numSecs) {
+		return (int) Math.round(numSecs * getFrameRate());
 	}
 
 }
