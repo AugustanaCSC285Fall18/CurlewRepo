@@ -35,7 +35,7 @@
             <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="66.0" text="Pause ॥" />
             <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="114.0" text="Manual Tracking" />
             <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="68.0" text="Grid" />
-            <Button fx:id="btnAddAnimal" mnemonicParsing="false" onAction="#handleBtnAddAnimal" text="Add New Animal" />
+            <Button fx:id="btnAddAnimal" mnemonicParsing="false" text="Add New Animal" />
          </children>
       </FlowPane>
    </bottom>
