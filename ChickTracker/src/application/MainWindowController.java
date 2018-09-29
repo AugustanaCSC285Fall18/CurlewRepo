@@ -40,6 +40,8 @@ import utils.UtilsForOpenCV;
 
 public class MainWindowController implements AutoTrackListener {
 	
+	@FXML private Button manualTrackingButton;
+	
 	@FXML private Button originButton;
 	@FXML private Button btnBrowse;
 	@FXML private ImageView videoView;
@@ -68,6 +70,11 @@ public class MainWindowController implements AutoTrackListener {
 		if (chosenFile != null) {
 			loadVideo(chosenFile.getPath());
 		}		
+	}
+	
+	@FXML
+	public void handleManualTracking() {
+		
 	}
 	
 	public void handleOriginButton() {
