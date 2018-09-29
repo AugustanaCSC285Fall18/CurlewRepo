@@ -34,7 +34,7 @@
             <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="55.0" text="Play  ▶" />
             <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="66.0" text="Pause ॥" />
             <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="114.0" text="Manual Tracking" />
-            <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="68.0" text="Grid" />
+            <Button fx:id="originButton" mnemonicParsing="false" onAction="#handleOriginButton" prefHeight="25.0" prefWidth="68.0" text="Set origin" />
             <Button fx:id="btnAddAnimal" mnemonicParsing="false" text="Add New Animal" />
          </children>
       </FlowPane>

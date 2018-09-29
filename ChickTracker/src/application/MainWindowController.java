@@ -36,6 +36,8 @@ import javafx.stage.Window;
 import utils.UtilsForOpenCV;
 
 public class MainWindowController implements AutoTrackListener {
+	
+	@FXML private Button originButton;
 
 	@FXML private Button btnBrowse;
 	@FXML private ImageView videoView;
@@ -55,6 +57,56 @@ public class MainWindowController implements AutoTrackListener {
 	private ProjectData project;
 	private Stage stage;
 	private ArrayList<AnimalTrack> animalList = new ArrayList<AnimalTrack>();
+	
+	@FXML
+	public void handleBrowse()  {
+		FileChooser fileChooser = new FileChooser();
+		fileChooser.setTitle("Open Video File");
+		File chosenFile = fileChooser.showOpenDialog(stage);
+		if (chosenFile != null) {
+			loadVideo(chosenFile.getPath());
+		}		
+	}
+	
+	public void handleOriginButton() {
+		
+	}
+	
+	@FXML
+	public void handleStartAutotracking() throws InterruptedException {
+		if (autotracker == null || !autotracker.isRunning()) {
+			Video video = project.getVideo();
+			video.setStartFrameNum(Integer.parseInt(textfieldStartFrame.getText()));
+			video.setEndFrameNum(Integer.parseInt(textfieldEndFrame.getText()));
+			autotracker = new AutoTracker();
+			// Use Observer Pattern to give autotracker a reference to this object, 
+			// and call back to methods in this class to update progress.
+			autotracker.addAutoTrackListener(this);
+			
+			// this method will start a new thread to run AutoTracker in the background
+			// so that we don't freeze up the main JavaFX UI thread.
+			autotracker.startAnalysis(video);
+			btnAutotrack.setText("CANCEL auto-tracking");
+		} else {
+			autotracker.cancelAnalysis();
+			btnAutotrack.setText("Start auto-tracking");
+		}
+		 
+	}
+	
+	// this method will get called repeatedly by the Autotracker after it analyzes each frame
+	@Override
+	public void handleTrackedFrame(Mat frame, int frameNumber, double fractionComplete) {
+		Image imgFrame = UtilsForOpenCV.matToJavaFXImage(frame);
+		// this method is being run by the AutoTracker's thread, so we must
+		// ask the JavaFX UI thread to update some visual properties
+		Platform.runLater(() -> { 
+			videoView.setImage(imgFrame);
+			progressAutoTrack.setProgress(fractionComplete);
+			sliderVideoTime.setValue(frameNumber);
+			textFieldCurFrameNum.setText(String.format("%05d",frameNumber));
+		});		
+	}
 	
 	@FXML public void initialize() {
 		
@@ -81,17 +133,7 @@ public class MainWindowController implements AutoTrackListener {
 		// (not perfect though... visual problems if the height gets too large.)
 		videoView.fitWidthProperty().bind(videoView.getScene().widthProperty());  
 	}
-	
-	@FXML
-	public void handleBrowse()  {
-		FileChooser fileChooser = new FileChooser();
-		fileChooser.setTitle("Open Video File");
-		File chosenFile = fileChooser.showOpenDialog(stage);
-		if (chosenFile != null) {
-			loadVideo(chosenFile.getPath());
-		}		
-	}
-	
+
 	public void loadVideo(String filePath) {
 		try {
 			project = new ProjectData(filePath);
@@ -103,7 +145,7 @@ public class MainWindowController implements AutoTrackListener {
 		}
 
 	}
-	
+
 	public void showFrameAt(int frameNum) {
 		if (autotracker == null || !autotracker.isRunning()) {
 			project.getVideo().setCurrentFrameNum(frameNum);
@@ -114,42 +156,6 @@ public class MainWindowController implements AutoTrackListener {
 		}		
 	}
 	
-	@FXML
-	public void handleStartAutotracking() throws InterruptedException {
-		if (autotracker == null || !autotracker.isRunning()) {
-			Video video = project.getVideo();
-			video.setStartFrameNum(Integer.parseInt(textfieldStartFrame.getText()));
-			video.setEndFrameNum(Integer.parseInt(textfieldEndFrame.getText()));
-			autotracker = new AutoTracker();
-			// Use Observer Pattern to give autotracker a reference to this object, 
-			// and call back to methods in this class to update progress.
-			autotracker.addAutoTrackListener(this);
-			
-			// this method will start a new thread to run AutoTracker in the background
-			// so that we don't freeze up the main JavaFX UI thread.
-			autotracker.startAnalysis(video);
-			btnAutotrack.setText("CANCEL auto-tracking");
-		} else {
-			autotracker.cancelAnalysis();
-			btnAutotrack.setText("Start auto-tracking");
-		}
-		 
-	}
-
-	// this method will get called repeatedly by the Autotracker after it analyzes each frame
-	@Override
-	public void handleTrackedFrame(Mat frame, int frameNumber, double fractionComplete) {
-		Image imgFrame = UtilsForOpenCV.matToJavaFXImage(frame);
-		// this method is being run by the AutoTracker's thread, so we must
-		// ask the JavaFX UI thread to update some visual properties
-		Platform.runLater(() -> { 
-			videoView.setImage(imgFrame);
-			progressAutoTrack.setProgress(fractionComplete);
-			sliderVideoTime.setValue(frameNumber);
-			textFieldCurFrameNum.setText(String.format("%05d",frameNumber));
-		});		
-	}
-
 	@Override
 	public void trackingComplete(List<AnimalTrack> trackedSegments) {
 		project.getUnassignedSegments().clear();

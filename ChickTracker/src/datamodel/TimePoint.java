@@ -12,43 +12,30 @@ public class TimePoint implements Comparable<TimePoint> {
 		this.frameNum = frameNum;
 	}
 	
-	public double getX() {
-		return x;
-	}
-	
-	public void setX(double x) {
-		this.x = x;
-	}
-		
-	public double getY() {
-		return y;
-	}
-	
-	public void setY(double y) {
-		this.y = y;
-	}
-	
-	public org.opencv.core.Point getPointOpenCV() {
-		return new org.opencv.core.Point(x,y);
-	}
-
-	public java.awt.Point getPointAWT() {
-		return new java.awt.Point((int)x,(int)y);
-	}
-
-	public int getFrameNum() {
-		return frameNum;
-	}
-
+	/**
+	 * Comparison based on the time (frame number).
+	 */
 	@Override
-	public String toString() {
-		return String.format("(%.1f,%.1f@T=%d)",x,y,frameNum);
+	public int compareTo(TimePoint other) {		
+		return this.getTimeDiffAfter(other);
 	}
-
+	
 	public double getDistanceTo(TimePoint other) {
 		double dx = other.x-x;
 		double dy = other.y-y;
 		return Math.sqrt(dx*dx+dy*dy);
+	}
+		
+	public int getFrameNum() {
+		return frameNum;
+	}
+	
+	public java.awt.Point getPointAWT() {
+		return new java.awt.Point((int)x,(int)y);
+	}
+	
+	public org.opencv.core.Point getPointOpenCV() {
+		return new org.opencv.core.Point(x,y);
 	}
 
 	/**
@@ -60,11 +47,24 @@ public class TimePoint implements Comparable<TimePoint> {
 		return this.frameNum - other.frameNum;
 	}
 
-	/**
-	 * Comparison based on the time (frame number).
-	 */
+	public double getX() {
+		return x;
+	}
+
+	public double getY() {
+		return y;
+	}
+
+	public void setX(double x) {
+		this.x = x;
+	}
+
+	public void setY(double y) {
+		this.y = y;
+	}
+
 	@Override
-	public int compareTo(TimePoint other) {		
-		return this.getTimeDiffAfter(other);
+	public String toString() {
+		return String.format("(%.1f,%.1f@T=%d)",x,y,frameNum);
 	}
 }

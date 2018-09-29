@@ -15,16 +15,16 @@ public class ProjectData {
 		unassignedSegments = new ArrayList<>();
 	}
 
-	public Video getVideo() {
-		return video;
-	}
-	
 	public List<AnimalTrack> getTracks() {
 		return tracks;
 	}
-
+	
 	public List<AnimalTrack> getUnassignedSegments() {
 		return unassignedSegments;
+	}
+
+	public Video getVideo() {
+		return video;
 	}
 
 	
