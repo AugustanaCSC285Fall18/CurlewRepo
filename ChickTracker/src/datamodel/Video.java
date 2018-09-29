@@ -1,7 +1,8 @@
 package datamodel;
 
-import java.awt.Point;
+
 import java.awt.Rectangle;
+import java.awt.Point;
 import java.io.FileNotFoundException;
 
 import org.opencv.core.Mat;
@@ -24,6 +25,7 @@ public class Video {
 	
 		
 	public Video(String filePath) throws FileNotFoundException {
+		origin = new Point();
 		this.filePath = filePath;
 		this.vidCap = new VideoCapture(filePath);
 		if (!vidCap.isOpened()) {
@@ -117,8 +119,8 @@ public class Video {
 		this.endFrameNum = endFrameNum;
 	}
 	
-	public void setOrigin (double x, double y) {
-		origin.setLocation(x, y);	
+	public void setOrigin (double x, double y){
+		origin.setLocation(x, y);
 	}
 
 	public void setStartFrameNum(int startFrameNum) {

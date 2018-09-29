@@ -1,5 +1,6 @@
 package application;
 
+import java.awt.event.MouseListener;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -18,6 +19,7 @@ import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Alert;
@@ -29,6 +31,7 @@ import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -38,7 +41,6 @@ import utils.UtilsForOpenCV;
 public class MainWindowController implements AutoTrackListener {
 	
 	@FXML private Button originButton;
-
 	@FXML private Button btnBrowse;
 	@FXML private ImageView videoView;
 	@FXML private Slider sliderVideoTime;
@@ -70,14 +72,28 @@ public class MainWindowController implements AutoTrackListener {
 	
 	public void handleOriginButton() {
 		
+		//means that when the ImageView (videoView) is clicked, origin will be set to the point where the press occurred. 
+		//https://stackoverflow.com/questions/25550518/add-eventhandler-to-imageview-contained-in-tilepane-contained-in-vbox
+		videoView.addEventHandler(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
+
+		     @Override
+		     public void handle(MouseEvent event) {
+		    	 
+		    	 project.getVideo().setOrigin(event.getSceneX(), event.getSceneY());
+		         System.out.println("Origin set at " + project.getVideo().getOrigin().toString());
+		         event.consume();
+		         
+		     }
+		});
+		
 	}
 	
 	@FXML
 	public void handleStartAutotracking() throws InterruptedException {
 		if (autotracker == null || !autotracker.isRunning()) {
-			Video video = project.getVideo();
-			video.setStartFrameNum(Integer.parseInt(textfieldStartFrame.getText()));
-			video.setEndFrameNum(Integer.parseInt(textfieldEndFrame.getText()));
+			//Video video = project.getVideo();
+			project.getVideo().setStartFrameNum(Integer.parseInt(textfieldStartFrame.getText()));
+			project.getVideo().setEndFrameNum(Integer.parseInt(textfieldEndFrame.getText()));
 			autotracker = new AutoTracker();
 			// Use Observer Pattern to give autotracker a reference to this object, 
 			// and call back to methods in this class to update progress.
@@ -85,7 +101,7 @@ public class MainWindowController implements AutoTrackListener {
 			
 			// this method will start a new thread to run AutoTracker in the background
 			// so that we don't freeze up the main JavaFX UI thread.
-			autotracker.startAnalysis(video);
+			autotracker.startAnalysis(project.getVideo());
 			btnAutotrack.setText("CANCEL auto-tracking");
 		} else {
 			autotracker.cancelAnalysis();
