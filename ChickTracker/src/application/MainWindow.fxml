@@ -13,9 +13,9 @@
 <?import javafx.scene.layout.FlowPane?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane prefHeight="671.0" prefWidth="761.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.MainWindowController">
+<BorderPane prefHeight="766.0" prefWidth="845.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.MainWindowController">
    <bottom>
-      <FlowPane columnHalignment="CENTER" BorderPane.alignment="TOP_CENTER">
+      <FlowPane columnHalignment="CENTER" prefHeight="60.0" prefWidth="856.0" BorderPane.alignment="TOP_CENTER">
          <BorderPane.margin>
             <Insets bottom="20.0" top="20.0" />
          </BorderPane.margin>
@@ -24,7 +24,10 @@
             <TextField fx:id="textfieldStartFrame" prefHeight="25.0" prefWidth="55.0" promptText="Frame#" text="5500" />
             <Label layoutX="10.0" layoutY="15.0" text="End:" />
             <TextField fx:id="textfieldEndFrame" layoutX="47.0" layoutY="10.0" prefHeight="25.0" prefWidth="55.0" promptText="Frame#" text="5800" />
-            <Button fx:id="btnAutotrack" mnemonicParsing="false" onAction="#handleStartAutotracking" prefHeight="25.0" prefWidth="120.0" text="Start Auto-Tracking" />
+            <Button fx:id="btnAutotrack" mnemonicParsing="false" onAction="#handleStartAutotracking" prefHeight="25.0" prefWidth="120.0" text="Start Auto-Tracking">
+               <FlowPane.margin>
+                  <Insets left="10.0" right="10.0" />
+               </FlowPane.margin></Button>
             <MenuButton fx:id="menuBtnAnimals" mnemonicParsing="false" onAction="#handleMenuBtnAnimals" text="MenuButton">
               <items>
                 <MenuItem mnemonicParsing="false" text="Action 1" />
@@ -37,11 +40,31 @@
                </FlowPane.margin>
             </Label>
             <ProgressBar fx:id="progressAutoTrack" prefWidth="200.0" progress="0.0" />
-            <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="55.0" text="Play  ▶" />
-            <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="66.0" text="Pause ॥" />
-            <Button fx:id="manualTrackingButton" mnemonicParsing="false" onAction="#handleManualTracking" prefHeight="25.0" prefWidth="114.0" text="Manual Tracking" />
-            <Button fx:id="originButton" mnemonicParsing="false" onAction="#handleOriginButton" prefHeight="25.0" prefWidth="68.0" text="Set origin" />
-            <Button fx:id="btnAddAnimal" mnemonicParsing="false" onAction="#handleBtnAddAnimal" text="Add New Animal" />
+            <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="55.0" text="Play  ▶">
+               <FlowPane.margin>
+                  <Insets />
+               </FlowPane.margin></Button>
+            <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="66.0" text="Pause ॥">
+               <FlowPane.margin>
+                  <Insets right="10.0" />
+               </FlowPane.margin></Button>
+            <Button fx:id="manualTrackingButton" mnemonicParsing="false" onAction="#handleManualTracking" prefHeight="25.0" prefWidth="114.0" text="Manual Tracking">
+               <FlowPane.margin>
+                  <Insets left="10.0" right="10.0" top="10.0" />
+               </FlowPane.margin></Button>
+            <Button fx:id="originButton" mnemonicParsing="false" onAction="#handleOriginButton" prefHeight="25.0" prefWidth="68.0" text="Set origin">
+               <FlowPane.margin>
+                  <Insets left="10.0" right="10.0" top="10.0" />
+               </FlowPane.margin></Button>
+            <Button fx:id="btnAddAnimal" mnemonicParsing="false" onAction="#handleBtnAddAnimal" text="Add New Animal">
+               <FlowPane.margin>
+                  <Insets left="10.0" right="10.0" top="10.0" />
+               </FlowPane.margin></Button>
+            <Button fx:id="btnSetPoint" mnemonicParsing="false" onAction="#handleBtnSetPoint" text="Set Point">
+               <FlowPane.margin>
+                  <Insets left="10.0" right="10.0" top="10.0" />
+               </FlowPane.margin>
+            </Button>
          </children>
       </FlowPane>
    </bottom>
