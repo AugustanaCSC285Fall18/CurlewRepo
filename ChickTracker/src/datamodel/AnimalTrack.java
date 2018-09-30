@@ -42,9 +42,17 @@ public class AnimalTrack {
 		return positions.get(positions.size()-1);
 	}
 	
+	public String getId() {
+		return animalID;
+	}
+	
 	public String toString() {
-		int startFrame = positions.get(0).getFrameNum();
-		int endFrame = getFinalTimePoint().getFrameNum();
+		int startFrame = 0;
+		int endFrame = 0;
+		if(!positions.isEmpty()) {
+		startFrame = positions.get(0).getFrameNum();
+		endFrame = getFinalTimePoint().getFrameNum();
+		}
 		return "AnimalTrack[id="+ animalID + ",numPts=" + positions.size()+" start=" + startFrame + " end=" + endFrame +"]"; 
 	}
 }

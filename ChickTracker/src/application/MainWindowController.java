@@ -19,6 +19,7 @@ import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
@@ -26,8 +27,10 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.Slider;
+import javafx.scene.control.SplitMenuButton;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -53,14 +56,14 @@ public class MainWindowController implements AutoTrackListener {
 	@FXML private Button btnAutotrack;
 	@FXML private ProgressBar progressAutoTrack;
 	
-	@FXML private ChoiceBox choiceBoxAnimals;
+	@FXML private SplitMenuButton splitMenuBtnAnimals;
 	@FXML private Button btnAddAnimal;
 
 	
 	private AutoTracker autotracker;
 	private ProjectData project;
 	private Stage stage;
-	private ArrayList<AnimalTrack> animalList = new ArrayList<AnimalTrack>();
+	private ArrayList<AnimalTrack> animalList;
 	
 	@FXML
 	public void handleBrowse()  {
@@ -147,6 +150,10 @@ public class MainWindowController implements AutoTrackListener {
 //		project.getVideo().setYPixelsPerCm(5.5);
 		
 		sliderVideoTime.valueProperty().addListener((obs, oldV, newV) -> showFrameAt(newV.intValue())); 
+		
+		animalList = new ArrayList<AnimalTrack>();
+		splitMenuBtnAnimals.getItems().clear();
+		splitMenuBtnAnimals.setText("Animal Select");
 	}
 	
 	public void initializeWithStage(Stage stage) {
@@ -196,19 +203,18 @@ public class MainWindowController implements AutoTrackListener {
 	}
 	
 	
-//	@FXML
-//	public void handleChoiceBoxAnimal() {
-//		choiceBoxAnimals.setItems(FXCollections.observableArrayList(animalList));
-//	}
-//	
-//	@FXML
-//	public void handleBtnAddAnimal() {
-//		//animalList.add(new AnimalTrack("Animal" + (animalList.size() + 1)));
-//		animalList.add(new AnimalTrack("bob"));
-//		animalList.add(new AnimalTrack("rob"));
-//		for (AnimalTrack track: animalList) {
-//			System.out.println(track);
-//		}
-//	}
+	@FXML
+	public void handleSplitMenuBtnAnimals() {
+	}
+	
+	@FXML
+	public void handleBtnAddAnimal() {
+		String newAnimal = "Animal " + (animalList.size() + 1);
+		
+		animalList.add(new AnimalTrack(newAnimal));
+		
+		splitMenuBtnAnimals.getItems().add(new MenuItem(newAnimal));
+        
+	}
 	
 }
