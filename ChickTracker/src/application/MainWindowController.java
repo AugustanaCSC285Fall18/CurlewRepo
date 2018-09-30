@@ -96,28 +96,27 @@ public class MainWindowController implements AutoTrackListener {
 
 	public void handleOriginButton() {
 
+		// prevents user from placing more than one origin
+		originButton.setDisable(true);
+
 		// means that when the ImageView (videoView) is clicked, origin will be set to
 		// the point where the press occurred.
 		// https://stackoverflow.com/questions/25550518/add-eventhandler-to-imageview-contained-in-tilepane-contained-in-vbox
-		
-		
-		
 		videoView.addEventHandler(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
-			
+
 			@Override
 			public void handle(MouseEvent event) {
 
 				project.getVideo().setOrigin(event.getSceneX(), event.getSceneY());
 				System.out.println("Origin set at " + project.getVideo().getOrigin().toString());
 				event.consume();
+				videoView.removeEventHandler(MouseEvent.MOUSE_PRESSED, this);
+				originButton.setDisable(false);
 
 			}
-			
+
 		});
 
-		//we need to figure out how to stop this from listening -Riley
-		//videoView.removeEventHandler(MouseEvent.MOUSE_PRESSED, null);
-		
 	}
 
 	@FXML
@@ -233,10 +232,10 @@ public class MainWindowController implements AutoTrackListener {
 
 	}
 
-	//this method handles the addAnimalBtn and the menuBtnAnimals
-	//objects because it makes it easier if we don't have to have
-	//another array of MenuItem objects. Even though it isn't
-	//seen each menu item will have its own listener. -Riley
+	// this method handles the addAnimalBtn and the menuBtnAnimals
+	// objects because it makes it easier if we don't have to have
+	// another array of MenuItem objects. Even though it isn't
+	// seen each menu item will have its own listener. -Riley
 	@FXML
 	public void handleBtnAddAnimal() {
 		String newAnimal = "Animal " + (animalList.size() + 1);
@@ -257,9 +256,9 @@ public class MainWindowController implements AutoTrackListener {
 		});
 
 	}
-	
+
 	public void handleBtnSetPoint() {
-		
+
 		videoView.addEventHandler(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
 
 			@Override
@@ -267,7 +266,7 @@ public class MainWindowController implements AutoTrackListener {
 
 				double actualX = event.getSceneX() - project.getVideo().getOrigin().getX();
 				double actualY = event.getSceneY() - project.getVideo().getOrigin().getY();
-				
+
 				TimePoint newTimePoint = new TimePoint(actualX, actualY, project.getVideo().getCurrentFrameNum());
 				currentAnimal.add(newTimePoint);
 				System.out.println(actualX + ", " + actualY);
@@ -275,7 +274,7 @@ public class MainWindowController implements AutoTrackListener {
 
 			}
 		});
-		
+
 	}
-	
+
 }
