@@ -27,6 +27,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.Slider;
@@ -56,7 +57,7 @@ public class MainWindowController implements AutoTrackListener {
 	@FXML private Button btnAutotrack;
 	@FXML private ProgressBar progressAutoTrack;
 	
-	@FXML private SplitMenuButton splitMenuBtnAnimals;
+	@FXML private MenuButton menuBtnAnimals;
 	@FXML private Button btnAddAnimal;
 
 	
@@ -152,8 +153,8 @@ public class MainWindowController implements AutoTrackListener {
 		sliderVideoTime.valueProperty().addListener((obs, oldV, newV) -> showFrameAt(newV.intValue())); 
 		
 		animalList = new ArrayList<AnimalTrack>();
-		splitMenuBtnAnimals.getItems().clear();
-		splitMenuBtnAnimals.setText("Animal Select");
+		menuBtnAnimals.getItems().clear();
+		menuBtnAnimals.setText("Animal Select");
 	}
 	
 	public void initializeWithStage(Stage stage) {
@@ -204,7 +205,7 @@ public class MainWindowController implements AutoTrackListener {
 	
 	
 	@FXML
-	public void handleSplitMenuBtnAnimals() {
+	public void handleMenuBtnAnimals() {
 	}
 	
 	@FXML
@@ -213,7 +214,8 @@ public class MainWindowController implements AutoTrackListener {
 		
 		animalList.add(new AnimalTrack(newAnimal));
 		
-		splitMenuBtnAnimals.getItems().add(new MenuItem(newAnimal));
+		menuBtnAnimals.getItems().add(new MenuItem(newAnimal));
+		
         
 	}
 	
