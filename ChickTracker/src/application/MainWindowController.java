@@ -1,6 +1,9 @@
 package application;
 
+import java.awt.Color;
 import java.awt.event.MouseListener;
+
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -8,6 +11,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.opencv.core.Mat;
+import org.opencv.core.Point;
+import org.opencv.core.Scalar;
+import org.opencv.imgproc.Imgproc;
 
 import autotracking.AutoTrackListener;
 import autotracking.AutoTracker;
@@ -38,6 +44,8 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
+import javafx.scene.shape.Circle;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.Window;
@@ -47,6 +55,9 @@ public class MainWindowController implements AutoTrackListener {
 
 	@FXML
 	private Button manualTrackingButton;
+	
+	@FXML
+	private Button btnSetPoint;
 
 	@FXML
 	private Button originButton;
@@ -258,7 +269,10 @@ public class MainWindowController implements AutoTrackListener {
 	}
 
 	public void handleBtnSetPoint() {
-
+		
+		btnSetPoint.setDisable(true);
+		
+		
 		videoView.addEventHandler(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
 
 			@Override
@@ -269,11 +283,21 @@ public class MainWindowController implements AutoTrackListener {
 
 				TimePoint newTimePoint = new TimePoint(actualX, actualY, project.getVideo().getCurrentFrameNum());
 				currentAnimal.add(newTimePoint);
-				System.out.println(actualX + ", " + actualY);
+				System.out.println("Current animal " + currentAnimal + actualX + ", " + actualY);
 				event.consume();
+				
+				Mat curFrame = project.getVideo().readFrame();
+				
+				Scalar RED = new Scalar(255,255,255);
+				Imgproc.circle(curFrame, new Point(actualX, actualY), 5, RED, -1);
+				
+				
+				btnSetPoint.setDisable(false);
 
 			}
 		});
+		
+	
 
 	}
 
