@@ -8,6 +8,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.opencv.core.Mat;
+import org.opencv.core.Scalar;
+import org.opencv.imgproc.Imgproc;
+import org.opencv.videoio.VideoCapture;
 import org.opencv.*;
 import javafx.scene.control.*;
 
@@ -289,7 +292,6 @@ public class MainWindowController implements AutoTrackListener {
 				event.consume();
 				videoView.removeEventHandler(MouseEvent.MOUSE_PRESSED, this);
 				btnSetPoint.setDisable(false);
-
 			}
 		});
 		
@@ -298,8 +300,7 @@ public class MainWindowController implements AutoTrackListener {
 	}
 	
 	public void handleBtnPlay() throws InterruptedException {
-		
-			
+
 	}
 	
 }
