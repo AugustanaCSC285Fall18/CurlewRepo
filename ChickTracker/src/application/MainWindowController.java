@@ -299,6 +299,9 @@ public class MainWindowController implements AutoTrackListener {
 
 	}
 	
+	
+	//https://github.com/opencv-java/video-basics/blob/master/src/it/polito/teaching/cv/VideoController.java
+	//haven't been able to get the video to play
 	public void handleBtnPlay() throws InterruptedException {
 
 	}
