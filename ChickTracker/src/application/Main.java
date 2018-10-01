@@ -31,6 +31,7 @@ public class Main extends Application {
 			primaryStage.setScene(scene);
 			controller.initializeWithStage(primaryStage);
 			primaryStage.show();
+			primaryStage.setResizable(false);
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
