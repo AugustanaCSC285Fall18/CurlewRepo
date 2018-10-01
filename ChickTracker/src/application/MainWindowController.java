@@ -11,17 +11,24 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.opencv.core.Mat;
+
 import org.opencv.core.Point;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
+import org.opencv.videoio.VideoCapture;
+import org.opencv.*;
+import javafx.scene.control.*;
+
 
 import autotracking.AutoTrackListener;
 import autotracking.AutoTracker;
+import autotracking.DetectedShape;
 import datamodel.AnimalTrack;
 import datamodel.ProjectData;
 import datamodel.TimePoint;
 import datamodel.Video;
 import javafx.application.Platform;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -56,9 +63,7 @@ public class MainWindowController implements AutoTrackListener {
 	@FXML
 	private Button manualTrackingButton;
 	
-	@FXML
-	private Button btnSetPoint;
-
+	
 	@FXML
 	private Button originButton;
 	@FXML
@@ -83,6 +88,13 @@ public class MainWindowController implements AutoTrackListener {
 	private MenuButton menuBtnAnimals;
 	@FXML
 	private Button btnAddAnimal;
+	@FXML
+	private Button btnSetPoint;
+	
+	@FXML
+	private Button btnPlay;
+	@FXML
+	private Button btnPause;
 
 	private AutoTracker autotracker;
 	private ProjectData project;
@@ -268,11 +280,13 @@ public class MainWindowController implements AutoTrackListener {
 
 	}
 
+	//users have to press add point every single time
+	//which is cumbersome so we will have to figure
+	//out how to streamline this -Riley
 	public void handleBtnSetPoint() {
 		
 		btnSetPoint.setDisable(true);
-		
-		
+
 		videoView.addEventHandler(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
 
 			@Override
@@ -285,6 +299,7 @@ public class MainWindowController implements AutoTrackListener {
 				currentAnimal.add(newTimePoint);
 				System.out.println("Current animal " + currentAnimal + actualX + ", " + actualY);
 				event.consume();
+
 				
 				Mat curFrame = project.getVideo().readFrame();
 				
@@ -293,12 +308,18 @@ public class MainWindowController implements AutoTrackListener {
 				
 				
 				btnSetPoint.setDisable(false);
-
-			}
+				videoView.removeEventHandler(MouseEvent.MOUSE_PRESSED, this);
+				btnSetPoint.setDisable(false);
+}
 		});
-		
-	
 
 	}
+	
+	
+	//https://github.com/opencv-java/video-basics/blob/master/src/it/polito/teaching/cv/VideoController.java
+	//haven't been able to get the video to play
+	public void handleBtnPlay() throws InterruptedException {
 
+	}
+	
 }

@@ -27,8 +27,8 @@ public class Video {
 	public Video(String filePath) throws FileNotFoundException {
 		origin = new Point();
 		this.filePath = filePath;
-		this.vidCap = new VideoCapture(filePath);
-		if (!vidCap.isOpened()) {
+		this.setVidCap(new VideoCapture(filePath));
+		if (!getVidCap().isOpened()) {
 			throw new FileNotFoundException("Unable to open video file: " + filePath);
 		}
 		//fill in some reasonable default/starting values for several fields
@@ -36,8 +36,8 @@ public class Video {
 		this.startFrameNum = 0;
 		this.endFrameNum = this.getTotalNumFrames()-1;
 		
-		int frameWidth = (int)vidCap.get(Videoio.CAP_PROP_FRAME_WIDTH);
-		int frameHeight = (int)vidCap.get(Videoio.CAP_PROP_FRAME_HEIGHT);
+		int frameWidth = (int)getVidCap().get(Videoio.CAP_PROP_FRAME_WIDTH);
+		int frameHeight = (int)getVidCap().get(Videoio.CAP_PROP_FRAME_HEIGHT);
 		this.arenaBounds = new Rectangle(0,0,frameWidth,frameHeight);
 	}
 	
@@ -56,7 +56,7 @@ public class Video {
 		return (xPixelsPerCm + yPixelsPerCm)/2;
 	}
 	public int getCurrentFrameNum() {
-		return (int) vidCap.get(Videoio.CV_CAP_PROP_POS_FRAMES);
+		return (int) getVidCap().get(Videoio.CV_CAP_PROP_POS_FRAMES);
 	}
 	public int getEmptyFrameNum() {
 		return emptyFrameNum;
@@ -74,7 +74,7 @@ public class Video {
 	 * @return frames per second
 	 */
 	public double getFrameRate() {
-		return vidCap.get(Videoio.CAP_PROP_FPS);
+		return getVidCap().get(Videoio.CAP_PROP_FPS);
 	}
 	
 	public Point getOrigin() {
@@ -86,7 +86,7 @@ public class Video {
 	}
 
 	public int getTotalNumFrames() {
-		return (int) vidCap.get(Videoio.CAP_PROP_FRAME_COUNT);
+		return (int) getVidCap().get(Videoio.CAP_PROP_FRAME_COUNT);
 	}
 
 	public double getxPixelsPerCm() {
@@ -99,7 +99,7 @@ public class Video {
 
 	public Mat readFrame() {
 		Mat frame = new Mat();
-		vidCap.read(frame);
+		getVidCap().read(frame);
 		return frame;
 	}
 
@@ -108,7 +108,7 @@ public class Video {
 	}
 
 	public void setCurrentFrameNum(int seekFrame) {
-		vidCap.set(Videoio.CV_CAP_PROP_POS_FRAMES, (double) seekFrame);
+		getVidCap().set(Videoio.CV_CAP_PROP_POS_FRAMES, (double) seekFrame);
 	}
 
 	public void setEmptyFrameNum(int emptyFrameNum) {
@@ -133,6 +133,14 @@ public class Video {
 	
 	public void setyPixelsPerCm(double yPixelsPerCm) {
 		this.yPixelsPerCm = yPixelsPerCm;
+	}
+
+	public VideoCapture getVidCap() {
+		return vidCap;
+	}
+
+	public void setVidCap(VideoCapture vidCap) {
+		this.vidCap = vidCap;
 	}
 
 }
