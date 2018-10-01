@@ -40,11 +40,11 @@
                </FlowPane.margin>
             </Label>
             <ProgressBar fx:id="progressAutoTrack" prefWidth="200.0" progress="0.0" />
-            <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="55.0" text="Play  ▶">
+            <Button fx:id="btnPlay" mnemonicParsing="false" onAction="#handleBtnPlay" prefHeight="25.0" prefWidth="55.0" text="Play  ▶">
                <FlowPane.margin>
                   <Insets />
                </FlowPane.margin></Button>
-            <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="66.0" text="Pause ॥">
+            <Button fx:id="btnPause" mnemonicParsing="false" prefHeight="25.0" prefWidth="66.0" text="Pause ॥">
                <FlowPane.margin>
                   <Insets right="10.0" />
                </FlowPane.margin></Button>
