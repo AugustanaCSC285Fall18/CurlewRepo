@@ -1,45 +1,45 @@
 package datamodel;
 
-
 public class TimePoint implements Comparable<TimePoint> {
-	private double x;     // location
-	private double y;      
+	private double x; // location
+	private double y;
 	private int frameNum; // time (measured in frames)
-	
+
 	public TimePoint(double x, double y, int frameNum) {
 		this.x = x;
 		this.y = y;
 		this.frameNum = frameNum;
 	}
-	
+
 	/**
 	 * Comparison based on the time (frame number).
 	 */
 	@Override
-	public int compareTo(TimePoint other) {		
+	public int compareTo(TimePoint other) {
 		return this.getTimeDiffAfter(other);
 	}
-	
+
 	public double getDistanceTo(TimePoint other) {
-		double dx = other.x-x;
-		double dy = other.y-y;
-		return Math.sqrt(dx*dx+dy*dy);
+		double dx = other.x - x;
+		double dy = other.y - y;
+		return Math.sqrt(dx * dx + dy * dy);
 	}
-		
+
 	public int getFrameNum() {
 		return frameNum;
 	}
-	
+
 	public java.awt.Point getPointAWT() {
-		return new java.awt.Point((int)x,(int)y);
+		return new java.awt.Point((int) x, (int) y);
 	}
-	
+
 	public org.opencv.core.Point getPointOpenCV() {
-		return new org.opencv.core.Point(x,y);
+		return new org.opencv.core.Point(x, y);
 	}
 
 	/**
 	 * How many frames have passed since another TimePoint
+	 * 
 	 * @param other - the otherTimePoint to compare with
 	 * @return the difference (negative if the other TimePoint is later)
 	 */
@@ -65,6 +65,6 @@ public class TimePoint implements Comparable<TimePoint> {
 
 	@Override
 	public String toString() {
-		return String.format("(%.1f,%.1f@T=%d)",x,y,frameNum);
+		return String.format("(%.1f,%.1f@T=%d)", x, y, frameNum);
 	}
 }

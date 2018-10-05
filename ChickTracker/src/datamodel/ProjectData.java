@@ -8,7 +8,7 @@ public class ProjectData {
 	private Video video;
 	private List<AnimalTrack> tracks;
 	private List<AnimalTrack> unassignedSegments;
-	
+
 	public ProjectData(String videoFilePath) throws FileNotFoundException {
 		video = new Video(videoFilePath);
 		tracks = new ArrayList<>();
@@ -18,7 +18,7 @@ public class ProjectData {
 	public List<AnimalTrack> getTracks() {
 		return tracks;
 	}
-	
+
 	public List<AnimalTrack> getUnassignedSegments() {
 		return unassignedSegments;
 	}
@@ -27,5 +27,4 @@ public class ProjectData {
 		return video;
 	}
 
-	
 }

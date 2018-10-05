@@ -3,7 +3,6 @@ package application;
 import java.awt.Color;
 import java.awt.event.MouseListener;
 
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -18,7 +17,6 @@ import org.opencv.imgproc.Imgproc;
 import org.opencv.videoio.VideoCapture;
 import org.opencv.*;
 import javafx.scene.control.*;
-
 
 import autotracking.AutoTrackListener;
 import autotracking.AutoTracker;
@@ -62,8 +60,7 @@ public class MainWindowController implements AutoTrackListener {
 
 	@FXML
 	private Button manualTrackingButton;
-	
-	
+
 	@FXML
 	private Button originButton;
 	@FXML
@@ -90,7 +87,7 @@ public class MainWindowController implements AutoTrackListener {
 	private Button btnAddAnimal;
 	@FXML
 	private Button btnSetPoint;
-	
+
 	@FXML
 	private Button btnPlay;
 	@FXML
@@ -280,11 +277,11 @@ public class MainWindowController implements AutoTrackListener {
 
 	}
 
-	//users have to press add point every single time
-	//which is cumbersome so we will have to figure
-	//out how to streamline this -Riley
+	// users have to press add point every single time
+	// which is cumbersome so we will have to figure
+	// out how to streamline this -Riley
 	public void handleBtnSetPoint() {
-		
+
 		btnSetPoint.setDisable(true);
 
 		videoView.addEventHandler(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
@@ -300,26 +297,23 @@ public class MainWindowController implements AutoTrackListener {
 				System.out.println("Current animal " + currentAnimal + actualX + ", " + actualY);
 				event.consume();
 
-				
 				Mat curFrame = project.getVideo().readFrame();
-				
-				Scalar RED = new Scalar(255,255,255);
+
+				Scalar RED = new Scalar(255, 255, 255);
 				Imgproc.circle(curFrame, new Point(actualX, actualY), 5, RED, -1);
-				
-				
+
 				btnSetPoint.setDisable(false);
 				videoView.removeEventHandler(MouseEvent.MOUSE_PRESSED, this);
 				btnSetPoint.setDisable(false);
-}
+			}
 		});
 
 	}
-	
-	
-	//https://github.com/opencv-java/video-basics/blob/master/src/it/polito/teaching/cv/VideoController.java
-	//haven't been able to get the video to play
+
+	// https://github.com/opencv-java/video-basics/blob/master/src/it/polito/teaching/cv/VideoController.java
+	// haven't been able to get the video to play
 	public void handleBtnPlay() throws InterruptedException {
 
 	}
-	
+
 }

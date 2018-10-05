@@ -12,11 +12,13 @@ public class UtilsForOpenCV {
 
 	/**
 	 * Converts an OpenCV Mat (matrix) image into a JavaFX Image object.
+	 * 
 	 * @param matImg - the OpenCV matrix to convert
 	 * @return an equivalent JavaFX Image
 	 */
 	public static Image matToJavaFXImage(Mat matImg) {
-		// Note: the code in this method is thanks to Luigi De Russis and/or Alberto Sacco
+		// Note: the code in this method is thanks to Luigi De Russis and/or Alberto
+		// Sacco
 		// https://github.com/opencv-java/getting-started/tree/master/FXHelloCV
 		int width = matImg.width(), height = matImg.height(), channels = matImg.channels();
 		byte[] sourcePixels = new byte[width * height * channels];
@@ -31,6 +33,6 @@ public class UtilsForOpenCV {
 		final byte[] targetPixels = ((DataBufferByte) image.getRaster().getDataBuffer()).getData();
 		System.arraycopy(sourcePixels, 0, targetPixels, 0, sourcePixels.length);
 
-		return SwingFXUtils.toFXImage(image, null);		
+		return SwingFXUtils.toFXImage(image, null);
 	}
 }
