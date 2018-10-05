@@ -111,7 +111,7 @@ public class MainWindowController implements AutoTrackListener {
 
 	@FXML
 	public void handleManualTracking() {
-
+		
 	}
 
 	public void handleOriginButton() {
@@ -197,6 +197,7 @@ public class MainWindowController implements AutoTrackListener {
 		animalList = new ArrayList<AnimalTrack>();
 		menuBtnAnimals.getItems().clear();
 		menuBtnAnimals.setText("Animal Select");
+		
 	}
 
 	public void initializeWithStage(Stage stage) {
