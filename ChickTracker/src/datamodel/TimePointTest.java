@@ -83,6 +83,7 @@ class TimePointTest {
 
 	void testSetPointsToSameValue() {
 		List<TimePoint> test = createListOfTestTimePoints();
+		// tests setting the x and y values to the already existing x and y values
 
 		test.get(2).setX(150);
 		test.get(2).setY(200);
