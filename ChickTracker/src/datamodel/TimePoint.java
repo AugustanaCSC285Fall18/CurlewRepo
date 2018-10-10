@@ -18,6 +18,22 @@ public class TimePoint implements Comparable<TimePoint> {
 	public int compareTo(TimePoint other) {
 		return this.getTimeDiffAfter(other);
 	}
+	
+	@Override
+	public boolean equals(Object object) {
+		if (!(object instanceof TimePoint)) {
+			return false;
+		}
+		
+		TimePoint other = (TimePoint) object;
+		
+		if (this.getTimeDiffAfter(other) == 0) {
+			if (this.x == other.getX() && this.y == other.getY()) {
+				return true;
+			}
+		}
+		return false;
+	}
 
 	public double getDistanceTo(TimePoint other) {
 		double dx = other.x - x;
