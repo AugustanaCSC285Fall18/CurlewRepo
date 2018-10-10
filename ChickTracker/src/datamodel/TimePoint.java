@@ -20,19 +20,23 @@ public class TimePoint implements Comparable<TimePoint> {
 	}
 	
 	@Override
+	/**
+	 * Equals method that tests to see if two TimePoints have the same location and the same time frame.
+	 */
 	public boolean equals(Object object) {
 		if (!(object instanceof TimePoint)) {
 			return false;
-		}
-		
-		TimePoint other = (TimePoint) object;
-		
-		if (this.getTimeDiffAfter(other) == 0) {
-			if (this.x == other.getX() && this.y == other.getY()) {
-				return true;
+		} else {
+			
+			TimePoint other = (TimePoint) object;
+			
+			if (this.getTimeDiffAfter(other) == 0) {
+				if (this.x == other.getX() && this.y == other.getY()) {
+					return true;
+				}
 			}
+			return false;
 		}
-		return false;
 	}
 
 	public double getDistanceTo(TimePoint other) {
