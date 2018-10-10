@@ -57,4 +57,8 @@ public class AnimalTrack {
 		return "AnimalTrack[id=" + animalID + ",numPts=" + positions.size() + " start=" + startFrame + " end="
 				+ endFrame + "]";
 	}
+
+	public int getNumPoints() {
+		return positions.size();
+	}
 }
