@@ -25,10 +25,7 @@ public class Video {
 	public Video(String filePath) throws FileNotFoundException {
 		origin = new Point();
 		this.filePath = filePath;
-		this.setVidCap(new VideoCapture(filePath));
-		if (!getVidCap().isOpened()) {
-			throw new FileNotFoundException("Unable to open video file: " + filePath);
-		}
+		connectVideoCapture();
 		// fill in some reasonable default/starting values for several fields
 		this.emptyFrameNum = 0;
 		this.startFrameNum = 0;
@@ -39,6 +36,14 @@ public class Video {
 		this.arenaBounds = new Rectangle(0, 0, frameWidth, frameHeight);
 	}
 
+	// copied from ClassSharedRepo
+	synchronized void connectVideoCapture() throws FileNotFoundException {
+		this.vidCap = new VideoCapture(filePath);
+		if (!vidCap.isOpened()) {
+			throw new FileNotFoundException("Unable to open video file: " + filePath);
+		}
+	}
+	
 	public double convertFrameNumsToSeconds(int numFrames) {
 		return numFrames / getFrameRate();
 	}
@@ -74,7 +79,7 @@ public class Video {
 	/**
 	 * @return frames per second
 	 */
-	public double getFrameRate() {
+	public synchronized double getFrameRate() {
 		return getVidCap().get(Videoio.CAP_PROP_FPS);
 	}
 
@@ -86,7 +91,7 @@ public class Video {
 		return startFrameNum;
 	}
 
-	public int getTotalNumFrames() {
+	public synchronized int getTotalNumFrames() {
 		return (int) getVidCap().get(Videoio.CAP_PROP_FRAME_COUNT);
 	}
 
@@ -98,7 +103,7 @@ public class Video {
 		return yPixelsPerCm;
 	}
 
-	public Mat readFrame() {
+	public synchronized Mat readFrame() {
 		Mat frame = new Mat();
 		getVidCap().read(frame);
 		return frame;
@@ -108,7 +113,7 @@ public class Video {
 		this.arenaBounds = arenaBounds;
 	}
 
-	public void setCurrentFrameNum(int seekFrame) {
+	public synchronized void setCurrentFrameNum(int seekFrame) {
 		getVidCap().set(Videoio.CV_CAP_PROP_POS_FRAMES, (double) seekFrame);
 	}
 
@@ -136,11 +141,11 @@ public class Video {
 		this.yPixelsPerCm = yPixelsPerCm;
 	}
 
-	public VideoCapture getVidCap() {
+	public synchronized VideoCapture getVidCap() {
 		return vidCap;
 	}
 
-	public void setVidCap(VideoCapture vidCap) {
+	public synchronized void setVidCap(VideoCapture vidCap) {
 		this.vidCap = vidCap;
 	}
 

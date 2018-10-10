@@ -1,1 +1,5 @@
 /bin/
+*.mp4
+*.avi
+!/testVideos/*.mp4
+fake_test.project
