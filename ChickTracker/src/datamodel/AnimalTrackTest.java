@@ -27,7 +27,7 @@ class AnimalTrackTest {
 		assertEquals(3,testTrack.getNumPoints());
 		
 		TimePoint ptAtZero = testTrack.getTimePointAtTime(0);
-		assertEquals(new TimePoint(200,108,0), ptAtZero);
+		assertEquals(new TimePoint(100,100,0), ptAtZero);
 		TimePoint ptAt2 = testTrack.getTimePointAtTime(2);
 		assertNull(ptAt2);
 		TimePoint lastPt = testTrack.getFinalTimePoint();
