@@ -61,7 +61,7 @@ class TimePointTest {
 		assertEquals(110, test.get(1).getY());
 		
 
-		// tests same data sets
+		// tests setting the x and y values to the already existing x and y values
 		test.get(2).setX(150);
 		test.get(2).setY(200);
 		assertEquals(150, test.get(2).getX());
