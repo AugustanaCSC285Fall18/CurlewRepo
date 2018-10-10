@@ -34,4 +34,14 @@ class AnimalTrackTest {
 		assertEquals(5,lastPt.getFrameNum());
 	}
 
+	
+	@Test
+	void testGettingFinalTimePoint() {
+		AnimalTrack testTrack = makeNewAnimal("Leonidas");
+		testTrack.add(new TimePoint(100,100,0));		
+		testTrack.add(new TimePoint(110,110,1));		
+		testTrack.add(new TimePoint(150,200,5));	
+		assertEquals(new TimePoint(150,200,5), testTrack.getFinalTimePoint());
+	}
+	
 }
