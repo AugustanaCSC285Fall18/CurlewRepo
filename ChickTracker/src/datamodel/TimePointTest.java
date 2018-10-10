@@ -104,17 +104,25 @@ class TimePointTest {
 	}
 	
 	@Test
-	void testEqualPoints() {
+	void testAddExistingPoints() {
 		List<TimePoint> test = createListOfTestTimePoints();
 		// adds points that are equal to points that are already existing in the list 
 		test.add(new TimePoint(100,100,0));
 		test.add(new TimePoint(110,110,1));
-		
+	}
+	
+	@Test
+	void testNotEqualPoints() {
+		List<TimePoint> test = createListOfTestTimePoints();
 		// test not equal points
 		assertFalse(test.get(0).equals(test.get(1)));
 		assertFalse(test.get(0).equals(test.get(2)));
 		assertFalse(test.get(1).equals(test.get(2)));
 		
+	}
+	
+	void testEqualPoints() {
+		List<TimePoint> test = createListOfTestTimePoints();
 		// tests equal points
 		assertTrue(test.get(0).equals(test.get(3)));
 		assertTrue(test.get(1).equals(test.get(4)));
