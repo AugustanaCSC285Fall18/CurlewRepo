@@ -5,6 +5,7 @@ import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 class TimePointTest {
@@ -75,6 +76,24 @@ class TimePointTest {
 		assertEquals(Math.sqrt(200), test.get(0).getDistanceTo(test.get(1)));
 		assertEquals(Math.sqrt(12500), test.get(0).getDistanceTo(test.get(2)));
 		assertEquals(Math.sqrt(9700), test.get(1).getDistanceTo(test.get(2)));
+	}
+	
+	@Test
+	void testEqualPoints() {
+		List<TimePoint> test = createListOfTestTimePoints();
+		// adds points that are equal to points that are already existing in the list 
+		test.add(new TimePoint(100,100,0));
+		test.add(new TimePoint(110,110,1));
+		
+		// test not equal points
+		assertFalse(test.get(0).equals(test.get(1)));
+		assertFalse(test.get(0).equals(test.get(2)));
+		assertFalse(test.get(1).equals(test.get(2)));
+		
+		// tests equal points
+		assertTrue(test.get(0).equals(test.get(3)));
+		assertTrue(test.get(1).equals(test.get(4)));
+		
 	}
 
 }
