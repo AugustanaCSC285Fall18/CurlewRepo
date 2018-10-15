@@ -1,7 +1,8 @@
 package application;
 
-import java.awt.Color;
+//import java.awt.Color;
 import java.awt.event.MouseListener;
+import javafx.scene.paint.Color;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -35,6 +36,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
@@ -50,6 +52,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -57,6 +60,11 @@ import javafx.stage.Window;
 import utils.UtilsForOpenCV;
 
 public class MainWindowController implements AutoTrackListener {
+
+	@FXML
+	private Canvas canvas;
+	
+	private GraphicsContext graphic;
 
 	@FXML
 	private Button manualTrackingButton;
@@ -98,7 +106,51 @@ public class MainWindowController implements AutoTrackListener {
 	private Stage stage;
 	private ArrayList<AnimalTrack> animalList;
 	private AnimalTrack currentAnimal;
+	
+	private CalibrationController calibController;
 
+	@FXML
+	public void initialize() {
+		// FIXME: this quick loading of a specific file and specific settings
+		// is for debugging purposes only, since there's no way to specify
+		// the settings in the GUI right now...
+		// loadVideo("/home/forrest/data/shara_chicks_tracking/sample1.mp4");
+		loadVideo("S:/class/cs/285/sample_videos/sample1.mp4");
+		project.getVideo().setxPixelsPerCm(6.5); // these are just rough estimates!
+		project.getVideo().setyPixelsPerCm(6.7);
+
+//		loadVideo("/home/forrest/data/shara_chicks_tracking/lowres/lowres2.avi");
+		// loadVideo("S:/class/cs/285/sample_videos/lowres2.mp4");
+//		project.getVideo().setXPixelsPerCm(5.5); //  these are just rough estimates!
+//		project.getVideo().setYPixelsPerCm(5.5);
+
+		graphic = canvas.getGraphicsContext2D();
+		graphic.setFill(Color.BLACK);
+		graphic.fillOval(0, 0, 100, 200);
+		
+		sliderVideoTime.valueProperty().addListener((obs, oldV, newV) -> showFrameAt(newV.intValue()));
+
+		animalList = new ArrayList<AnimalTrack>();
+		menuBtnAnimals.getItems().clear();
+		menuBtnAnimals.setText("Animal Select");
+
+	}
+
+	public void initializeWithStage(Stage stage) {
+		this.stage = stage;
+
+		// bind it so whenever the Scene changes width, the videoView matches it
+		// (not perfect though... visual problems if the height gets too large.)
+		videoView.fitWidthProperty().bind(videoView.getScene().widthProperty());
+	}
+
+	public void resetMouseModeAndButtons() {
+		canvas.setOnMousePressed(e -> handleMousePressForTracking(e)); // switch back to manual tracking mode
+		originButton.setDisable(false);
+		//re-enable other buttons too, involving calibration, etc?		
+	}
+	
+	
 	@FXML
 	public void handleBrowse() {
 		FileChooser fileChooser = new FileChooser();
@@ -109,11 +161,9 @@ public class MainWindowController implements AutoTrackListener {
 		}
 	}
 
-	@FXML
-	public void handleManualTracking() {
-		
-	}
+	
 
+	@FXML
 	public void handleOriginButton() {
 
 		// prevents user from placing more than one origin
@@ -122,23 +172,9 @@ public class MainWindowController implements AutoTrackListener {
 		// means that when the ImageView (videoView) is clicked, origin will be set to
 		// the point where the press occurred.
 		// https://stackoverflow.com/questions/25550518/add-eventhandler-to-imageview-contained-in-tilepane-contained-in-vbox
-		videoView.addEventHandler(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
-
-			@Override
-			public void handle(MouseEvent event) {
-
-				project.getVideo().setOrigin(event.getSceneX(), event.getSceneY());
-				System.out.println("Origin set at " + project.getVideo().getOrigin().toString());
-				event.consume();
-				videoView.removeEventHandler(MouseEvent.MOUSE_PRESSED, this);
-				originButton.setDisable(false);
-
-			}
-
-		});
-
+		canvas.setOnMousePressed(e -> calibController.handleMousePressedSetOrigin(e));
 	}
-
+	
 	@FXML
 	public void handleStartAutotracking() throws InterruptedException {
 		if (autotracker == null || !autotracker.isRunning()) {
@@ -176,42 +212,12 @@ public class MainWindowController implements AutoTrackListener {
 		});
 	}
 
-	@FXML
-	public void initialize() {
-
-		// FIXME: this quick loading of a specific file and specific settings
-		// is for debugging purposes only, since there's no way to specify
-		// the settings in the GUI right now...
-		// loadVideo("/home/forrest/data/shara_chicks_tracking/sample1.mp4");
-		loadVideo("S:/class/cs/285/sample_videos/sample1.mp4");
-		project.getVideo().setxPixelsPerCm(6.5); // these are just rough estimates!
-		project.getVideo().setyPixelsPerCm(6.7);
-
-//		loadVideo("/home/forrest/data/shara_chicks_tracking/lowres/lowres2.avi");
-		// loadVideo("S:/class/cs/285/sample_videos/lowres2.mp4");
-//		project.getVideo().setXPixelsPerCm(5.5); //  these are just rough estimates!
-//		project.getVideo().setYPixelsPerCm(5.5);
-
-		sliderVideoTime.valueProperty().addListener((obs, oldV, newV) -> showFrameAt(newV.intValue()));
-
-		animalList = new ArrayList<AnimalTrack>();
-		menuBtnAnimals.getItems().clear();
-		menuBtnAnimals.setText("Animal Select");
-		
-	}
-
-	public void initializeWithStage(Stage stage) {
-		this.stage = stage;
-
-		// bind it so whenever the Scene changes width, the videoView matches it
-		// (not perfect though... visual problems if the height gets too large.)
-		videoView.fitWidthProperty().bind(videoView.getScene().widthProperty());
-	}
-
 	public void loadVideo(String filePath) {
 		try {
 			project = new ProjectData(filePath);
 			Video video = project.getVideo();
+			calibController = new CalibrationController(video, canvas, this);
+
 			sliderVideoTime.setMax(video.getTotalNumFrames() - 1);
 			showFrameAt(0);
 		} catch (FileNotFoundException e) {
@@ -282,34 +288,23 @@ public class MainWindowController implements AutoTrackListener {
 	// which is cumbersome so we will have to figure
 	// out how to streamline this -Riley
 	public void handleBtnSetPoint() {
-
 		btnSetPoint.setDisable(true);
-
-		videoView.addEventHandler(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
-
-			@Override
-			public void handle(MouseEvent event) {
-
-				double actualX = event.getSceneX() - project.getVideo().getOrigin().getX();
-				double actualY = event.getSceneY() - project.getVideo().getOrigin().getY();
-
-				TimePoint newTimePoint = new TimePoint(actualX, actualY, project.getVideo().getCurrentFrameNum());
-				currentAnimal.add(newTimePoint);
-				System.out.println("Current animal " + currentAnimal + actualX + ", " + actualY);
-				event.consume();
-
-				btnSetPoint.setDisable(false);
-				videoView.removeEventHandler(MouseEvent.MOUSE_PRESSED, this);
-				btnSetPoint.setDisable(false);
-			}
-		});
-
+		canvas.setOnMousePressed(e -> handleMousePressForTracking(e));
 	}
+	
+	public void handleMousePressForTracking(MouseEvent event) {
+		double actualX = event.getSceneX() - project.getVideo().getOrigin().getX();
+		double actualY = event.getSceneY() - project.getVideo().getOrigin().getY();
 
-	// https://github.com/opencv-java/video-basics/blob/master/src/it/polito/teaching/cv/VideoController.java
-	// haven't been able to get the video to play
-	public void handleBtnPlay() throws InterruptedException {
+		TimePoint newTimePoint = new TimePoint(actualX, actualY, project.getVideo().getCurrentFrameNum());
+		currentAnimal.add(newTimePoint);
+		System.out.println("Current animal " + currentAnimal + actualX + ", " + actualY);
 
+		graphic.fillOval(100, 100, 20, 20);
+
+		btnSetPoint.setDisable(false);
 	}
+	
+
 
 }
