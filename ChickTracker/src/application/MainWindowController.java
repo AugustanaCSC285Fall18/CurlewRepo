@@ -298,11 +298,6 @@ public class MainWindowController implements AutoTrackListener {
 				System.out.println("Current animal " + currentAnimal + actualX + ", " + actualY);
 				event.consume();
 
-				Mat curFrame = project.getVideo().readFrame();
-
-				Scalar RED = new Scalar(255, 255, 255);
-				Imgproc.circle(curFrame, new Point(actualX, actualY), 5, RED, -1);
-
 				btnSetPoint.setDisable(false);
 				videoView.removeEventHandler(MouseEvent.MOUSE_PRESSED, this);
 				btnSetPoint.setDisable(false);
