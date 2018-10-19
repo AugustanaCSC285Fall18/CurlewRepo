@@ -11,6 +11,8 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.JOptionPane;
+
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfByte;
 import org.opencv.core.Point;
@@ -270,7 +272,7 @@ public class MainWindowController implements AutoTrackListener {
 	// seen each menu item will have its own listener. -Riley
 	@FXML
 	public void handleBtnAddAnimal() {
-		String newAnimal = "Animal " + (animalList.size() + 1);
+		String newAnimal = JOptionPane.showInputDialog("Enter Chick's Name:", "Animal " + (animalList.size()+1));;
 		animalList.add(new AnimalTrack(newAnimal));
 
 		MenuItem newItem = new MenuItem(newAnimal);
