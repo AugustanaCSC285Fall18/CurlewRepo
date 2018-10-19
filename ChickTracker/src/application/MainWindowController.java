@@ -287,14 +287,14 @@ public class MainWindowController implements AutoTrackListener {
 			@Override
 			public void handle(ActionEvent event) {
 				String name = newItem.getText();
-				AnimalTrack selectedAnimal = null;
+				//AnimalTrack selectedAnimal = null;
 				for (AnimalTrack animal : animalList) {
 					if (animal.getId().equals(name)) {
-						selectedAnimal = animal;
+						currentAnimal = animal;
 					}
 				}
 				menuBtnAnimals.setText(name);
-				System.out.println(selectedAnimal);
+				System.out.println(currentAnimal);
 			}
 		});
 
