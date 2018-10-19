@@ -34,6 +34,10 @@ public class CalibrationController {
 		this.videoView = videoView;
 	}
 
+	/**
+	 * Uses mouse click to change your origin to your clicked point, and places a circle graphic
+	 * @param event Mouse click where you want a point
+	 */
 	public void handleMousePressedSetOrigin(MouseEvent event) {
 		double realX = event.getX();
 		double realY = event.getY();
