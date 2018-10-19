@@ -312,7 +312,7 @@ public class MainWindowController implements AutoTrackListener {
 		TimePoint newTimePoint = new TimePoint(actualX, actualY, project.getVideo().getCurrentFrameNum());
 		currentAnimal.add(newTimePoint);
 		System.out.println("Current animal " + currentAnimal + actualX + ", " + actualY);
-		graphic.setFill(Color.BEIGE);
+		graphic.setFill(Color.GREENYELLOW);
 		graphic.fillOval(event.getX() - 5, event.getY() - 5, 10, 10);
 		
 		sliderVideoTime.setValue(project.getVideo().getCurrentFrameNum() + 33);
