@@ -1,6 +1,5 @@
 package application;
 
-
 import java.io.ByteArrayInputStream;
 
 import org.opencv.core.Mat;
@@ -16,8 +15,9 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 
 /**
- * Class proposed by Dr. Stonedahl which would possibly keep MainWindowController cleaner by handling
- * calibration methods. 
+ * Class proposed by Dr. Stonedahl which would possibly keep
+ * MainWindowController cleaner by handling calibration methods.
+ * 
  * @author christopherbaker15
  *
  */
@@ -26,27 +26,32 @@ public class CalibrationController {
 	private Canvas canvas;
 	private MainWindowController mwController;
 	private ImageView videoView;
-	
+
 	public CalibrationController(Video video, Canvas canvas, MainWindowController mwController, ImageView videoView) {
 		this.video = video;
 		this.canvas = canvas;
 		this.mwController = mwController;
 		this.videoView = videoView;
 	}
-	
+
 	public void handleMousePressedSetOrigin(MouseEvent event) {
-		double realX = event.getSceneX();
-		double realY = event.getSceneY();
-		
+		double realX = event.getX();
+		double realY = event.getY();
+
 		video.setOrigin(realX, realY);
 		System.out.println("Origin set at " + video.getOrigin().toString());
-		GraphicsContext g = canvas.getGraphicsContext2D(); 
+		GraphicsContext g = canvas.getGraphicsContext2D();
 		g.setFill(Color.GOLD);
-		g.fillOval(realX, realY-65, 5, 5);
-		mwController.resetMouseModeAndButtons();		
+		g.fillOval(realX-2.5, realY-2.5, 5, 5);
+		mwController.resetMouseModeAndButtons();
 	}
-	
-	public void resizeCanvas() {
+
+	/**
+	 * Sizes the ImageView and Canvas objects, making sure to keep the Canvas and
+	 * Image view the same size. Creates a Mat from the empty frame and creates a
+	 * single image, then uses that image to size ImageView and canvas
+	 */
+	public void sizeCenterPanel() {
 		videoView.fitWidthProperty().bind(videoView.getScene().widthProperty());
 		video.setCurrentFrameNum(video.getEmptyFrameNum());
 		Mat matImage = video.readFrame();
@@ -55,14 +60,14 @@ public class CalibrationController {
 		Image blankImage = new Image(new ByteArrayInputStream(buffer.toArray()));
 
 		double aspectRatio = blankImage.getWidth() / blankImage.getHeight();
-		double realWidth = Math.min(videoView.getScene().widthProperty().doubleValue(),
-				videoView.getScene().widthProperty().doubleValue() * aspectRatio);
-		double realHeight = Math.min(videoView.getScene().heightProperty().doubleValue(),
-				videoView.getScene().heightProperty().doubleValue() / aspectRatio);
+//		double realWidth = Math.min(videoView.getScene().widthProperty().doubleValue(),
+//				videoView.getScene().widthProperty().doubleValue() * aspectRatio);
+//		double realHeight = Math.min(videoView.getScene().heightProperty().doubleValue(),
+//				videoView.getScene().heightProperty().doubleValue() / aspectRatio);
 
-		canvas.setHeight(realHeight);
-		canvas.setWidth(realWidth);
+		canvas.setHeight(videoView.getScene().widthProperty().doubleValue()/aspectRatio);
+		canvas.setWidth(videoView.getScene().widthProperty().doubleValue());
+		
 	}
-	
-	
+
 }

@@ -144,8 +144,11 @@ public class MainWindowController implements AutoTrackListener {
 		// (not perfect though... visual problems if the height gets too large.)
 
 		// videoView.fitWidthProperty().bind(videoView.getScene().widthProperty());
+
+		calibController.sizeCenterPanel();
 		
-		calibController.resizeCanvas();
+		
+		
 	}
 
 	public void resetMouseModeAndButtons() {
@@ -174,6 +177,7 @@ public class MainWindowController implements AutoTrackListener {
 		// the point where the press occurred.
 		// https://stackoverflow.com/questions/25550518/add-eventhandler-to-imageview-contained-in-tilepane-contained-in-vbox
 		canvas.setOnMousePressed(e -> calibController.handleMousePressedSetOrigin(e));
+		
 	}
 
 	@FXML
@@ -303,7 +307,5 @@ public class MainWindowController implements AutoTrackListener {
 
 		btnSetPoint.setDisable(false);
 	}
-
-	
 
 }
