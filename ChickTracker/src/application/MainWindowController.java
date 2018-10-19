@@ -94,7 +94,9 @@ public class MainWindowController implements AutoTrackListener {
 	@FXML
 	private Button btnAddAnimal;
 	@FXML
-	private Button manualTrackbtn;
+	private Button btnStartManualTrack;
+	@FXML
+	private Button btnStopManualTrack;
 
 	@FXML
 	private Button btnPlay;
@@ -106,6 +108,7 @@ public class MainWindowController implements AutoTrackListener {
 	private Stage stage;
 	private ArrayList<AnimalTrack> animalList;
 	private AnimalTrack currentAnimal;
+	private boolean manualTrackActive;
 
 	private CalibrationController calibController;
 
@@ -290,10 +293,17 @@ public class MainWindowController implements AutoTrackListener {
 	// users have to press add point every single time
 	// which is cumbersome so we will have to figure
 	// out how to streamline this -Riley
-	public void handleManualTrack() {
-		manualTrackbtn.setDisable(true);
-		canvas.setOnMousePressed(e -> handleMousePressForTracking(e));
+	public void handleBtnStartManualTrack() {
+			canvas.setOnMousePressed(e -> handleMousePressForTracking(e));
+			btnStartManualTrack.setDisable(true);
+			btnStopManualTrack.setDisable(false);
 	}
+	
+	public void handleBtnStopManualTrack() {
+		canvas.setOnMousePressed(null);
+		btnStartManualTrack.setDisable(false);
+		btnStopManualTrack.setDisable(true);
+}
 
 	public void handleMousePressForTracking(MouseEvent event) {
 		double actualX = event.getSceneX() - project.getVideo().getOrigin().getX();
@@ -302,8 +312,10 @@ public class MainWindowController implements AutoTrackListener {
 		TimePoint newTimePoint = new TimePoint(actualX, actualY, project.getVideo().getCurrentFrameNum());
 		currentAnimal.add(newTimePoint);
 		System.out.println("Current animal " + currentAnimal + actualX + ", " + actualY);
-
-		manualTrackbtn.setDisable(false);
+		graphic.setFill(Color.BEIGE);
+		graphic.fillOval(event.getX() - 5, event.getY() - 5, 10, 10);
+		
+		sliderVideoTime.setValue(project.getVideo().getCurrentFrameNum() + 33);
 	}
 
 }
