@@ -70,7 +70,7 @@
                </padding></Button>
             <Button fx:id="originButton" mnemonicParsing="false" onAction="#handleOriginButton" text="Set origin">
                <FlowPane.margin>
-                  <Insets bottom="10.0" left="10.0" right="5.0" top="10.0" />
+                  <Insets bottom="10.0" left="20.0" right="5.0" top="10.0" />
                </FlowPane.margin>
                <padding>
                   <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
@@ -94,7 +94,7 @@
                   <Insets bottom="1.0" left="10.0" right="10.0" top="1.0" />
                </padding>
             </MenuButton>
-            <Button fx:id="manualTrackbtn" mnemonicParsing="false" onAction="#handleManualTrack" text="Manual Track">
+            <Button fx:id="btnStartManualTrack" mnemonicParsing="false" onAction="#handleBtnStartManualTrack" text="Start Manual Track">
                <FlowPane.margin>
                   <Insets bottom="10.0" left="5.0" right="5.0" top="10.0" />
                </FlowPane.margin>
@@ -102,6 +102,7 @@
                   <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
                </padding>
             </Button>
+            <Button fx:id="btnStopManualTrack" mnemonicParsing="false" onAction="#handleBtnStopManualTrack" text="Stop Manual Track" />
          </children>
       </FlowPane>
    </bottom>
@@ -122,7 +123,7 @@
       <StackPane prefHeight="150.0" prefWidth="200.0" BorderPane.alignment="CENTER">
          <children>
             <ImageView fx:id="videoView" pickOnBounds="true" preserveRatio="true" />
-            <Canvas fx:id="canvas" height="65.0" opacity="0.42" width="86.0" />
+            <Canvas fx:id="canvas" height="65.0" width="86.0" />
          </children>
       </StackPane>
    </center>
