@@ -68,9 +68,7 @@ public class MainWindowController implements AutoTrackListener {
 
 	private GraphicsContext graphic;
 
-	@FXML
-	private Button manualTrackingButton;
-
+	
 	@FXML
 	private Button originButton;
 	@FXML
@@ -96,7 +94,7 @@ public class MainWindowController implements AutoTrackListener {
 	@FXML
 	private Button btnAddAnimal;
 	@FXML
-	private Button btnSetPoint;
+	private Button manualTrackbtn;
 
 	@FXML
 	private Button btnPlay;
@@ -292,8 +290,8 @@ public class MainWindowController implements AutoTrackListener {
 	// users have to press add point every single time
 	// which is cumbersome so we will have to figure
 	// out how to streamline this -Riley
-	public void handleBtnSetPoint() {
-		btnSetPoint.setDisable(true);
+	public void handleManualTrack() {
+		manualTrackbtn.setDisable(true);
 		canvas.setOnMousePressed(e -> handleMousePressForTracking(e));
 	}
 
@@ -305,7 +303,7 @@ public class MainWindowController implements AutoTrackListener {
 		currentAnimal.add(newTimePoint);
 		System.out.println("Current animal " + currentAnimal + actualX + ", " + actualY);
 
-		btnSetPoint.setDisable(false);
+		manualTrackbtn.setDisable(false);
 	}
 
 }
