@@ -4,6 +4,7 @@ package application;
 import java.awt.event.MouseListener;
 import javafx.scene.paint.Color;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -11,9 +12,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.opencv.core.Mat;
-
+import org.opencv.core.MatOfByte;
 import org.opencv.core.Point;
 import org.opencv.core.Scalar;
+import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.videoio.VideoCapture;
 import org.opencv.*;
@@ -63,7 +65,7 @@ public class MainWindowController implements AutoTrackListener {
 
 	@FXML
 	private Canvas canvas;
-	
+
 	private GraphicsContext graphic;
 
 	@FXML
@@ -106,7 +108,7 @@ public class MainWindowController implements AutoTrackListener {
 	private Stage stage;
 	private ArrayList<AnimalTrack> animalList;
 	private AnimalTrack currentAnimal;
-	
+
 	private CalibrationController calibController;
 
 	@FXML
@@ -126,8 +128,7 @@ public class MainWindowController implements AutoTrackListener {
 
 		graphic = canvas.getGraphicsContext2D();
 		graphic.setFill(Color.BLACK);
-		graphic.fillOval(0, 0, 100, 200);
-		
+
 		sliderVideoTime.valueProperty().addListener((obs, oldV, newV) -> showFrameAt(newV.intValue()));
 
 		animalList = new ArrayList<AnimalTrack>();
@@ -141,16 +142,18 @@ public class MainWindowController implements AutoTrackListener {
 
 		// bind it so whenever the Scene changes width, the videoView matches it
 		// (not perfect though... visual problems if the height gets too large.)
-		videoView.fitWidthProperty().bind(videoView.getScene().widthProperty());
+
+		// videoView.fitWidthProperty().bind(videoView.getScene().widthProperty());
+		
+		calibController.resizeCanvas();
 	}
 
 	public void resetMouseModeAndButtons() {
 		canvas.setOnMousePressed(e -> handleMousePressForTracking(e)); // switch back to manual tracking mode
 		originButton.setDisable(false);
-		//re-enable other buttons too, involving calibration, etc?		
+		// re-enable other buttons too, involving calibration, etc?
 	}
-	
-	
+
 	@FXML
 	public void handleBrowse() {
 		FileChooser fileChooser = new FileChooser();
@@ -160,8 +163,6 @@ public class MainWindowController implements AutoTrackListener {
 			loadVideo(chosenFile.getPath());
 		}
 	}
-
-	
 
 	@FXML
 	public void handleOriginButton() {
@@ -174,7 +175,7 @@ public class MainWindowController implements AutoTrackListener {
 		// https://stackoverflow.com/questions/25550518/add-eventhandler-to-imageview-contained-in-tilepane-contained-in-vbox
 		canvas.setOnMousePressed(e -> calibController.handleMousePressedSetOrigin(e));
 	}
-	
+
 	@FXML
 	public void handleStartAutotracking() throws InterruptedException {
 		if (autotracker == null || !autotracker.isRunning()) {
@@ -216,7 +217,7 @@ public class MainWindowController implements AutoTrackListener {
 		try {
 			project = new ProjectData(filePath);
 			Video video = project.getVideo();
-			calibController = new CalibrationController(video, canvas, this);
+			calibController = new CalibrationController(video, canvas, this, videoView);
 
 			sliderVideoTime.setMax(video.getTotalNumFrames() - 1);
 			showFrameAt(0);
@@ -291,7 +292,7 @@ public class MainWindowController implements AutoTrackListener {
 		btnSetPoint.setDisable(true);
 		canvas.setOnMousePressed(e -> handleMousePressForTracking(e));
 	}
-	
+
 	public void handleMousePressForTracking(MouseEvent event) {
 		double actualX = event.getSceneX() - project.getVideo().getOrigin().getX();
 		double actualY = event.getSceneY() - project.getVideo().getOrigin().getY();
@@ -300,11 +301,9 @@ public class MainWindowController implements AutoTrackListener {
 		currentAnimal.add(newTimePoint);
 		System.out.println("Current animal " + currentAnimal + actualX + ", " + actualY);
 
-		graphic.fillOval(100, 100, 20, 20);
-
 		btnSetPoint.setDisable(false);
 	}
-	
 
+	
 
 }
