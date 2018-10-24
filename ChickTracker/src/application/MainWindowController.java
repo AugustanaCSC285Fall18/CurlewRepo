@@ -273,7 +273,7 @@ public class MainWindowController implements AutoTrackListener {
 	// seen each menu item will have its own listener. -Riley
 	@FXML
 	public void handleBtnAddAnimal() {
-		String newAnimal = JOptionPane.showInputDialog(null, "Enter Chick's Name:", "Adding New Chick", JOptionPane.PLAIN_MESSAGE);;
+		String newAnimal = JOptionPane.showInputDialog(null, "Enter Animals's Name:", "Adding New Animal", JOptionPane.PLAIN_MESSAGE);;
 		if (newAnimal.length()<1) {
 			System.out.println("Animals " + (animalList.size()+1));
 			newAnimal = "Animals " + (animalList.size()+1);
