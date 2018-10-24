@@ -70,7 +70,6 @@ public class MainWindowController implements AutoTrackListener {
 
 	private GraphicsContext graphic;
 
-	
 	@FXML
 	private Button originButton;
 	@FXML
@@ -155,9 +154,7 @@ public class MainWindowController implements AutoTrackListener {
 		// videoView.fitWidthProperty().bind(videoView.getScene().widthProperty());
 
 		calibController.sizeCenterPanel();
-		
-		
-		
+
 	}
 
 	public void resetMouseModeAndButtons() {
@@ -186,7 +183,7 @@ public class MainWindowController implements AutoTrackListener {
 		// the point where the press occurred.
 		// https://stackoverflow.com/questions/25550518/add-eventhandler-to-imageview-contained-in-tilepane-contained-in-vbox
 		canvas.setOnMousePressed(e -> calibController.handleMousePressedSetOrigin(e));
-		
+
 	}
 
 	@FXML
@@ -279,60 +276,65 @@ public class MainWindowController implements AutoTrackListener {
 	// seen each menu item will have its own listener. -Riley
 	@FXML
 	public void handleBtnAddAnimal() {
-		String newAnimal = JOptionPane.showInputDialog(null, "Enter Animals's ID:", "Adding New Animal", JOptionPane.PLAIN_MESSAGE);
-		if (newAnimal.length() >= 20) {
-			newAnimal = JOptionPane.showInputDialog(null, "ID was too long. Enter Valid Animal Name:", "Adding New Animal", JOptionPane.ERROR_MESSAGE);
-		} else if (animalIdList.contains(newAnimal)) {
-			newAnimal = JOptionPane.showInputDialog(null, "ID already used. Enter Valid Animal Name:", "Adding New Animal", JOptionPane.ERROR_MESSAGE);
-		}
-		if (newAnimal.length()<1) {
-			newAnimal = "Animals " + (animalList.size()+1);
-		}
-		animalList.add(new AnimalTrack(newAnimal));
-		animalIdList.add(newAnimal);
 
-		MenuItem newItem = new MenuItem(newAnimal);
-		menuBtnAnimals.getItems().add(newItem);
-		
-		if (menuBtnAnimals.getItems().isEmpty() == false) {
-			btnStartManualTrack.setDisable(false);
-		}
-
-		newItem.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent event) {
-				String name = newItem.getText();
-				//AnimalTrack selectedAnimal = null;
-				for (AnimalTrack animal : animalList) {
-					if (animal.getId().equals(name)) {
-						currentAnimal = animal;
-					}
-				}
-				menuBtnAnimals.setText(name);
+		Object possibleAnimal = JOptionPane.showInputDialog(null, "Enter Animals's Name:", "Adding New Animal",
+				JOptionPane.PLAIN_MESSAGE);
+		if (possibleAnimal instanceof String) {
+			String newAnimal = (String) possibleAnimal;
+			if (newAnimal.length() >= 20) {
+				newAnimal = JOptionPane.showInputDialog(null, "Name was too long. Enter Valid Animals's Name:",
+						"Adding New Animal", JOptionPane.PLAIN_MESSAGE);
+			} else if (animalIdList.contains(newAnimal)) {
+				newAnimal = JOptionPane.showInputDialog(null, "ID already used. Enter Valid Animal Name:",
+						"Adding New Animal", JOptionPane.ERROR_MESSAGE);
 			}
-		});
+			if (newAnimal.length() < 1) {
+				newAnimal = "Animals " + (animalList.size() + 1);
+			}
+			animalList.add(new AnimalTrack(newAnimal));
+			animalIdList.add(newAnimal);
+
+			MenuItem newItem = new MenuItem(newAnimal);
+			menuBtnAnimals.getItems().add(newItem);
+
+			if (menuBtnAnimals.getItems().isEmpty() == false) {
+				btnStartManualTrack.setDisable(false);
+			}
+
+			newItem.setOnAction(new EventHandler<ActionEvent>() {
+				@Override
+				public void handle(ActionEvent event) {
+					String name = newItem.getText();
+					int index = animalIdList.indexOf(name);
+					currentAnimal = animalList.get(index);
+					menuBtnAnimals.setText(name);
+				}
+			});
+		}
 
 	}
-
 
 	@FXML
 	public void handleBtnRemoveAnimal() {
 		if (currentAnimal != null) {
 			int selectedAnimalIndex = animalList.indexOf(currentAnimal);
 			menuBtnAnimals.getItems().remove(selectedAnimalIndex);
-			menuBtnAnimals.setText(null);	
+			menuBtnAnimals.setText(null);
 			animalList.remove(selectedAnimalIndex);
+			animalIdList.remove(selectedAnimalIndex);
 			currentAnimal = null;
-			
-			if(menuBtnAnimals.getItems().isEmpty() == true) {
+
+			if (menuBtnAnimals.getItems().isEmpty() == true) {
 				btnStartManualTrack.setDisable(true);
 			} else {
 				currentAnimal = animalList.get(0);
 				menuBtnAnimals.setText(currentAnimal.getId());
 			}
+		} else {
+			JOptionPane.showMessageDialog(null, "Please select an animal to remove.", "WARNING", JOptionPane.ERROR_MESSAGE);
 		}
 	}
-	
+
 	// users have to press add point every single time
 	// which is cumbersome so we will have to figure
 	// out how to streamline this -Riley
@@ -342,12 +344,12 @@ public class MainWindowController implements AutoTrackListener {
 		btnStartManualTrack.setDisable(true);
 		btnStopManualTrack.setDisable(false);
 	}
-	
+
 	public void handleBtnStopManualTrack() {
 		canvas.setOnMousePressed(null);
 		btnStartManualTrack.setDisable(false);
 		btnStopManualTrack.setDisable(true);
-}
+	}
 
 	public void handleMousePressForTracking(MouseEvent event) {
 		double actualX = event.getSceneX() - project.getVideo().getOrigin().getX();
@@ -358,7 +360,7 @@ public class MainWindowController implements AutoTrackListener {
 		System.out.println("Current animal " + currentAnimal + actualX + ", " + actualY);
 		graphic.setFill(Color.GREENYELLOW);
 		graphic.fillOval(event.getX() - 5, event.getY() - 5, 10, 10);
-		
+
 		sliderVideoTime.setValue(project.getVideo().getCurrentFrameNum() + 33);
 	}
 
