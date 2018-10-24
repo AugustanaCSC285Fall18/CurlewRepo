@@ -285,8 +285,9 @@ public class MainWindowController implements AutoTrackListener {
 		MenuItem newItem = new MenuItem(newAnimal);
 		menuBtnAnimals.getItems().add(newItem);
 		
-		if (menuBtnAnimals.getItems().size() == 1) {
+		if (menuBtnAnimals.getItems().isEmpty() == false) {
 			btnStartManualTrack.setDisable(false);
+			
 		}
 
 		newItem.setOnAction(new EventHandler<ActionEvent>() {
@@ -306,13 +307,11 @@ public class MainWindowController implements AutoTrackListener {
 
 	}
 
-	// users have to press add point every single time
-	// which is cumbersome so we will have to figure
-	// out how to streamline this -Riley
+	
 	public void handleBtnStartManualTrack() {
-			canvas.setOnMousePressed(e -> handleMousePressForTracking(e));
-			btnStartManualTrack.setDisable(true);
-			btnStopManualTrack.setDisable(false);
+		canvas.setOnMousePressed(e -> handleMousePressForTracking(e));
+		btnStartManualTrack.setDisable(true);
+		btnStopManualTrack.setDisable(false);
 	}
 	
 	public void handleBtnStopManualTrack() {
