@@ -111,6 +111,7 @@ public class MainWindowController implements AutoTrackListener {
 	private ProjectData project;
 	private Stage stage;
 	private ArrayList<AnimalTrack> animalList;
+	private ArrayList<String> animalIdList;
 	private AnimalTrack currentAnimal;
 	private boolean manualTrackActive;
 
@@ -137,6 +138,7 @@ public class MainWindowController implements AutoTrackListener {
 		sliderVideoTime.valueProperty().addListener((obs, oldV, newV) -> showFrameAt(newV.intValue()));
 
 		animalList = new ArrayList<AnimalTrack>();
+		animalIdList = new ArrayList<String>();
 		menuBtnAnimals.getItems().clear();
 		menuBtnAnimals.setText("Animal Select");
 		btnStartManualTrack.setDisable(true);
@@ -277,14 +279,17 @@ public class MainWindowController implements AutoTrackListener {
 	// seen each menu item will have its own listener. -Riley
 	@FXML
 	public void handleBtnAddAnimal() {
-		String newAnimal = JOptionPane.showInputDialog(null, "Enter Animals's Name:", "Adding New Animal", JOptionPane.PLAIN_MESSAGE);
+		String newAnimal = JOptionPane.showInputDialog(null, "Enter Animals's ID:", "Adding New Animal", JOptionPane.PLAIN_MESSAGE);
 		if (newAnimal.length() >= 20) {
-			newAnimal = JOptionPane.showInputDialog(null, "Name was too long. Enter Valid Animals's Name:", "Adding New Animal", JOptionPane.PLAIN_MESSAGE);
-		} 
+			newAnimal = JOptionPane.showInputDialog(null, "ID was too long. Enter Valid Animal Name:", "Adding New Animal", JOptionPane.ERROR_MESSAGE);
+		} else if (animalIdList.contains(newAnimal)) {
+			newAnimal = JOptionPane.showInputDialog(null, "ID already used. Enter Valid Animal Name:", "Adding New Animal", JOptionPane.ERROR_MESSAGE);
+		}
 		if (newAnimal.length()<1) {
 			newAnimal = "Animals " + (animalList.size()+1);
 		}
 		animalList.add(new AnimalTrack(newAnimal));
+		animalIdList.add(newAnimal);
 
 		MenuItem newItem = new MenuItem(newAnimal);
 		menuBtnAnimals.getItems().add(newItem);
