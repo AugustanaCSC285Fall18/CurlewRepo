@@ -96,6 +96,8 @@ public class MainWindowController implements AutoTrackListener {
 	@FXML
 	private Button btnAddAnimal;
 	@FXML
+	private Button btnRemoveAnimal;
+	@FXML
 	private Button btnStartManualTrack;
 	@FXML
 	private Button btnStopManualTrack;
@@ -277,7 +279,6 @@ public class MainWindowController implements AutoTrackListener {
 	public void handleBtnAddAnimal() {
 		String newAnimal = JOptionPane.showInputDialog(null, "Enter Animals's Name:", "Adding New Animal", JOptionPane.PLAIN_MESSAGE);;
 		if (newAnimal.length()<1) {
-			System.out.println("Animals " + (animalList.size()+1));
 			newAnimal = "Animals " + (animalList.size()+1);
 		}
 		animalList.add(new AnimalTrack(newAnimal));
@@ -301,13 +302,27 @@ public class MainWindowController implements AutoTrackListener {
 					}
 				}
 				menuBtnAnimals.setText(name);
-				System.out.println(currentAnimal);
 			}
 		});
 
 	}
 
+
+	@FXML
+	public void handleBtnRemoveAnimal() {
+		if (currentAnimal != null) {
+			int selectedAnimalIndex = animalList.indexOf(currentAnimal);
+			menuBtnAnimals.getItems().remove(selectedAnimalIndex);
+			menuBtnAnimals.setText(null);	
+			animalList.remove(selectedAnimalIndex);
+			currentAnimal = null;
+		}
+	}
 	
+	// users have to press add point every single time
+	// which is cumbersome so we will have to figure
+	// out how to streamline this -Riley
+
 	public void handleBtnStartManualTrack() {
 		canvas.setOnMousePressed(e -> handleMousePressForTracking(e));
 		btnStartManualTrack.setDisable(true);
