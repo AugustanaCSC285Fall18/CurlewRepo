@@ -319,6 +319,9 @@ public class MainWindowController implements AutoTrackListener {
 			
 			if(menuBtnAnimals.getItems().isEmpty() == true) {
 				btnStartManualTrack.setDisable(true);
+			} else {
+				currentAnimal = animalList.get(0);
+				menuBtnAnimals.setText(currentAnimal.getId());
 			}
 		}
 	}
