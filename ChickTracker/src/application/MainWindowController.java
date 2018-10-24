@@ -277,35 +277,40 @@ public class MainWindowController implements AutoTrackListener {
 	// seen each menu item will have its own listener. -Riley
 	@FXML
 	public void handleBtnAddAnimal() {
-		String newAnimal = JOptionPane.showInputDialog(null, "Enter Animals's Name:", "Adding New Animal", JOptionPane.PLAIN_MESSAGE);
-		if (newAnimal.length() >= 20) {
-			newAnimal = JOptionPane.showInputDialog(null, "Name was too long. Enter Valid Animals's Name:", "Adding New Animal", JOptionPane.PLAIN_MESSAGE);
-		} 
-		if (newAnimal.length()<1) {
-			newAnimal = "Animals " + (animalList.size()+1);
-		}
-		animalList.add(new AnimalTrack(newAnimal));
-
-		MenuItem newItem = new MenuItem(newAnimal);
-		menuBtnAnimals.getItems().add(newItem);
+		Object possibleAnimal = JOptionPane.showInputDialog(null, "Enter Animals's Name:", "Adding New Animal", JOptionPane.PLAIN_MESSAGE);
 		
-		if (menuBtnAnimals.getItems().isEmpty() == false) {
-			btnStartManualTrack.setDisable(false);
-		}
-
-		newItem.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent event) {
-				String name = newItem.getText();
-				//AnimalTrack selectedAnimal = null;
-				for (AnimalTrack animal : animalList) {
-					if (animal.getId().equals(name)) {
-						currentAnimal = animal;
-					}
-				}
-				menuBtnAnimals.setText(name);
+		if(possibleAnimal instanceof String) {
+			String newAnimal = (String)possibleAnimal;
+		
+			if (newAnimal.length() >= 20) {
+				newAnimal = JOptionPane.showInputDialog(null, "Name was too long. Enter Valid Animals's Name:", "Adding New Animal", JOptionPane.PLAIN_MESSAGE);
+			} 
+			if (newAnimal.length()<1) {
+				newAnimal = "Animals " + (animalList.size()+1);
 			}
-		});
+			animalList.add(new AnimalTrack(newAnimal));
+
+			MenuItem newItem = new MenuItem(newAnimal);
+			menuBtnAnimals.getItems().add(newItem);
+
+			if (menuBtnAnimals.getItems().isEmpty() == false) {
+				btnStartManualTrack.setDisable(false);
+			}
+
+			newItem.setOnAction(new EventHandler<ActionEvent>() {
+				@Override
+				public void handle(ActionEvent event) {
+					String name = newItem.getText();
+					//AnimalTrack selectedAnimal = null;
+					for (AnimalTrack animal : animalList) {
+						if (animal.getId().equals(name)) {
+							currentAnimal = animal;
+						}
+					}
+					menuBtnAnimals.setText(name);
+				}
+			});
+		}
 
 	}
 
