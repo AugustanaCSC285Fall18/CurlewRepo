@@ -137,6 +137,8 @@ public class MainWindowController implements AutoTrackListener {
 		animalList = new ArrayList<AnimalTrack>();
 		menuBtnAnimals.getItems().clear();
 		menuBtnAnimals.setText("Animal Select");
+		btnStartManualTrack.setDisable(true);
+		btnStopManualTrack.setDisable(true);
 
 	}
 
@@ -282,6 +284,10 @@ public class MainWindowController implements AutoTrackListener {
 
 		MenuItem newItem = new MenuItem(newAnimal);
 		menuBtnAnimals.getItems().add(newItem);
+		
+		if (menuBtnAnimals.getItems().size() == 1) {
+			btnStartManualTrack.setDisable(false);
+		}
 
 		newItem.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
