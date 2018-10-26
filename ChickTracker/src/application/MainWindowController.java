@@ -354,14 +354,27 @@ public class MainWindowController implements AutoTrackListener {
 	public void handleMousePressForTracking(MouseEvent event) {
 		double actualX = event.getSceneX() - project.getVideo().getOrigin().getX();
 		double actualY = event.getSceneY() - project.getVideo().getOrigin().getY();
+		int currentFrame = project.getVideo().getCurrentFrameNum();
+		int skipToFrame = project.getVideo().getCurrentFrameNum() + 33;
 
-		TimePoint newTimePoint = new TimePoint(actualX, actualY, project.getVideo().getCurrentFrameNum());
-		currentAnimal.add(newTimePoint);
+//		TimePoint newTimePoint = new TimePoint(actualX, actualY, project.getVideo().getCurrentFrameNum());
+		AnimalTrack closestAutoTrackSegment = project.getNearestUnassignedSegment(actualX, actualY, currentFrame, skipToFrame);
+		List<TimePoint> closestPoints = closestAutoTrackSegment.getTimePointsWithinInterval(currentFrame, skipToFrame);
+		TimePoint closestPoint = project.getNearestPoint(closestPoints, actualX, actualY);
+		if (closestPoint.getDistanceTo(actualX, actualY) < 5) {
+			skipToFrame = closestAutoTrackSegment.getFinalTimePoint().getFrameNum();
+			currentAnimal.add(closestAutoTrackSegment);
+		} else {
+			TimePoint newTimePoint = new TimePoint(actualX, actualY, project.getVideo().getCurrentFrameNum());
+			currentAnimal.add(newTimePoint);
+		}
+		
+		//drawing click location
 		System.out.println("Current animal " + currentAnimal + actualX + ", " + actualY);
 		graphic.setFill(Color.GREENYELLOW);
 		graphic.fillOval(event.getX() - 5, event.getY() - 5, 10, 10);
 
-		sliderVideoTime.setValue(project.getVideo().getCurrentFrameNum() + 33);
+		sliderVideoTime.setValue(skipToFrame);
 	}
 
 }
