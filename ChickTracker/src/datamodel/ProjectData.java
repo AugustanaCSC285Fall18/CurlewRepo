@@ -10,6 +10,9 @@ import java.util.Scanner;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import datamodel.AnimalTrack;
+import datamodel.TimePoint;
+
 public class ProjectData {
 	private Video video;
 	private List<AnimalTrack> tracks;
@@ -33,6 +36,38 @@ public class ProjectData {
 		return video;
 	}
 
+
+	/**
+	 * This method returns the unassigned segment that contains a TimePoint (between
+	 * startFrame and endFrame) that is closest to the given x,y location
+	 * 
+	 * @param x          - x coordinate to search near
+	 * @param y          - y coordinate to search near
+	 * @param startFrame - (inclusive)
+	 * @param endFrame   - (inclusive)
+	 * @return the unassigned segment (AnimalTrack) that contained the nearest point
+	 *         within the given time interval, or *null* if there is NO unassigned
+	 *         segment that contains any TimePoints within the given range.
+	 */
+	public AnimalTrack getNearestUnassignedSegment(double x, double y, int startFrame, int endFrame) {
+		AnimalTrack closestTrack = null;
+		TimePoint closestPoint = null;
+		double shortestDistance = video.getFrameHeight() * video.getFrameHeight()
+				+ video.getFrameWidth() * video.getFrameWidth(); // initializes to the furthest distance in the video
+		for (AnimalTrack segment : unassignedSegments) {
+			List<TimePoint> validPoints = segment.getTimePointsWithinInterval(startFrame, endFrame);
+			for (TimePoint testPoint : validPoints) {
+				double testDistance = testPoint.getDistanceTo(x, y);
+				if (shortestDistance > testDistance) {
+					closestTrack = segment;
+					closestPoint = testPoint;
+					shortestDistance = testDistance;
+				}
+			}
+		}
+		return closestTrack;
+	}
+	
 
 	public void saveToFile(File saveFile) throws FileNotFoundException {
 		String json = toJSON();

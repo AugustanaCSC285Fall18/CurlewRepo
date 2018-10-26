@@ -82,7 +82,14 @@ public class TimePoint implements Comparable<TimePoint> {
 	public void setY(double y) {
 		this.y = y;
 	}
+	
+	public double getDistanceTo(double x2, double y2) {
+		double dx = x2 - x;
+		double dy = y2 - y;
+		return Math.sqrt(dx * dx + dy * dy);
+	}
 
+	
 	@Override
 	public String toString() {
 		return String.format("(%.1f,%.1f@T=%d)", x, y, frameNum);

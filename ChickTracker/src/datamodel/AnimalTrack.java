@@ -3,6 +3,8 @@ package datamodel;
 import java.util.ArrayList;
 import java.util.List;
 
+import datamodel.TimePoint;
+
 public class AnimalTrack {
 	private String animalID;
 
@@ -51,10 +53,25 @@ public class AnimalTrack {
   
         // if we reach here, then frameNum was  
         // not present 
-        return null; 
-    
-		
+        return null; 	
 	}
+	
+	/**
+	 * 
+	 * @param startFrameNum - the starting time (inclusive)
+	 * @param endFrameNum   - the ending time (inclusive)
+	 * @return all time points in that time interval
+	 */
+	public List<TimePoint> getTimePointsWithinInterval(int startFrameNum, int endFrameNum) {
+		List<TimePoint> pointsInInterval = new ArrayList<>();
+		for (TimePoint pt : positions) {
+			if (pt.getFrameNum() >= startFrameNum && pt.getFrameNum() <= endFrameNum) {
+				pointsInInterval.add(pt);
+			}
+		}
+		return pointsInInterval;
+	}
+
 
 	public TimePoint getFinalTimePoint() {
 		return positions.get(positions.size() - 1);

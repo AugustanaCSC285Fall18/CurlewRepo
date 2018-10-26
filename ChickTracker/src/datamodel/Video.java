@@ -60,6 +60,14 @@ public class Video {
 		return (xPixelsPerCm + yPixelsPerCm) / 2;
 	}
 
+	public synchronized int getFrameWidth() {
+		return (int) vidCap.get(Videoio.CAP_PROP_FRAME_WIDTH);
+	}
+
+	public synchronized int getFrameHeight() {
+		return (int) vidCap.get(Videoio.CAP_PROP_FRAME_HEIGHT);
+	}
+	
 	public int getCurrentFrameNum() {
 		return (int) getVidCap().get(Videoio.CV_CAP_PROP_POS_FRAMES);
 	}
