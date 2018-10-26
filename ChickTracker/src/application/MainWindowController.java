@@ -352,8 +352,8 @@ public class MainWindowController implements AutoTrackListener {
 	}
 
 	public void handleMousePressForTracking(MouseEvent event) {
-		double actualX = event.getSceneX() - project.getVideo().getOrigin().getX();
-		double actualY = event.getSceneY() - project.getVideo().getOrigin().getY();
+		double actualX = event.getX() - project.getVideo().getOrigin().getX();
+		double actualY = -(event.getY() - project.getVideo().getOrigin().getY());
 
 		TimePoint newTimePoint = new TimePoint(actualX, actualY, project.getVideo().getCurrentFrameNum());
 		currentAnimal.add(newTimePoint);
