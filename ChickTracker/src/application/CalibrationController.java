@@ -1,6 +1,7 @@
 package application;
 
 import java.io.ByteArrayInputStream;
+import java.util.ArrayList;
 
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfByte;
@@ -35,18 +36,21 @@ public class CalibrationController {
 	}
 
 	/**
-	 * Uses mouse click to change your origin to your clicked point, and places a circle graphic
+	 * Uses mouse click to change your origin to your clicked point, and places a
+	 * circle graphic
+	 * 
 	 * @param event Mouse click where you want a point
 	 */
 	public void handleMousePressedSetOrigin(MouseEvent event) {
 		double realX = event.getX();
 		double realY = event.getY();
-
+		
+		
 		video.setOrigin(realX, realY);
 		System.out.println("Origin set at " + video.getOrigin().toString());
 		GraphicsContext g = canvas.getGraphicsContext2D();
 		g.setFill(Color.GOLD);
-		g.fillOval(realX-2.5, realY-2.5, 5, 5);
+		g.fillOval(realX - 2.5, realY - 2.5, 5, 5);
 		mwController.resetMouseModeAndButtons();
 	}
 
@@ -69,8 +73,14 @@ public class CalibrationController {
 //		double realHeight = Math.min(videoView.getScene().heightProperty().doubleValue(),
 //				videoView.getScene().heightProperty().doubleValue() / aspectRatio);
 
-		canvas.setHeight(videoView.getScene().widthProperty().doubleValue()/aspectRatio);
+		canvas.setHeight(videoView.getScene().widthProperty().doubleValue() / aspectRatio);
 		canvas.setWidth(videoView.getScene().widthProperty().doubleValue());
+
+	}
+
+	public void calibrateScale(MouseEvent event) {
+		ArrayList scalePoints = new ArrayList<>();
+		scalePoints.add(5.0);
 		
 	}
 

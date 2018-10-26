@@ -105,6 +105,8 @@ public class MainWindowController implements AutoTrackListener {
 	private Button btnPlay;
 	@FXML
 	private Button btnPause;
+	@FXML
+	private Button btnCalibrate;
 
 	private AutoTracker autotracker;
 	private ProjectData project;
@@ -362,6 +364,10 @@ public class MainWindowController implements AutoTrackListener {
 		graphic.fillOval(event.getX() - 5, event.getY() - 5, 10, 10);
 
 		sliderVideoTime.setValue(project.getVideo().getCurrentFrameNum() + 33);
+	}
+	
+	public void handleCalibration() {
+		canvas.setOnMousePressed(e -> calibController.calibrateScale(e));
 	}
 
 }
