@@ -353,7 +353,7 @@ public class MainWindowController implements AutoTrackListener {
 
 	public void handleMousePressForTracking(MouseEvent event) {
 		double actualX = event.getSceneX() - project.getVideo().getOrigin().getX();
-		double actualY = event.getSceneY() - project.getVideo().getOrigin().getY();
+		double actualY = -(event.getSceneY() - project.getVideo().getOrigin().getY());
 		int currentFrame = project.getVideo().getCurrentFrameNum();
 		int skipToFrame = project.getVideo().getCurrentFrameNum() + 33;
 
