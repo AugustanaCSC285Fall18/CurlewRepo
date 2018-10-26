@@ -105,11 +105,14 @@ public class MainWindowController implements AutoTrackListener {
 	private Button btnPlay;
 	@FXML
 	private Button btnPause;
+	
+	public static final Color[] TRACK_COLORS = new Color[] { Color.RED, Color.BLUE, Color.GREEN, Color.CYAN,
+			Color.MAGENTA, Color.BLUEVIOLET, Color.ORANGE };
 
 	private AutoTracker autotracker;
 	private ProjectData project;
 	private Stage stage;
-	private ArrayList<AnimalTrack> animalList;
+	private List<AnimalTrack> animalList;
 	private ArrayList<String> animalIdList;
 	private AnimalTrack currentAnimal;
 	private boolean manualTrackActive;
@@ -241,10 +244,18 @@ public class MainWindowController implements AutoTrackListener {
 		if (autotracker == null || !autotracker.isRunning()) {
 			project.getVideo().setCurrentFrameNum(frameNum);
 			Image curFrame = UtilsForOpenCV.matToJavaFXImage(project.getVideo().readFrame());
+			GraphicsContext g = canvas.getGraphicsContext2D();
 			videoView.setImage(curFrame);
-			textFieldCurFrameNum.setText(String.format("%05d", frameNum));
+
+			g.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
+			//double scalingRatio = getImageScalingRatio();
+			//g.drawImage(curFrame, 0, 0, curFrame.getWidth() * scalingRatio, curFrame.getHeight() * scalingRatio);
+
+			drawAssignedAnimalTracks(g, 1, frameNum);
+			//drawUnassignedSegments(g, scalingRatio, frameNum);
 
 		}
+		textFieldCurFrameNum.setText(String.format("%05d", frameNum));
 	}
 
 	@Override
@@ -289,9 +300,9 @@ public class MainWindowController implements AutoTrackListener {
 						"Adding New Animal", JOptionPane.ERROR_MESSAGE);
 			}
 			if (newAnimal.length() < 1) {
-				newAnimal = "Animals " + (animalList.size() + 1);
+				newAnimal = "Animals " + (project.getTracks().size() + 1);
 			}
-			animalList.add(new AnimalTrack(newAnimal));
+			project.getTracks().add(new AnimalTrack(newAnimal));
 			animalIdList.add(newAnimal);
 
 			MenuItem newItem = new MenuItem(newAnimal);
@@ -306,7 +317,7 @@ public class MainWindowController implements AutoTrackListener {
 				public void handle(ActionEvent event) {
 					String name = newItem.getText();
 					int index = animalIdList.indexOf(name);
-					currentAnimal = animalList.get(index);
+					currentAnimal = project.getTracks().get(index);
 					menuBtnAnimals.setText(name);
 				}
 			});
@@ -317,17 +328,19 @@ public class MainWindowController implements AutoTrackListener {
 	@FXML
 	public void handleBtnRemoveAnimal() {
 		if (currentAnimal != null) {
-			int selectedAnimalIndex = animalList.indexOf(currentAnimal);
+			int selectedAnimalIndex = project.getTracks().indexOf(currentAnimal);
 			menuBtnAnimals.getItems().remove(selectedAnimalIndex);
 			menuBtnAnimals.setText(null);
-			animalList.remove(selectedAnimalIndex);
+			project.getTracks().remove(selectedAnimalIndex);
 			animalIdList.remove(selectedAnimalIndex);
 			currentAnimal = null;
 
 			if (menuBtnAnimals.getItems().isEmpty() == true) {
-				btnStartManualTrack.setDisable(true);
+				canvas.setOnMousePressed(null);
+				btnStartManualTrack.setDisable(false);
+				btnStopManualTrack.setDisable(true);
 			} else {
-				currentAnimal = animalList.get(0);
+				currentAnimal = project.getTracks().get(0);
 				menuBtnAnimals.setText(currentAnimal.getId());
 			}
 		} else {
@@ -352,8 +365,8 @@ public class MainWindowController implements AutoTrackListener {
 	}
 
 	public void handleMousePressForTracking(MouseEvent event) {
-		double actualX = event.getSceneX() - project.getVideo().getOrigin().getX();
-		double actualY = event.getSceneY() - project.getVideo().getOrigin().getY();
+		double actualX = event.getX() - project.getVideo().getOrigin().getX();
+		double actualY = event.getY() - project.getVideo().getOrigin().getY();
 
 		TimePoint newTimePoint = new TimePoint(actualX, actualY, project.getVideo().getCurrentFrameNum());
 		currentAnimal.add(newTimePoint);
@@ -361,7 +374,30 @@ public class MainWindowController implements AutoTrackListener {
 		graphic.setFill(Color.GREENYELLOW);
 		graphic.fillOval(event.getX() - 5, event.getY() - 5, 10, 10);
 
-		sliderVideoTime.setValue(project.getVideo().getCurrentFrameNum() + 33);
+		//sliderVideoTime.setValue(project.getVideo().getCurrentFrameNum() + 33);
+		showFrameAt(project.getVideo().getCurrentFrameNum() + 33);
 	}
 
+	private void drawAssignedAnimalTracks(GraphicsContext g, double scalingRatio, int frameNum) {
+		
+		for (int i = 0; i < project.getTracks().size(); i++) {
+			AnimalTrack track = project.getTracks().get(i);
+			Color trackColor = TRACK_COLORS[i % TRACK_COLORS.length];
+			Color trackPrevColor = trackColor.deriveColor(0, 0.5, 1.5, 1.0); // subtler variant
+
+			g.setFill(trackPrevColor);
+			// draw chick's recent trail from the last few seconds
+			for (TimePoint prevPt : track.getTimePointsWithinInterval(frameNum - 120, frameNum)) {
+				g.fillOval(prevPt.getX() * scalingRatio - 3, prevPt.getY() * scalingRatio - 3, 7, 7);
+			}
+			// draw the current point (if any) as a larger dot
+			TimePoint currPt = track.getTimePointAtTime(frameNum);
+			if (currPt != null) {
+				g.setFill(trackColor);
+				g.fillOval(currPt.getX() * scalingRatio - 7, currPt.getY() * scalingRatio - 7, 15, 15);
+			}
+		}
+	}
+	
+	
 }
