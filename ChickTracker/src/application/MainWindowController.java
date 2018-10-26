@@ -375,29 +375,38 @@ public class MainWindowController implements AutoTrackListener {
 		int currentFrame = project.getVideo().getCurrentFrameNum();
 		int skipToFrame = project.getVideo().getCurrentFrameNum() + 33;
 
+		if ((Integer.parseInt(textfieldStartFrame.getText()) < currentFrame && Integer.parseInt(textfieldEndFrame.getText()) > currentFrame) && !project.getUnassignedSegments().isEmpty()) {
 //		TimePoint newTimePoint = new TimePoint(actualX, actualY, project.getVideo().getCurrentFrameNum());
-		AnimalTrack closestAutoTrackSegment = project.getNearestUnassignedSegment(actualX, actualY, currentFrame, skipToFrame);
-		List<TimePoint> closestPoints = closestAutoTrackSegment.getTimePointsWithinInterval(currentFrame, skipToFrame);
-		TimePoint closestPoint = project.getNearestPoint(closestPoints, actualX, actualY);
-		if (closestPoint.getDistanceTo(actualX, actualY) < 5) {
-			skipToFrame = closestAutoTrackSegment.getFinalTimePoint().getFrameNum();
-			currentAnimal.add(closestAutoTrackSegment);
+			AnimalTrack closestAutoTrackSegment = project.getNearestUnassignedSegment(actualX, actualY, currentFrame, skipToFrame);
+			List<TimePoint> closestPoints = closestAutoTrackSegment.getTimePointsWithinInterval(currentFrame, skipToFrame);
+			if (!closestPoints.isEmpty()) {
+				TimePoint closestPoint = project.getNearestPoint(closestPoints, actualX, actualY);
+				if (closestPoint.getDistanceTo(actualX, actualY) < 50) {
+					skipToFrame = closestAutoTrackSegment.getFinalTimePoint().getFrameNum();
+					currentAnimal.add(closestAutoTrackSegment);
+					System.out.println("Found AutoTrack Segment! " + closestAutoTrackSegment);
+				} else {
+					TimePoint newTimePoint = new TimePoint(actualX, actualY, currentFrame);
+					currentAnimal.add(newTimePoint);
+				}
+			} else {
+				TimePoint newTimePoint = new TimePoint(actualX, actualY, currentFrame);
+				currentAnimal.add(newTimePoint);
+			}
 		} else {
-			TimePoint newTimePoint = new TimePoint(actualX, actualY, project.getVideo().getCurrentFrameNum());
+			TimePoint newTimePoint = new TimePoint(actualX, actualY, currentFrame);
 			currentAnimal.add(newTimePoint);
 		}
-		
 		//drawing click location
-
 		System.out.println("Current animal " + currentAnimal + actualX + ", " + actualY);
 		graphic.setFill(Color.GREENYELLOW);
 		graphic.fillOval(event.getX() - 5, event.getY() - 5, 10, 10);
 
 
 		//sliderVideoTime.setValue(project.getVideo().getCurrentFrameNum() + 33);
-		showFrameAt(project.getVideo().getCurrentFrameNum() + 33);
+		showFrameAt(skipToFrame);
 
-		sliderVideoTime.setValue(skipToFrame);
+//		sliderVideoTime.setValue(skipToFrame);
 
 	}
 
