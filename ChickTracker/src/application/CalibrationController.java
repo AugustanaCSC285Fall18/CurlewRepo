@@ -30,11 +30,6 @@ public class CalibrationController {
 	private MainWindowController mwController;
 	private ImageView videoView;
 	private ArrayList<Double> scaleCoords = new ArrayList<Double>();
-	private ArrayList<Double> vertCoordinates = new ArrayList<Double>();
-	private double xOne;
-	private double xTwo;
-	private double yOne;
-	private double yTwo;
 
 	public CalibrationController(Video video, Canvas canvas, MainWindowController mwController, ImageView videoView) {
 		this.video = video;
@@ -84,7 +79,26 @@ public class CalibrationController {
 		canvas.setWidth(videoView.getScene().widthProperty().doubleValue());
 
 	}
+	
+	
+	
+	
+	
+	
+	
+	
 
+	// ============================================================================
+	/*
+	 * Everything below this line should be changed if we have time. This code works
+	 * but doesn't follow any of our coding guidelines.
+	 * 
+	 */
+
+	
+	/*
+	 * This uses the ArrayList field to create
+	 */
 	public void calibrateXScale() {
 
 		// this ugly thing takes the values from our ArrayList and uses pythgorean's
