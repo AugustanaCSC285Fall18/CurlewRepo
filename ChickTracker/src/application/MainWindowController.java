@@ -8,6 +8,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -102,13 +103,16 @@ public class MainWindowController implements AutoTrackListener {
 	private Button btnStopManualTrack;
 
 	@FXML
-	private Button btnPlay;
-	@FXML
-	private Button btnPause;
-
-	@FXML
 	private Button btnCalibrate;
+	
+	@FXML
+	private Button btnJumpAhead;
+	@FXML
+	private Button btnJumpBack;
 
+	@FXML
+	private Button btnSetFrameNum;
+	
 	public static final Color[] TRACK_COLORS = new Color[] { Color.RED, Color.BLUE, Color.GREEN, Color.CYAN,
 			Color.MAGENTA, Color.BLUEVIOLET, Color.ORANGE };
 
@@ -251,12 +255,12 @@ public class MainWindowController implements AutoTrackListener {
 			videoView.setImage(curFrame);
 
 			g.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
-			// double scalingRatio = getImageScalingRatio();
-			// g.drawImage(curFrame, 0, 0, curFrame.getWidth() * scalingRatio,
+			double scalingRatio = getImageScalingRatio();
+			//g.drawImage(curFrame, 0, 0, curFrame.getWidth() * scalingRatio,
 			// curFrame.getHeight() * scalingRatio);
 
-			drawAssignedAnimalTracks(g, 1, frameNum);
-			// drawUnassignedSegments(g, scalingRatio, frameNum);
+			drawAssignedAnimalTracks(g, scalingRatio, frameNum);
+			drawUnassignedSegments(g, scalingRatio, frameNum);
 
 		}
 		textFieldCurFrameNum.setText(String.format("%05d", frameNum));
@@ -312,7 +316,10 @@ public class MainWindowController implements AutoTrackListener {
 			MenuItem newItem = new MenuItem(newAnimal);
 			menuBtnAnimals.getItems().add(newItem);
 
-			if (menuBtnAnimals.getItems().isEmpty() == false) {
+			//this has to be .size() == 1 not .isEmpty() == false
+			//otherwise every time a new animal is added it will
+			//allow the startManualTrackBtn to be clicked
+			if (menuBtnAnimals.getItems().size() == 1) {
 				btnStartManualTrack.setDisable(false);
 			}
 
@@ -371,49 +378,51 @@ public class MainWindowController implements AutoTrackListener {
 
 	public void handleMousePressForTracking(MouseEvent event) {
 
-		double actualX = event.getX() - project.getVideo().getOrigin().getX();
-		double actualY = event.getY() - project.getVideo().getOrigin().getY();
+		double scalingRatio = getImageScalingRatio();
+		
+		double unscaledX = event.getX() / scalingRatio;
+		double unscaledY = event.getY() / scalingRatio;
 
 		// TimePoint newTimePoint = new TimePoint(actualX, actualY,
 		// project.getVideo().getCurrentFrameNum());
 		// currentAnimal.add(newTimePoint);
 
-		int currentFrame = project.getVideo().getCurrentFrameNum();
-		int skipToFrame = project.getVideo().getCurrentFrameNum() + 33;
+		int currentFrame = project.getVideo().getCurrentFrameNum() - 1;
+		int skipToFrame = project.getVideo().getCurrentFrameNum() + 32;
 
 		if ((Integer.parseInt(textfieldStartFrame.getText()) < currentFrame
 				&& Integer.parseInt(textfieldEndFrame.getText()) > currentFrame)
 				&& !project.getUnassignedSegments().isEmpty()) {
 //		TimePoint newTimePoint = new TimePoint(actualX, actualY, project.getVideo().getCurrentFrameNum());
-			AnimalTrack closestAutoTrackSegment = project.getNearestUnassignedSegment(actualX, actualY, currentFrame,
+			AnimalTrack closestAutoTrackSegment = project.getNearestUnassignedSegment(unscaledX, unscaledY, currentFrame,
 					skipToFrame);
 			List<TimePoint> closestPoints = closestAutoTrackSegment.getTimePointsWithinInterval(currentFrame,
 					skipToFrame);
 			if (!closestPoints.isEmpty()) {
-				TimePoint closestPoint = project.getNearestPoint(closestPoints, actualX, actualY);
-				if (closestPoint.getDistanceTo(actualX, actualY) < 50) {
+				TimePoint closestPoint = project.getNearestPoint(closestPoints, unscaledX, unscaledY);
+				if (closestPoint.getDistanceTo(unscaledX, unscaledY) < 50) {
 					skipToFrame = closestAutoTrackSegment.getFinalTimePoint().getFrameNum();
 					currentAnimal.add(closestAutoTrackSegment);
 					System.out.println("Found AutoTrack Segment! " + closestAutoTrackSegment);
 				} else {
-					TimePoint newTimePoint = new TimePoint(actualX, actualY, currentFrame);
+					TimePoint newTimePoint = new TimePoint(unscaledX, unscaledY, currentFrame);
 					currentAnimal.add(newTimePoint);
 				}
 			} else {
-				TimePoint newTimePoint = new TimePoint(actualX, actualY, currentFrame);
+				TimePoint newTimePoint = new TimePoint(unscaledX, unscaledY, currentFrame);
 				currentAnimal.add(newTimePoint);
 			}
 		} else {
-			TimePoint newTimePoint = new TimePoint(actualX, actualY, currentFrame);
+			TimePoint newTimePoint = new TimePoint(unscaledX, unscaledY, currentFrame);
 			currentAnimal.add(newTimePoint);
 		}
-		// drawing click location
-		System.out.println("Current animal " + currentAnimal + actualX + ", " + actualY);
-		graphic.setFill(Color.GREENYELLOW);
-		graphic.fillOval(event.getX() - 5, event.getY() - 5, 10, 10);
 
-		// sliderVideoTime.setValue(project.getVideo().getCurrentFrameNum() + 33);
-		showFrameAt(skipToFrame);
+		if (skipToFrame < project.getVideo().getEndFrameNum()) {
+			sliderVideoTime.setValue(skipToFrame);
+			showFrameAt(skipToFrame);
+		} else {
+			showFrameAt(currentFrame);
+		}
 
 //		sliderVideoTime.setValue(skipToFrame);
 
@@ -450,4 +459,75 @@ public class MainWindowController implements AutoTrackListener {
 		}
 	}
 
+	private void drawUnassignedSegments(GraphicsContext g, double scalingRatio, int frameNum) {
+		
+		for (AnimalTrack segment : project.getUnassignedSegments()) {
+
+			g.setFill(Color.DARKGRAY);
+			// draw this segments recent past & near future locations
+			for (TimePoint prevPt : segment.getTimePointsWithinInterval(frameNum - 30, frameNum + 30)) {
+				g.fillRect(prevPt.getX() * scalingRatio - 1, prevPt.getY() * scalingRatio - 1, 2, 2);
+			}
+			// draw the current point (if any) as a larger square
+			TimePoint currPt = segment.getTimePointAtTime(frameNum);
+			if (currPt != null) {
+				g.fillRect(currPt.getX() * scalingRatio - 5, currPt.getY() * scalingRatio - 5, 11, 11);
+			}
+		}
+	}
+	
+	/*
+	 * It doesn't look like these methods are jumping and going back
+	 * the same amount, but they are.
+	 */
+	public void handleBtnJumpAhead() {
+		if (project.getVideo().getCurrentFrameNum() + 31 < project.getVideo().getEndFrameNum()) {
+			sliderVideoTime.setValue(project.getVideo().getCurrentFrameNum() + 31);
+			showFrameAt(project.getVideo().getCurrentFrameNum());
+		} else {
+			showFrameAt(project.getVideo().getCurrentFrameNum() - 1);
+		}
+	}
+	
+	/*
+	 * It doesn't look like these methods are jumping and going back
+	 * the same amount, but they are.
+	 */
+	public void handleBtnJumpBack() {
+		sliderVideoTime.setValue(project.getVideo().getCurrentFrameNum() - 35);
+		showFrameAt(project.getVideo().getCurrentFrameNum());
+	}
+	
+	
+	
+	public void handleBtnSetFrameNum() {
+		int newFrameNum = Integer.MAX_VALUE;
+		boolean enteredNum = false;
+		String input = JOptionPane.showInputDialog(null, "Enter desired Frame Number:", 
+				"Set Frame Number", JOptionPane.PLAIN_MESSAGE);
+		try {
+			newFrameNum = Integer.parseInt(input);
+			enteredNum = true;
+		} catch (NumberFormatException e) {
+			JOptionPane.showMessageDialog(null, "Please enter only numbers.", 
+					"Set Frame Number", JOptionPane.ERROR_MESSAGE);
+		}
+		
+		 if (newFrameNum < 1) {
+			JOptionPane.showMessageDialog(null, "Number needs to be at least 1.", 
+					"Set Frame Number", JOptionPane.ERROR_MESSAGE);
+		} else if (newFrameNum < project.getVideo().getEndFrameNum()) {
+				sliderVideoTime.setValue(newFrameNum);
+				showFrameAt(newFrameNum);
+		} else if (enteredNum == true) {
+			JOptionPane.showMessageDialog(null, "Number cannot be greater than the number of frames.", 
+					"Set Frame Number", JOptionPane.ERROR_MESSAGE);
+		}
+	}
+	
+	private double getImageScalingRatio() {
+		double widthRatio = canvas.getWidth() / project.getVideo().getFrameWidth();
+		double heightRatio = canvas.getHeight() / project.getVideo().getFrameHeight();
+		return Math.min(widthRatio, heightRatio);
+	}
 }

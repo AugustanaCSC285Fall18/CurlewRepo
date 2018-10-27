@@ -16,6 +16,13 @@ public class AnimalTrack {
 	}
 
 	public void add(TimePoint pt) {
+		int frameNum = pt.getFrameNum();
+		for (int index = 0; index < positions.size(); index++) {
+			if (positions.get(index).getFrameNum() == frameNum) {
+				System.out.println("point in frame " + positions.get(index).getFrameNum() + " removed");
+				this.removePoint(positions.get(index));
+			}
+		}
 		positions.add(pt);
 	}
 
@@ -105,5 +112,9 @@ public class AnimalTrack {
 
 	public int getNumPoints() {
 		return positions.size();
+	}
+	
+	public void removePoint(TimePoint point) {
+		positions.remove(point);
 	}
 }

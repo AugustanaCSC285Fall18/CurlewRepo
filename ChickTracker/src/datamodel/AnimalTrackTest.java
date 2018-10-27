@@ -44,4 +44,20 @@ class AnimalTrackTest {
 		assertEquals(new TimePoint(150,200,5), testTrack.getFinalTimePoint());
 	}
 	
+	@Test
+	void testRemovingPoints() {
+		AnimalTrack testTrack = makeNewAnimal("bill");
+		
+		testTrack.add(new TimePoint(100,100,0));		
+		testTrack.add(new TimePoint(110,110,1));		
+		testTrack.add(new TimePoint(150,200,5));
+		assertEquals(3, testTrack.getNumPoints());
+		testTrack.removePoint(new TimePoint(50,100,0));
+		assertEquals(3, testTrack.getNumPoints());
+		testTrack.removePoint(new TimePoint(110,110,1));	
+		assertEquals(2, testTrack.getNumPoints());
+		testTrack.removePoint(new TimePoint(150,200,5));
+		assertEquals(1, testTrack.getNumPoints());
+	}
+	
 }
