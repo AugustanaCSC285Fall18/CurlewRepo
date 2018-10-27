@@ -424,7 +424,7 @@ public class MainWindowController implements AutoTrackListener {
 		JOptionPane.showMessageDialog(null,
 				"Set the horizontal scale by clicking the ends of horizontal meter stick");
 		
-		canvas.setOnMousePressed(e -> calibController.getHorizontalOne(e));
+		canvas.setOnMousePressed(e -> calibController.startHorizontalScaling(e));
 //		JOptionPane.showMessageDialog(null,
 //				"Set the vertical scale by clicking the ends of vertical meter stick");
 	}

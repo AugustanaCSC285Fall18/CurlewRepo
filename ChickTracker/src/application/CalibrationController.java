@@ -29,12 +29,12 @@ public class CalibrationController {
 	private Canvas canvas;
 	private MainWindowController mwController;
 	private ImageView videoView;
+	private ArrayList<Double> scaleCoords = new ArrayList<Double>();
+	private ArrayList<Double> vertCoordinates = new ArrayList<Double>();
 	private double xOne;
 	private double xTwo;
 	private double yOne;
 	private double yTwo;
-	
-
 
 	public CalibrationController(Video video, Canvas canvas, MainWindowController mwController, ImageView videoView) {
 		this.video = video;
@@ -52,8 +52,7 @@ public class CalibrationController {
 	public void handleMousePressedSetOrigin(MouseEvent event) {
 		double realX = event.getX();
 		double realY = event.getY();
-		
-		
+
 		video.setOrigin(realX, realY);
 		System.out.println("Origin set at " + video.getOrigin().toString());
 		GraphicsContext g = canvas.getGraphicsContext2D();
@@ -83,31 +82,78 @@ public class CalibrationController {
 
 		canvas.setHeight(videoView.getScene().widthProperty().doubleValue() / aspectRatio);
 		canvas.setWidth(videoView.getScene().widthProperty().doubleValue());
-		
 
 	}
 
 	public void calibrateXScale() {
-		double distance = Math.sqrt(Math.pow(yTwo-yOne, 2)+ Math.pow(xTwo-xOne, 2));
-		video.setxPixelsPerCm(distance);
+
+		// this ugly thing takes the values from our ArrayList and uses pythgorean's
+		// theorem to find the distance between the points.
+
+		video.setxPixelsPerCm(calculateDistance() / 100);
 		GraphicsContext g = canvas.getGraphicsContext2D();
 		g.setStroke(Color.GREEN);
-		g.strokeLine(xOne, yOne, xTwo, yTwo);
+		g.strokeLine(scaleCoords.get(0), scaleCoords.get(1), scaleCoords.get(2), scaleCoords.get(3));
+		scaleCoords.clear();
 		System.out.print("Entered xPixelsPerCm: " + video.getxPixelsPerCm());
+		JOptionPane.showMessageDialog(null, "Set the vertical scale by clicking the ends of vertical meter stick");
+		canvas.setOnMousePressed(e -> startVerticalScaling(e));
 	}
-	
-	public void getHorizontalOne(MouseEvent event) {
-		
-		xOne = event.getX();
-		yOne = event.getY();
-		canvas.setOnMousePressed(e -> getHorizontalTwo(e));
+
+	public void calibrateYScale() {
+
+		// this ugly thing takes the values from our ArrayList and uses pythgorean's
+		// theorem to find the distance between the points.
+
+		video.setyPixelsPerCm(calculateDistance() / 100);
+		GraphicsContext g = canvas.getGraphicsContext2D();
+		g.setStroke(Color.RED);
+		g.strokeLine(scaleCoords.get(0), scaleCoords.get(1), scaleCoords.get(2), scaleCoords.get(3));
+		scaleCoords.clear();
+		System.out.println("Entered yPixelsPerCm: " + video.getyPixelsPerCm());
 	}
-	
-	public void getHorizontalTwo(MouseEvent event) {
-		xTwo = event.getX();
-		yTwo = event.getY();	
+
+	public void startHorizontalScaling(MouseEvent event) {
+
+//		xOne = event.getX();
+//		yOne = event.getY();
+		scaleCoords.add(event.getX());
+		scaleCoords.add(event.getY());
+
+		canvas.setOnMousePressed(e -> endHorizontalScaling(e));
+	}
+
+	public void endHorizontalScaling(MouseEvent event) {
+		scaleCoords.add(event.getX());
+		scaleCoords.add(event.getY());
+		System.out.println(scaleCoords.toString());
 		mwController.resetMouseModeAndButtons();
 		calibrateXScale();
+	}
+
+	public void startVerticalScaling(MouseEvent event) {
+		scaleCoords.add(event.getX());
+		scaleCoords.add(event.getY());
+
+		canvas.setOnMousePressed(e -> endVerticalScaling(e));
+	}
+
+	public void endVerticalScaling(MouseEvent event) {
+		scaleCoords.add(event.getX());
+		scaleCoords.add(event.getY());
+		System.out.println(scaleCoords.toString());
+		mwController.resetMouseModeAndButtons();
+		calibrateYScale();
+	}
+
+	/**
+	 * Uses the calibration class' ArrayList field to measure the distance between
+	 * 
+	 * @return distance between 2 points on canvas
+	 */
+	public double calculateDistance() {
+		return Math.sqrt(Math.pow(scaleCoords.get(3) - scaleCoords.get(1), 2)
+				+ Math.pow(scaleCoords.get(2) - scaleCoords.get(0), 2));
 	}
 
 }
