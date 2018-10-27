@@ -168,7 +168,8 @@ public class MainWindowController implements AutoTrackListener {
 	}
 
 	public void resetMouseModeAndButtons() {
-		canvas.setOnMousePressed(e -> handleMousePressForTracking(e)); // switch back to manual tracking mode
+		canvas.setOnMousePressed(null);
+		btnStartManualTrack.setDisable(false);
 		originButton.setDisable(false);
 		// re-enable other buttons too, involving calibration, etc?
 	}
@@ -308,7 +309,7 @@ public class MainWindowController implements AutoTrackListener {
 						"Adding New Animal", JOptionPane.ERROR_MESSAGE);
 			}
 			if (newAnimal.length() < 1) {
-				newAnimal = "Animals " + (project.getTracks().size() + 1);
+				newAnimal = "Animal " + (project.getTracks().size() + 1);
 			}
 			project.getTracks().add(new AnimalTrack(newAnimal));
 			animalIdList.add(newAnimal);
@@ -430,12 +431,13 @@ public class MainWindowController implements AutoTrackListener {
 
 	public void handleCalibration() {
 		btnCalibrate.setDisable(true);
+		btnStartManualTrack.setDisable(true);
+		btnStopManualTrack.setDisable(true);
 		JOptionPane.showMessageDialog(null,
 				"Set the horizontal scale by clicking the ends of horizontal meter stick");
 		
 		canvas.setOnMousePressed(e -> calibController.startHorizontalScaling(e));
-//		JOptionPane.showMessageDialog(null,
-//				"Set the vertical scale by clicking the ends of vertical meter stick");
+
 	}
 
 	private void drawAssignedAnimalTracks(GraphicsContext g, double scalingRatio, int frameNum) {
@@ -516,18 +518,24 @@ public class MainWindowController implements AutoTrackListener {
 		 if (newFrameNum < 1) {
 			JOptionPane.showMessageDialog(null, "Number needs to be at least 1.", 
 					"Set Frame Number", JOptionPane.ERROR_MESSAGE);
+			
 		} else if (newFrameNum < project.getVideo().getEndFrameNum()) {
 				sliderVideoTime.setValue(newFrameNum);
 				showFrameAt(newFrameNum);
+				
 		} else if (enteredNum == true) {
 			JOptionPane.showMessageDialog(null, "Number cannot be greater than the number of frames.", 
 					"Set Frame Number", JOptionPane.ERROR_MESSAGE);
 		}
 	}
 	
+	//Our tracked points are stored as un-scaled points,
+	//so in order to get them out appropriately you 
+	//to multiply them by this number.
 	private double getImageScalingRatio() {
 		double widthRatio = canvas.getWidth() / project.getVideo().getFrameWidth();
 		double heightRatio = canvas.getHeight() / project.getVideo().getFrameHeight();
 		return Math.min(widthRatio, heightRatio);
 	}
+	
 }
