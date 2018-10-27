@@ -3,6 +3,8 @@ package application;
 import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 
+import javax.swing.JOptionPane;
+
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfByte;
 import org.opencv.imgcodecs.Imgcodecs;
@@ -27,6 +29,12 @@ public class CalibrationController {
 	private Canvas canvas;
 	private MainWindowController mwController;
 	private ImageView videoView;
+	private double xOne;
+	private double xTwo;
+	private double yOne;
+	private double yTwo;
+	
+
 
 	public CalibrationController(Video video, Canvas canvas, MainWindowController mwController, ImageView videoView) {
 		this.video = video;
@@ -75,13 +83,31 @@ public class CalibrationController {
 
 		canvas.setHeight(videoView.getScene().widthProperty().doubleValue() / aspectRatio);
 		canvas.setWidth(videoView.getScene().widthProperty().doubleValue());
+		
 
 	}
 
-	public void calibrateScale(MouseEvent event) {
-		ArrayList scalePoints = new ArrayList<>();
-		scalePoints.add(5.0);
+	public void calibrateXScale() {
+		double distance = Math.sqrt(Math.pow(yTwo-yOne, 2)+ Math.pow(xTwo-xOne, 2));
+		video.setxPixelsPerCm(distance);
+		GraphicsContext g = canvas.getGraphicsContext2D();
+		g.setStroke(Color.GREEN);
+		g.strokeLine(xOne, yOne, xTwo, yTwo);
+		System.out.print("Entered xPixelsPerCm: " + video.getxPixelsPerCm());
+	}
+	
+	public void getHorizontalOne(MouseEvent event) {
 		
+		xOne = event.getX();
+		yOne = event.getY();
+		canvas.setOnMousePressed(e -> getHorizontalTwo(e));
+	}
+	
+	public void getHorizontalTwo(MouseEvent event) {
+		xTwo = event.getX();
+		yTwo = event.getY();	
+		mwController.resetMouseModeAndButtons();
+		calibrateXScale();
 	}
 
 }

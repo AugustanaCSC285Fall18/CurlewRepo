@@ -109,10 +109,8 @@ public class MainWindowController implements AutoTrackListener {
 	@FXML
 	private Button btnCalibrate;
 
-
 	public static final Color[] TRACK_COLORS = new Color[] { Color.RED, Color.BLUE, Color.GREEN, Color.CYAN,
 			Color.MAGENTA, Color.BLUEVIOLET, Color.ORANGE };
-
 
 	private AutoTracker autotracker;
 	private ProjectData project;
@@ -253,11 +251,12 @@ public class MainWindowController implements AutoTrackListener {
 			videoView.setImage(curFrame);
 
 			g.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
-			//double scalingRatio = getImageScalingRatio();
-			//g.drawImage(curFrame, 0, 0, curFrame.getWidth() * scalingRatio, curFrame.getHeight() * scalingRatio);
+			// double scalingRatio = getImageScalingRatio();
+			// g.drawImage(curFrame, 0, 0, curFrame.getWidth() * scalingRatio,
+			// curFrame.getHeight() * scalingRatio);
 
 			drawAssignedAnimalTracks(g, 1, frameNum);
-			//drawUnassignedSegments(g, scalingRatio, frameNum);
+			// drawUnassignedSegments(g, scalingRatio, frameNum);
 
 		}
 		textFieldCurFrameNum.setText(String.format("%05d", frameNum));
@@ -349,7 +348,8 @@ public class MainWindowController implements AutoTrackListener {
 				menuBtnAnimals.setText(currentAnimal.getId());
 			}
 		} else {
-			JOptionPane.showMessageDialog(null, "Please select an animal to remove.", "WARNING", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(null, "Please select an animal to remove.", "WARNING",
+					JOptionPane.ERROR_MESSAGE);
 		}
 	}
 
@@ -374,16 +374,21 @@ public class MainWindowController implements AutoTrackListener {
 		double actualX = event.getX() - project.getVideo().getOrigin().getX();
 		double actualY = event.getY() - project.getVideo().getOrigin().getY();
 
-		//TimePoint newTimePoint = new TimePoint(actualX, actualY, project.getVideo().getCurrentFrameNum());
-		//currentAnimal.add(newTimePoint);
+		// TimePoint newTimePoint = new TimePoint(actualX, actualY,
+		// project.getVideo().getCurrentFrameNum());
+		// currentAnimal.add(newTimePoint);
 
 		int currentFrame = project.getVideo().getCurrentFrameNum();
 		int skipToFrame = project.getVideo().getCurrentFrameNum() + 33;
 
-		if ((Integer.parseInt(textfieldStartFrame.getText()) < currentFrame && Integer.parseInt(textfieldEndFrame.getText()) > currentFrame) && !project.getUnassignedSegments().isEmpty()) {
+		if ((Integer.parseInt(textfieldStartFrame.getText()) < currentFrame
+				&& Integer.parseInt(textfieldEndFrame.getText()) > currentFrame)
+				&& !project.getUnassignedSegments().isEmpty()) {
 //		TimePoint newTimePoint = new TimePoint(actualX, actualY, project.getVideo().getCurrentFrameNum());
-			AnimalTrack closestAutoTrackSegment = project.getNearestUnassignedSegment(actualX, actualY, currentFrame, skipToFrame);
-			List<TimePoint> closestPoints = closestAutoTrackSegment.getTimePointsWithinInterval(currentFrame, skipToFrame);
+			AnimalTrack closestAutoTrackSegment = project.getNearestUnassignedSegment(actualX, actualY, currentFrame,
+					skipToFrame);
+			List<TimePoint> closestPoints = closestAutoTrackSegment.getTimePointsWithinInterval(currentFrame,
+					skipToFrame);
 			if (!closestPoints.isEmpty()) {
 				TimePoint closestPoint = project.getNearestPoint(closestPoints, actualX, actualY);
 				if (closestPoint.getDistanceTo(actualX, actualY) < 50) {
@@ -402,25 +407,30 @@ public class MainWindowController implements AutoTrackListener {
 			TimePoint newTimePoint = new TimePoint(actualX, actualY, currentFrame);
 			currentAnimal.add(newTimePoint);
 		}
-		//drawing click location
+		// drawing click location
 		System.out.println("Current animal " + currentAnimal + actualX + ", " + actualY);
 		graphic.setFill(Color.GREENYELLOW);
 		graphic.fillOval(event.getX() - 5, event.getY() - 5, 10, 10);
 
-
-		//sliderVideoTime.setValue(project.getVideo().getCurrentFrameNum() + 33);
+		// sliderVideoTime.setValue(project.getVideo().getCurrentFrameNum() + 33);
 		showFrameAt(skipToFrame);
 
 //		sliderVideoTime.setValue(skipToFrame);
 
 	}
-	
+
 	public void handleCalibration() {
-		canvas.setOnMousePressed(e -> calibController.calibrateScale(e));
+		btnCalibrate.setDisable(true);
+		JOptionPane.showMessageDialog(null,
+				"Set the horizontal scale by clicking the ends of horizontal meter stick");
+		
+		canvas.setOnMousePressed(e -> calibController.getHorizontalOne(e));
+//		JOptionPane.showMessageDialog(null,
+//				"Set the vertical scale by clicking the ends of vertical meter stick");
 	}
 
 	private void drawAssignedAnimalTracks(GraphicsContext g, double scalingRatio, int frameNum) {
-		
+
 		for (int i = 0; i < project.getTracks().size(); i++) {
 			AnimalTrack track = project.getTracks().get(i);
 			Color trackColor = TRACK_COLORS[i % TRACK_COLORS.length];
@@ -439,6 +449,5 @@ public class MainWindowController implements AutoTrackListener {
 			}
 		}
 	}
-	
-	
+
 }
