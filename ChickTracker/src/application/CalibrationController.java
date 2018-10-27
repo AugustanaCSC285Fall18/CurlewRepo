@@ -31,6 +31,7 @@ public class CalibrationController {
 	private ImageView videoView;
 	private ArrayList<Double> scaleCoords = new ArrayList<Double>();
 
+
 	public CalibrationController(Video video, Canvas canvas, MainWindowController mwController, ImageView videoView) {
 		this.video = video;
 		this.canvas = canvas;
@@ -103,8 +104,9 @@ public class CalibrationController {
 
 		// this ugly thing takes the values from our ArrayList and uses pythgorean's
 		// theorem to find the distance between the points.
-
-		video.setxPixelsPerCm(calculateDistance() / 100);
+		String numberCentimeters = JOptionPane.showInputDialog(null, "Enter distance chosen in centimeters", "Adding New Animal",
+				JOptionPane.PLAIN_MESSAGE);
+		video.setxPixelsPerCm(calculateDistance() / Double.parseDouble(numberCentimeters));
 		GraphicsContext g = canvas.getGraphicsContext2D();
 		g.setStroke(Color.GREEN);
 		g.strokeLine(scaleCoords.get(0), scaleCoords.get(1), scaleCoords.get(2), scaleCoords.get(3));
@@ -118,8 +120,10 @@ public class CalibrationController {
 
 		// this ugly thing takes the values from our ArrayList and uses pythgorean's
 		// theorem to find the distance between the points.
-
-		video.setyPixelsPerCm(calculateDistance() / 100);
+		String numberCentimeters = JOptionPane.showInputDialog(null, "Enter distance chosen in centimeters", "Adding New Animal",
+				JOptionPane.PLAIN_MESSAGE);
+		
+		video.setyPixelsPerCm(calculateDistance() / Double.parseDouble(numberCentimeters));
 		GraphicsContext g = canvas.getGraphicsContext2D();
 		g.setStroke(Color.RED);
 		g.strokeLine(scaleCoords.get(0), scaleCoords.get(1), scaleCoords.get(2), scaleCoords.get(3));
