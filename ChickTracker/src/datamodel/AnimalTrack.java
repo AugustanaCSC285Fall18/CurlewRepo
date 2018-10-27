@@ -19,6 +19,17 @@ public class AnimalTrack {
 		positions.add(pt);
 	}
 
+	/**
+	 * Adds the positions of two AnimalTracks to this AnimalTrack
+	 * @param other - AnimalTrack to be added
+	 */
+	public void add(AnimalTrack other) {
+		List<TimePoint> otherPoints = other.positions;
+		for (TimePoint point : otherPoints) {
+			positions.add(point);
+		}
+	}
+	
 	public TimePoint getTimePointAtIndex(int index) {
 		return positions.get(index);
 	}

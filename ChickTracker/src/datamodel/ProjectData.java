@@ -51,21 +51,33 @@ public class ProjectData {
 	 */
 	public AnimalTrack getNearestUnassignedSegment(double x, double y, int startFrame, int endFrame) {
 		AnimalTrack closestTrack = null;
-		TimePoint closestPoint = null;
-		double shortestDistance = video.getFrameHeight() * video.getFrameHeight()
-				+ video.getFrameWidth() * video.getFrameWidth(); // initializes to the furthest distance in the video
+//		TimePoint closestPoint = null;
+		double shortestDistance = Integer.MAX_VALUE;
 		for (AnimalTrack segment : unassignedSegments) {
 			List<TimePoint> validPoints = segment.getTimePointsWithinInterval(startFrame, endFrame);
-			for (TimePoint testPoint : validPoints) {
-				double testDistance = testPoint.getDistanceTo(x, y);
+			TimePoint point = getNearestPoint(validPoints, x, y);
+			if (point != null) {	
+				double testDistance = point.getDistanceTo(x, y);
 				if (shortestDistance > testDistance) {
 					closestTrack = segment;
-					closestPoint = testPoint;
 					shortestDistance = testDistance;
 				}
 			}
 		}
 		return closestTrack;
+	}
+	
+	public TimePoint getNearestPoint(List<TimePoint> points, double x, double y) {
+		TimePoint closestPoint = null;
+		double shortestDistance = Integer.MAX_VALUE;
+		for (TimePoint testPoint : points) {
+			double testDistance = testPoint.getDistanceTo(x, y);
+			if (shortestDistance > testDistance) {
+				closestPoint = testPoint;
+				shortestDistance = testDistance;
+			}
+		}
+		return closestPoint;
 	}
 	
 
