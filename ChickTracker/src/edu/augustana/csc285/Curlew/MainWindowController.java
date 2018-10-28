@@ -123,7 +123,6 @@ public class MainWindowController implements AutoTrackListener {
 	private AutoTracker autotracker;
 	private ProjectData project;
 	private Stage stage;
-	private List<AnimalTrack> animalList;
 	private ArrayList<String> animalIdList;
 	private AnimalTrack currentAnimal;
 	private boolean manualTrackActive;
@@ -136,9 +135,12 @@ public class MainWindowController implements AutoTrackListener {
 		// is for debugging purposes only, since there's no way to specify
 		// the settings in the GUI right now...
 		// loadVideo("/home/forrest/data/shara_chicks_tracking/sample1.mp4");
-		loadVideo("S:/class/cs/285/sample_videos/sample1.mp4");
-		project.getVideo().setxPixelsPerCm(6.5); // these are just rough estimates!
-		project.getVideo().setyPixelsPerCm(6.7);
+//		loadVideo("S:/class/cs/285/sample_videos/sample1.mp4");
+//		project.getVideo().setxPixelsPerCm(6.5); // these are just rough estimates!
+//		project.getVideo().setyPixelsPerCm(6.7);
+		handleBrowse();
+		
+
 
 //		loadVideo("/home/forrest/data/shara_chicks_tracking/lowres/lowres2.avi");
 		// loadVideo("S:/class/cs/285/sample_videos/lowres2.mp4");
@@ -150,7 +152,6 @@ public class MainWindowController implements AutoTrackListener {
 
 		sliderVideoTime.valueProperty().addListener((obs, oldV, newV) -> showFrameAt(newV.intValue()));
 
-		animalList = new ArrayList<AnimalTrack>();
 		animalIdList = new ArrayList<String>();
 		menuBtnAnimals.getItems().clear();
 		menuBtnAnimals.setText("Animal Select");
@@ -239,6 +240,7 @@ public class MainWindowController implements AutoTrackListener {
 		File chosenFile = fileChooser.showOpenDialog(stage);
 		if (chosenFile != null) {
 			project = ProjectData.loadFromFile(chosenFile);
+			initialize();
 		}
 	}
 	
