@@ -156,9 +156,15 @@ public class MainWindowController implements AutoTrackListener {
 		menuBtnAnimals.setText("Animal Select");
 		btnStartManualTrack.setDisable(true);
 		btnStopManualTrack.setDisable(true);
-		JOptionPane.showMessageDialog(null, "Please choose the start time when all chicks are visible "
-				+ "and the end time when you would like to end tracking. \n"
-				+ "Then click auto tracking once.", "Instructions for Tracking", JOptionPane.INFORMATION_MESSAGE);
+		
+		// Creates some basic instructions for the user to read prior to seeing the window. 
+		Alert startUpInstructions = new Alert(AlertType.INFORMATION);
+		startUpInstructions.setTitle("Instructions for Tracking");
+		startUpInstructions.setHeaderText(null);
+		startUpInstructions.setContentText("Please set the arena bounds after selecting a video.\n"
+				+ "Then choose the start time when all chicks are visible and the end time when you"
+				+ " would like to end tracking.\nThen click auto tracking once.");
+		startUpInstructions.showAndWait();
 		
 
 	}
