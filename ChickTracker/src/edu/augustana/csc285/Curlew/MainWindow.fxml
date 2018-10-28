@@ -18,16 +18,22 @@
 
 <BorderPane prefHeight="766.0" prefWidth="845.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="edu.augustana.csc285.Curlew.MainWindowController">
    <bottom>
-      <FlowPane columnHalignment="CENTER" prefHeight="60.0" prefWidth="856.0" BorderPane.alignment="TOP_CENTER">
+      <FlowPane columnHalignment="CENTER" prefHeight="60.0" prefWidth="845.0" BorderPane.alignment="TOP_CENTER">
          <BorderPane.margin>
             <Insets bottom="20.0" top="20.0" />
          </BorderPane.margin>
          <children>
-            <Slider fx:id="sliderVideoTime" prefHeight="14.0" prefWidth="797.0" />
+            <Slider fx:id="sliderVideoTime" prefHeight="14.0" prefWidth="844.0">
+               <padding>
+                  <Insets left="20.0" right="20.0" />
+               </padding></Slider>
             <Label text="Start frame:">
                <FlowPane.margin>
                   <Insets bottom="10.0" left="10.0" top="10.0" />
-               </FlowPane.margin></Label>
+               </FlowPane.margin>
+               <padding>
+                  <Insets left="10.0" />
+               </padding></Label>
             <TextField fx:id="textfieldStartFrame" prefHeight="25.0" prefWidth="55.0" promptText="Frame#" text="5500">
                <FlowPane.margin>
                   <Insets bottom="10.0" right="10.0" top="10.0" />
@@ -40,85 +46,96 @@
                <FlowPane.margin>
                   <Insets bottom="10.0" right="10.0" top="10.0" />
                </FlowPane.margin></TextField>
-            <Button fx:id="btnAutotrack" mnemonicParsing="false" onAction="#handleStartAutotracking" text="Start Auto-Tracking">
+            <Button fx:id="btnSetFrameNum" mnemonicParsing="false" onAction="#handleBtnSetFrameNum" text="Set Frame Num">
                <FlowPane.margin>
-                  <Insets bottom="10.0" right="10.0" top="10.0" />
+                  <Insets left="60.0" />
                </FlowPane.margin>
-               <padding>
-                  <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
-               </padding></Button>
-            <Label text="Progress: ">
-               <FlowPane.margin>
-                  <Insets bottom="10.0" top="10.0" />
-               </FlowPane.margin>
-            </Label>
-            <ProgressBar fx:id="progressAutoTrack" prefHeight="18.0" prefWidth="88.0" progress="0.0">
-               <FlowPane.margin>
-                  <Insets bottom="10.0" right="10.0" top="10.0" />
-               </FlowPane.margin></ProgressBar>
+            </Button>
             <Button fx:id="btnJumpBack" mnemonicParsing="false" onAction="#handleBtnJumpBack" text="Jump Back 33">
                <FlowPane.margin>
-                  <Insets bottom="10.0" right="5.0" top="10.0" />
+                  <Insets left="5.0" />
                </FlowPane.margin>
             </Button>
             <Button fx:id="btnJumpAhead" mnemonicParsing="false" onAction="#handleBtnJumpAhead" text="Jump Ahead 33">
                <FlowPane.margin>
-                  <Insets bottom="10.0" top="10.0" />
+                  <Insets left="5.0" />
                </FlowPane.margin>
             </Button>
-            <Button fx:id="btnSetFrameNum" mnemonicParsing="false" onAction="#handleBtnSetFrameNum" text="Set Frame Num">
+            <Label text="Current Frame">
                <FlowPane.margin>
-                  <Insets bottom="10.0" left="5.0" right="5.0" top="10.0" />
-               </FlowPane.margin>
-            </Button>
-            <Button fx:id="originButton" mnemonicParsing="false" onAction="#handleOriginButton" text="Set origin">
-               <FlowPane.margin>
-                  <Insets bottom="10.0" left="20.0" right="5.0" top="10.0" />
-               </FlowPane.margin>
-               <padding>
-                  <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
-               </padding></Button>
-            <Button fx:id="btnArena" mnemonicParsing="false" onAction="#handleArena" text="Set Arena Bounds" />
-            <Button fx:id="btnAddAnimal" mnemonicParsing="false" onAction="#handleBtnAddAnimal" text="Add New Animal">
-               <FlowPane.margin>
-                  <Insets bottom="10.0" left="5.0" right="5.0" top="10.0" />
-               </FlowPane.margin>
-               <padding>
-                  <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
-               </padding></Button>
-            <Button fx:id="btnRemoveAnimal" mnemonicParsing="false" onAction="#handleBtnRemoveAnimal" text="Remove Selected Animal" />
-            <MenuButton fx:id="menuBtnAnimals" mnemonicParsing="false" onAction="#handleMenuBtnAnimals" text="MenuButton">
-              <items>
-                <MenuItem mnemonicParsing="false" text="Action 1" />
-                <MenuItem mnemonicParsing="false" text="Action 2" />
-              </items>
-               <FlowPane.margin>
-                  <Insets bottom="10.0" left="5.0" right="5.0" top="10.0" />
-               </FlowPane.margin>
-               <padding>
-                  <Insets bottom="1.0" left="10.0" right="10.0" top="1.0" />
-               </padding>
-            </MenuButton>
-            <Button fx:id="btnStartManualTrack" mnemonicParsing="false" onAction="#handleBtnStartManualTrack" text="Start Manual Track">
-               <FlowPane.margin>
-                  <Insets bottom="10.0" left="5.0" right="5.0" top="10.0" />
-               </FlowPane.margin>
-               <padding>
-                  <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
-               </padding>
-            </Button>
-            <Button fx:id="btnStopManualTrack" mnemonicParsing="false" onAction="#handleBtnStopManualTrack" text="Stop Manual Track" />
+                  <Insets left="50.0" />
+               </FlowPane.margin></Label>
+            <TextField fx:id="textFieldCurFrameNum" editable="false" prefWidth="100.0" promptText="(frame #)" />
+            <FlowPane prefHeight="16.0" prefWidth="839.0">
+               <children>
+                  <Button fx:id="originButton" mnemonicParsing="false" onAction="#handleOriginButton" prefWidth="84.0" text="Set origin">
+                     <FlowPane.margin>
+                        <Insets bottom="10.0" left="20.0" right="5.0" top="10.0" />
+                     </FlowPane.margin>
+                     <padding>
+                        <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
+                     </padding>
+                  </Button>
+                  <Button fx:id="btnArena" mnemonicParsing="false" onAction="#handleArena" text="Set Arena Bounds" />
+                  <Button fx:id="btnAddAnimal" mnemonicParsing="false" onAction="#handleBtnAddAnimal" text="Add New Animal">
+                     <FlowPane.margin>
+                        <Insets bottom="10.0" left="5.0" right="5.0" top="10.0" />
+                     </FlowPane.margin>
+                     <padding>
+                        <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
+                     </padding>
+                  </Button>
+                  <Button fx:id="btnRemoveAnimal" mnemonicParsing="false" onAction="#handleBtnRemoveAnimal" text="Remove Selected Animal" />
+                  <MenuButton fx:id="menuBtnAnimals" mnemonicParsing="false" onAction="#handleMenuBtnAnimals" text="MenuButton">
+                    <items>
+                      <MenuItem mnemonicParsing="false" text="Action 1" />
+                      <MenuItem mnemonicParsing="false" text="Action 2" />
+                    </items>
+                     <FlowPane.margin>
+                        <Insets bottom="10.0" left="5.0" right="5.0" top="10.0" />
+                     </FlowPane.margin>
+                     <padding>
+                        <Insets bottom="1.0" left="10.0" right="10.0" top="1.0" />
+                     </padding>
+                  </MenuButton>
+               </children>
+            </FlowPane>
+            <FlowPane prefHeight="15.0" prefWidth="841.0">
+               <children>
+                  <Button fx:id="btnAutotrack" mnemonicParsing="false" onAction="#handleStartAutotracking" prefHeight="27.0" prefWidth="129.0" text="Start Auto-Tracking">
+                     <FlowPane.margin>
+                        <Insets bottom="10.0" left="20.0" right="10.0" top="10.0" />
+                     </FlowPane.margin>
+                     <padding>
+                        <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
+                     </padding>
+                  </Button>
+                  <Label text="  Progress: ">
+                     <FlowPane.margin>
+                        <Insets bottom="10.0" top="10.0" />
+                     </FlowPane.margin>
+                  </Label>
+                  <ProgressBar fx:id="progressAutoTrack" prefHeight="18.0" prefWidth="88.0" progress="0.0">
+                     <FlowPane.margin>
+                        <Insets bottom="10.0" right="10.0" top="10.0" />
+                     </FlowPane.margin>
+                  </ProgressBar>
+                  <Button fx:id="btnStartManualTrack" mnemonicParsing="false" onAction="#handleBtnStartManualTrack" text="Start Manual Track">
+                     <FlowPane.margin>
+                        <Insets bottom="10.0" left="5.0" right="5.0" top="10.0" />
+                     </FlowPane.margin>
+                     <padding>
+                        <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
+                     </padding>
+                  </Button>
+                  <Button fx:id="btnStopManualTrack" mnemonicParsing="false" onAction="#handleBtnStopManualTrack" text="Stop Manual Track" />
+               </children>
+            </FlowPane>
          </children>
       </FlowPane>
    </bottom>
    <top>
       <BorderPane BorderPane.alignment="CENTER">
-         <right>
-            <TextField fx:id="textFieldCurFrameNum" editable="false" prefWidth="100.0" promptText="(frame #)" BorderPane.alignment="CENTER" />
-         </right>
-         <center>
-            <Label text="Frame:" BorderPane.alignment="CENTER_RIGHT" />
-         </center>
          <top>
             <MenuBar BorderPane.alignment="CENTER">
               <menus>
