@@ -103,7 +103,7 @@ public class MainWindowController implements AutoTrackListener {
 	private Button btnStopManualTrack;
 
 	@FXML
-	private Button btnCalibrate;
+	private Button btnArena;
 	
 	@FXML
 	private Button btnJumpAhead;
@@ -429,12 +429,12 @@ public class MainWindowController implements AutoTrackListener {
 
 	}
 
-	public void handleCalibration() {
-		btnCalibrate.setDisable(true);
+	public void handleArena() {
+		btnArena.setDisable(true);
 		btnStartManualTrack.setDisable(true);
 		btnStopManualTrack.setDisable(true);
 		JOptionPane.showMessageDialog(null,
-				"Set the horizontal scale by clicking the ends of horizontal meter stick");
+				"Set the horizontal by clicking bottom left of box to bottom right");
 		
 		canvas.setOnMousePressed(e -> calibController.startHorizontalScaling(e));
 
