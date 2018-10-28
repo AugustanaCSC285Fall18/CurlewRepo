@@ -364,36 +364,37 @@ public class MainWindowController implements AutoTrackListener {
 	
 	/**
 	 * Makes sure the user selects a valid name for the animal to be added.
-	 * @return a valid animal name selected by the user
+	 * @return a valid animal name selected by the user or the empty String if the user cancelled the window
 	 */
 	private String promptAnimalID() {
-		boolean invalidName = true;
-		String animalName = "";
-		while (invalidName) {
+		boolean invalidID = true;
+		String animalID = "";
+		while (invalidID) {
+			animalID = "";//resets the ID each time the user is prompted to reset the choice after a warning message
 			TextInputDialog addAnimalDialog = new TextInputDialog("Animal "+ (project.getTracks().size() + 1));
 			addAnimalDialog.setTitle("Adding new Animal");
 			addAnimalDialog.setContentText("Enter Animal ID: ");
 			Optional<String> result = addAnimalDialog.showAndWait();
-			if (result.isPresent()) {
-				animalName = result.get();
+			if (result.isPresent()) { // if the user clicked ok
+				animalID = result.get();
 			}
-			if (animalName.length() >= 20) {
-				Alert longNameAlert = new Alert(AlertType.WARNING);
-				longNameAlert.setTitle("WARNING");
-				longNameAlert.setHeaderText("Invalid Animal ID");
-				longNameAlert.setContentText("ID is too long.");
-				longNameAlert.showAndWait();
-			} else if (animalIdList.contains(animalName)) {
-				Alert existingNameAlert = new Alert(AlertType.WARNING);
-				existingNameAlert.setTitle("WARNING");
-				existingNameAlert.setHeaderText("Invalid Animal ID");
-				existingNameAlert.setContentText("ID is already assigned to another animal.");
-				existingNameAlert.showAndWait();
-			} else {
-				invalidName = false;
+			if (animalID.length() >= 20) { // if the user gave a ID that exceeds the max character limit
+				Alert longIdAlert = new Alert(AlertType.WARNING);
+				longIdAlert.setTitle("WARNING");
+				longIdAlert.setHeaderText("Invalid Animal ID");
+				longIdAlert.setContentText("ID is too long.");
+				longIdAlert.showAndWait();
+			} else if (animalIdList.contains(animalID)) { // if the user gave an ID that is already assigned to another animal
+				Alert existingIdAlert = new Alert(AlertType.WARNING);
+				existingIdAlert.setTitle("WARNING");
+				existingIdAlert.setHeaderText("Invalid Animal ID");
+				existingIdAlert.setContentText("ID is already assigned to another animal.");
+				existingIdAlert.showAndWait();
+			} else { // user provided a valid ID or cancelled the window
+				invalidID = false; 
 			}
 		}
-		return animalName;
+		return animalID;
 	}
 
 	@FXML
