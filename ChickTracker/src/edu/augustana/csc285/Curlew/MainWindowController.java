@@ -155,7 +155,9 @@ public class MainWindowController implements AutoTrackListener {
 		menuBtnAnimals.setText("Animal Select");
 		btnStartManualTrack.setDisable(true);
 		btnStopManualTrack.setDisable(true);
-		JOptionPane.showMessageDialog(null, "Please choose the start time when all chicks are visible and the end time when you would like to end tracking. Then click auto tracking once.", "Instructions for Tracking", JOptionPane.INFORMATION_MESSAGE);
+		JOptionPane.showMessageDialog(null, "Please choose the start time when all chicks are visible "
+				+ "and the end time when you would like to end tracking. \n"
+				+ "Then click auto tracking once.", "Instructions for Tracking", JOptionPane.INFORMATION_MESSAGE);
 		
 
 	}
@@ -432,21 +434,31 @@ public class MainWindowController implements AutoTrackListener {
 			if (!project.getUnassignedSegments().isEmpty()) {
 				// finds the closest AutoTrack segment and creates a list of the closest points in that segment within plus or minus 5 frames of the current frame
 				AnimalTrack closestAutoTrackSegment = project.getNearestUnassignedSegment(unscaledX, unscaledY, currentFrame,skipToFrame);
-				List<TimePoint> closestPoints = closestAutoTrackSegment.getTimePointsWithinInterval(currentFrame-5,currentFrame + 5);
-				
+				List<TimePoint> closestPoints = new ArrayList<>();
+				try {
+					closestPoints = closestAutoTrackSegment.getTimePointsWithinInterval(currentFrame-5,currentFrame + 5);
+				} catch (NullPointerException e) {
+					
+				}
 				// checks to make sure there is points in the list of closest points
 				if (!closestPoints.isEmpty()) {
+					
 					// finds the TimePoint that is closest to the click location
 					TimePoint closestPoint = project.getNearestPoint(closestPoints, unscaledX, unscaledY);
+					
 					//TimePoint closestPoint = closestAutoTrackSegment.getTimePointAtTime(currentFrame);
+					
 					// Checks to see if that point is close enough to the click location
 					if (closestPoint.getDistanceTo(unscaledX, unscaledY) < 10) { // if close enough,
 						// sets the frame that will be moved to next to the end of the autotrack segment
 						skipToFrame = closestAutoTrackSegment.getFinalTimePoint().getFrameNum()+1;
+						
 						// adds the timepoints from the segment to the current animal
 						currentAnimal.add(closestAutoTrackSegment);
+						
 						// removes that segment from the unassigned segments list
 						project.getUnassignedSegments().remove(closestAutoTrackSegment);
+						
 					} else { // if not close enough, create a new TimePoint from the click location and add it to the current animal
 						TimePoint newTimePoint = new TimePoint(unscaledX, unscaledY, currentFrame);
 						currentAnimal.add(newTimePoint);
@@ -466,8 +478,9 @@ public class MainWindowController implements AutoTrackListener {
 				sliderVideoTime.setValue(skipToFrame);
 				showFrameAt(skipToFrame);
 				System.out.println("Skipping to frame: " + skipToFrame);
-			} else { // if the frame that the video will be moved to is past the last frame in the video, it does not move the video 
-				showFrameAt(currentFrame);
+			} else { // if the frame that the video will be moved to is past the last frame in the video, it does not move the video
+				sliderVideoTime.setValue(endFrame);
+				showFrameAt(endFrame);
 				System.out.println("End frame: " + endFrame);
 				System.out.println("Unable to move to frame " + skipToFrame);
 			}
