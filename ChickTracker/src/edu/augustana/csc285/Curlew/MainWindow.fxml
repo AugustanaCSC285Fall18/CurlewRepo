@@ -16,7 +16,7 @@
 <?import javafx.scene.layout.FlowPane?>
 <?import javafx.scene.layout.StackPane?>
 
-<BorderPane prefHeight="766.0" prefWidth="845.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.MainWindowController">
+<BorderPane prefHeight="766.0" prefWidth="845.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="edu.augustana.csc285.Curlew.MainWindowController">
    <bottom>
       <FlowPane columnHalignment="CENTER" prefHeight="60.0" prefWidth="856.0" BorderPane.alignment="TOP_CENTER">
          <BorderPane.margin>
@@ -125,6 +125,7 @@
                 <Menu mnemonicParsing="false" text="File">
                   <items>
                         <MenuItem mnemonicParsing="false" onAction="#handleBrowse" text="Browse" />
+                        <MenuItem mnemonicParsing="false" onAction="#handleSave" text="Save" />
                   </items>
                 </Menu>
                 <Menu mnemonicParsing="false" text="Edit">
@@ -134,7 +135,7 @@
                 </Menu>
                 <Menu mnemonicParsing="false" text="Help">
                   <items>
-                    <MenuItem mnemonicParsing="false" text="About" />
+                    <MenuItem mnemonicParsing="false" onAction="#handleAbout" text="About" />
                   </items>
                 </Menu>
               </menus>

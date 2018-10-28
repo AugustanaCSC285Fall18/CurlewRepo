@@ -1,4 +1,4 @@
-package application;
+package edu.augustana.csc285.Curlew;
 
 import java.io.ByteArrayInputStream;
 import java.util.ArrayList;

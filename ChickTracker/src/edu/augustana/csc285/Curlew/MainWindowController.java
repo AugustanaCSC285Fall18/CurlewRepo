@@ -1,4 +1,4 @@
-package application;
+package edu.augustana.csc285.Curlew;
 
 //import java.awt.Color;
 import java.awt.event.MouseListener;
@@ -536,6 +536,24 @@ public class MainWindowController implements AutoTrackListener {
 		double widthRatio = canvas.getWidth() / project.getVideo().getFrameWidth();
 		double heightRatio = canvas.getHeight() / project.getVideo().getFrameHeight();
 		return Math.min(widthRatio, heightRatio);
+	}
+	
+	public void handleAbout() {
+		Alert alert = new Alert(AlertType.INFORMATION);
+		alert.setTitle("About Message");
+		alert.setHeaderText(null);
+		String names = "Team Curlew: Bryson Adcock, Chris Baker, Kathryn Clark, Riley Smith, Leo ;)"
+				+ "\nProject Supervisor: Dr. Forrest Stonedahl";
+		String acknowledgements = "\n\nLeo did basically everything for the project\nJust kidding. He literally did the whole thing.";
+		String usedLibraries = "\nLibraries: OpenCV, JavaFX, JavaSwing, JSON, GSON";
+		
+		alert.setContentText(names + acknowledgements + usedLibraries);
+
+		alert.showAndWait();
+	}
+	
+	public void handleSave() {
+		
 	}
 	
 }
