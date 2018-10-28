@@ -166,7 +166,7 @@
       <StackPane prefHeight="150.0" prefWidth="200.0" BorderPane.alignment="CENTER">
          <children>
             <ImageView fx:id="videoView" pickOnBounds="true" preserveRatio="true" />
-            <Canvas fx:id="canvas" height="65.0" width="86.0" />
+            <Canvas fx:id="canvas" height="65.0" opacity="0.46" width="86.0" />
          </children>
       </StackPane>
    </center>
