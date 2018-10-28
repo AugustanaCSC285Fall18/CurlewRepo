@@ -104,7 +104,7 @@ public class MainWindowController implements AutoTrackListener {
 
 	@FXML
 	private Button btnArena;
-	
+
 	@FXML
 	private Button btnJumpAhead;
 	@FXML
@@ -112,7 +112,7 @@ public class MainWindowController implements AutoTrackListener {
 
 	@FXML
 	private Button btnSetFrameNum;
-	
+
 	public static final Color[] TRACK_COLORS = new Color[] { Color.RED, Color.BLUE, Color.GREEN, Color.CYAN,
 			Color.MAGENTA, Color.BLUEVIOLET, Color.ORANGE };
 
@@ -152,9 +152,17 @@ public class MainWindowController implements AutoTrackListener {
 		menuBtnAnimals.setText("Animal Select");
 		btnStartManualTrack.setDisable(true);
 		btnStopManualTrack.setDisable(true);
+		
+		
 
 	}
 
+	/**
+	 * Initializes with the FXML stage, and also sizes the Canvas and ImageView
+	 * objects to be identical
+	 * 
+	 * @param stage
+	 */
 	public void initializeWithStage(Stage stage) {
 		this.stage = stage;
 
@@ -167,13 +175,21 @@ public class MainWindowController implements AutoTrackListener {
 
 	}
 
+	/**
+	 * Re-enables buttons (if they should be re-enabled) and set canvas'
+	 * mousePressed to null
+	 */
 	public void resetMouseModeAndButtons() {
 		canvas.setOnMousePressed(null);
 		btnStartManualTrack.setDisable(false);
 		originButton.setDisable(false);
+
 		// re-enable other buttons too, involving calibration, etc?
 	}
 
+	/**
+	 * Allows user to choose the video that they are going to work on
+	 */
 	@FXML
 	public void handleBrowse() {
 		FileChooser fileChooser = new FileChooser();
@@ -184,6 +200,10 @@ public class MainWindowController implements AutoTrackListener {
 		}
 	}
 
+	/**
+	 * Allows user to set an origin point on their video, which will adjust the
+	 * where the data references as the origin
+	 */
 	@FXML
 	public void handleOriginButton() {
 
@@ -197,12 +217,16 @@ public class MainWindowController implements AutoTrackListener {
 
 	}
 
+	/**
+	 * 
+	 * @throws InterruptedException
+	 */
 	@FXML
 	public void handleStartAutotracking() throws InterruptedException {
 		if (autotracker == null || !autotracker.isRunning()) {
 			// Video video = project.getVideo();
-			project.getVideo().setStartFrameNum(Integer.parseInt(textfieldStartFrame.getText()));
-			project.getVideo().setEndFrameNum(Integer.parseInt(textfieldEndFrame.getText()));
+			project.getVideo().setStartAutoTrackFrameNum(Integer.parseInt(textfieldStartFrame.getText()));
+			project.getVideo().setEndAutoTrackFrameNum(Integer.parseInt(textfieldEndFrame.getText()));
 			autotracker = new AutoTracker();
 			// Use Observer Pattern to give autotracker a reference to this object,
 			// and call back to methods in this class to update progress.
@@ -234,6 +258,11 @@ public class MainWindowController implements AutoTrackListener {
 		});
 	}
 
+	/**
+	 * Loads the video currently stored in the project field
+	 * 
+	 * @param filePath
+	 */
 	public void loadVideo(String filePath) {
 		try {
 			project = new ProjectData(filePath);
@@ -248,6 +277,12 @@ public class MainWindowController implements AutoTrackListener {
 
 	}
 
+	/**
+	 * ImageView displays chosen frame number and changes text field to show new
+	 * frame number
+	 * 
+	 * @param frameNum
+	 */
 	public void showFrameAt(int frameNum) {
 		if (autotracker == null || !autotracker.isRunning()) {
 			project.getVideo().setCurrentFrameNum(frameNum);
@@ -257,7 +292,7 @@ public class MainWindowController implements AutoTrackListener {
 
 			g.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
 			double scalingRatio = getImageScalingRatio();
-			//g.drawImage(curFrame, 0, 0, curFrame.getWidth() * scalingRatio,
+			// g.drawImage(curFrame, 0, 0, curFrame.getWidth() * scalingRatio,
 			// curFrame.getHeight() * scalingRatio);
 
 			drawAssignedAnimalTracks(g, scalingRatio, frameNum);
@@ -267,6 +302,7 @@ public class MainWindowController implements AutoTrackListener {
 		textFieldCurFrameNum.setText(String.format("%05d", frameNum));
 	}
 
+	
 	@Override
 	public void trackingComplete(List<AnimalTrack> trackedSegments) {
 		project.getUnassignedSegments().clear();
@@ -317,9 +353,9 @@ public class MainWindowController implements AutoTrackListener {
 			MenuItem newItem = new MenuItem(newAnimal);
 			menuBtnAnimals.getItems().add(newItem);
 
-			//this has to be .size() == 1 not .isEmpty() == false
-			//otherwise every time a new animal is added it will
-			//allow the startManualTrackBtn to be clicked
+			// this has to be .size() == 1 not .isEmpty() == false
+			// otherwise every time a new animal is added it will
+			// allow the startManualTrackBtn to be clicked
 			if (menuBtnAnimals.getItems().size() == 1) {
 				btnStartManualTrack.setDisable(false);
 			}
@@ -380,7 +416,7 @@ public class MainWindowController implements AutoTrackListener {
 	public void handleMousePressForTracking(MouseEvent event) {
 
 		double scalingRatio = getImageScalingRatio();
-		
+
 		double unscaledX = event.getX() / scalingRatio;
 		double unscaledY = event.getY() / scalingRatio;
 
@@ -395,8 +431,8 @@ public class MainWindowController implements AutoTrackListener {
 				&& Integer.parseInt(textfieldEndFrame.getText()) > currentFrame)
 				&& !project.getUnassignedSegments().isEmpty()) {
 //		TimePoint newTimePoint = new TimePoint(actualX, actualY, project.getVideo().getCurrentFrameNum());
-			AnimalTrack closestAutoTrackSegment = project.getNearestUnassignedSegment(unscaledX, unscaledY, currentFrame,
-					skipToFrame);
+			AnimalTrack closestAutoTrackSegment = project.getNearestUnassignedSegment(unscaledX, unscaledY,
+					currentFrame, skipToFrame);
 			List<TimePoint> closestPoints = closestAutoTrackSegment.getTimePointsWithinInterval(currentFrame,
 					skipToFrame);
 			if (!closestPoints.isEmpty()) {
@@ -429,13 +465,18 @@ public class MainWindowController implements AutoTrackListener {
 
 	}
 
+	/**
+	 * (Renamed from the calibration method) This method is triggered when the user
+	 * clicks the arena button, and begins the arena creating process handled in the
+	 * CalibrationController class
+	 * 
+	 */
 	public void handleArena() {
 		btnArena.setDisable(true);
 		btnStartManualTrack.setDisable(true);
 		btnStopManualTrack.setDisable(true);
-		JOptionPane.showMessageDialog(null,
-				"Set the horizontal by clicking bottom left of box to bottom right");
-		
+		JOptionPane.showMessageDialog(null, "Set the horizontal by clicking bottom left of box to bottom right");
+
 		canvas.setOnMousePressed(e -> calibController.startHorizontalScaling(e));
 
 	}
@@ -462,7 +503,7 @@ public class MainWindowController implements AutoTrackListener {
 	}
 
 	private void drawUnassignedSegments(GraphicsContext g, double scalingRatio, int frameNum) {
-		
+
 		for (AnimalTrack segment : project.getUnassignedSegments()) {
 
 			g.setFill(Color.DARKGRAY);
@@ -477,10 +518,10 @@ public class MainWindowController implements AutoTrackListener {
 			}
 		}
 	}
-	
+
 	/*
-	 * It doesn't look like these methods are jumping and going back
-	 * the same amount, but they are.
+	 * It doesn't look like these methods are jumping and going back the same
+	 * amount, but they are.
 	 */
 	public void handleBtnJumpAhead() {
 		if (project.getVideo().getCurrentFrameNum() + 31 < project.getVideo().getEndFrameNum()) {
@@ -490,54 +531,52 @@ public class MainWindowController implements AutoTrackListener {
 			showFrameAt(project.getVideo().getCurrentFrameNum() - 1);
 		}
 	}
-	
+
 	/*
-	 * It doesn't look like these methods are jumping and going back
-	 * the same amount, but they are.
+	 * It doesn't look like these methods are jumping and going back the same
+	 * amount, but they are.
 	 */
 	public void handleBtnJumpBack() {
 		sliderVideoTime.setValue(project.getVideo().getCurrentFrameNum() - 35);
 		showFrameAt(project.getVideo().getCurrentFrameNum());
 	}
-	
-	
-	
+
 	public void handleBtnSetFrameNum() {
 		int newFrameNum = Integer.MAX_VALUE;
 		boolean enteredNum = false;
-		String input = JOptionPane.showInputDialog(null, "Enter desired Frame Number:", 
-				"Set Frame Number", JOptionPane.PLAIN_MESSAGE);
+		String input = JOptionPane.showInputDialog(null, "Enter desired Frame Number:", "Set Frame Number",
+				JOptionPane.PLAIN_MESSAGE);
 		try {
 			newFrameNum = Integer.parseInt(input);
 			enteredNum = true;
 		} catch (NumberFormatException e) {
-			JOptionPane.showMessageDialog(null, "Please enter only numbers.", 
-					"Set Frame Number", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(null, "Please enter only numbers.", "Set Frame Number",
+					JOptionPane.ERROR_MESSAGE);
 		}
-		
-		 if (newFrameNum < 1) {
-			JOptionPane.showMessageDialog(null, "Number needs to be at least 1.", 
-					"Set Frame Number", JOptionPane.ERROR_MESSAGE);
-			
+
+		if (newFrameNum < 1) {
+			JOptionPane.showMessageDialog(null, "Number needs to be at least 1.", "Set Frame Number",
+					JOptionPane.ERROR_MESSAGE);
+
 		} else if (newFrameNum < project.getVideo().getEndFrameNum()) {
-				sliderVideoTime.setValue(newFrameNum);
-				showFrameAt(newFrameNum);
-				
+			sliderVideoTime.setValue(newFrameNum);
+			showFrameAt(newFrameNum);
+
 		} else if (enteredNum == true) {
-			JOptionPane.showMessageDialog(null, "Number cannot be greater than the number of frames.", 
+			JOptionPane.showMessageDialog(null, "Number cannot be greater than the number of frames.",
 					"Set Frame Number", JOptionPane.ERROR_MESSAGE);
 		}
 	}
-	
-	//Our tracked points are stored as un-scaled points,
-	//so in order to get them out appropriately you 
-	//to multiply them by this number.
+
+	// Our tracked points are stored as un-scaled points,
+	// so in order to get them out appropriately you
+	// to multiply them by this number.
 	private double getImageScalingRatio() {
 		double widthRatio = canvas.getWidth() / project.getVideo().getFrameWidth();
 		double heightRatio = canvas.getHeight() / project.getVideo().getFrameHeight();
 		return Math.min(widthRatio, heightRatio);
 	}
-	
+
 	public void handleAbout() {
 		Alert alert = new Alert(AlertType.INFORMATION);
 		alert.setTitle("About Message");
@@ -546,14 +585,14 @@ public class MainWindowController implements AutoTrackListener {
 				+ "\nProject Supervisor: Dr. Forrest Stonedahl";
 		String acknowledgements = "\n\nLeo did basically everything for the project\nJust kidding. He literally did the whole thing.";
 		String usedLibraries = "\nLibraries: OpenCV, JavaFX, JavaSwing, JSON, GSON";
-		
+
 		alert.setContentText(names + acknowledgements + usedLibraries);
 
 		alert.showAndWait();
 	}
-	
+
 	public void handleSave() {
-		
+
 	}
-	
+
 }

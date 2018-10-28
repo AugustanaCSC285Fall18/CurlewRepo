@@ -31,7 +31,6 @@ public class CalibrationController {
 	private ImageView videoView;
 	private ArrayList<Double> scaleCoords = new ArrayList<Double>();
 
-
 	public CalibrationController(Video video, Canvas canvas, MainWindowController mwController, ImageView videoView) {
 		this.video = video;
 		this.canvas = canvas;
@@ -80,14 +79,6 @@ public class CalibrationController {
 		canvas.setWidth(videoView.getScene().widthProperty().doubleValue());
 
 	}
-	
-	
-	
-	
-	
-	
-	
-	
 
 	// ============================================================================
 	/*
@@ -96,9 +87,8 @@ public class CalibrationController {
 	 * 
 	 */
 
-	
 	/*
-	 * This uses the ArrayList field to create
+	 * This uses the ArrayList field to create the scale for the x values
 	 */
 	public void calibrateXScale() {
 
@@ -116,6 +106,9 @@ public class CalibrationController {
 		canvas.setOnMousePressed(e -> startVerticalScaling(e));
 	}
 
+	/**
+	 * Uses the ArrayList field to create the scale for the y values
+	 */
 	public void calibrateYScale() {
 
 		// this ugly thing takes the values from our ArrayList and uses pythgorean's
@@ -131,6 +124,12 @@ public class CalibrationController {
 		System.out.println("Entered yPixelsPerCm: " + video.getyPixelsPerCm());
 	}
 
+	/**
+	 * Starts the calibration process and records x and y coordinates as doubles in
+	 * the scaleCoords ArrayList
+	 * 
+	 * @param event MouseEvent that records where you press the mouse
+	 */
 	public void startHorizontalScaling(MouseEvent event) {
 
 //		xOne = event.getX();
@@ -141,6 +140,12 @@ public class CalibrationController {
 		canvas.setOnMousePressed(e -> endHorizontalScaling(e));
 	}
 
+	/**
+	 * Ends the recording of points for the horizontal scale and sends the
+	 * MouseEvent into the vertical recording methods
+	 * 
+	 * @param event MouseEvent mousePressed
+	 */
 	public void endHorizontalScaling(MouseEvent event) {
 		scaleCoords.add(event.getX());
 		scaleCoords.add(event.getY());
@@ -149,6 +154,12 @@ public class CalibrationController {
 		calibrateXScale();
 	}
 
+	/**
+	 * Uses the mousePressed event to record x and y coordinates as doubles for the
+	 * scaleCoords ArrayList
+	 * 
+	 * @param event MouseEvent mousePressed
+	 */
 	public void startVerticalScaling(MouseEvent event) {
 		scaleCoords.add(event.getX());
 		scaleCoords.add(event.getY());
@@ -156,6 +167,12 @@ public class CalibrationController {
 		canvas.setOnMousePressed(e -> endVerticalScaling(e));
 	}
 
+	/**
+	 * Ends the vertical scaling and starts the calibrate Y scale method after
+	 * recording second vertical point
+	 * 
+	 * @param event MouseEvent mousePressed
+	 */
 	public void endVerticalScaling(MouseEvent event) {
 		scaleCoords.add(event.getX());
 		scaleCoords.add(event.getY());
