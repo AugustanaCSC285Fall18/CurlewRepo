@@ -1,0 +1,36 @@
+{
+  "video": {
+    "origin": {
+      "x": 0,
+      "y": 0
+    },
+    "filePath": "S:/class/cs/285/sample_videos/sample1.mp4",
+    "vidCap": {
+      "nativeObj": 2208962212592
+    },
+    "emptyFrameNum": 0,
+    "startFrameNum": 0,
+    "endFrameNum": 7191,
+    "videoStartFrameNum": 0,
+    "videoEndFrameNum": 7191,
+    "xPixelsPerCm": 6.5,
+    "yPixelsPerCm": 6.7,
+    "arenaBounds": {
+      "x": 0,
+      "y": 0,
+      "width": 660,
+      "height": 440
+    }
+  },
+  "tracks": [
+    {
+      "animalID": "Animal 1",
+      "positions": []
+    },
+    {
+      "animalID": "Animal 2",
+      "positions": []
+    }
+  ],
+  "unassignedSegments": []
+}

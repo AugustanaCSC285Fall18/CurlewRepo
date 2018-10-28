@@ -143,6 +143,8 @@
                   <items>
                         <MenuItem mnemonicParsing="false" onAction="#handleBrowse" text="Browse" />
                         <MenuItem mnemonicParsing="false" onAction="#handleExport" text="Export" />
+                        <MenuItem mnemonicParsing="false" onAction="#handleSaveProject" text="Save Project" />
+                        <MenuItem mnemonicParsing="false" onAction="#handleLoadProject" text="Load Project" />
                   </items>
                 </Menu>
                 <Menu mnemonicParsing="false" text="Edit">

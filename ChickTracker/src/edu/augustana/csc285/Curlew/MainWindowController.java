@@ -212,6 +212,32 @@ public class MainWindowController implements AutoTrackListener {
 		}
 	}
 
+	@FXML
+	public void handleSaveProject() throws FileNotFoundException {
+		TextInputDialog fileNameDialog = new TextInputDialog("project.txt");
+		fileNameDialog.setTitle("Choose file name");
+		fileNameDialog.setContentText("Project will be saved as a text file. \nChoose a file name (i.e. example.txt):");
+		Optional<String> result = fileNameDialog.showAndWait();
+		if (result.isPresent()) {
+			File saveFile = new File(result.get());
+			project.saveToFile(saveFile);
+		}
+	}
+	
+	/**
+	 * Loads the project data from a previously worked on project
+	 * @throws FileNotFoundException
+	 */
+	@FXML
+	public void handleLoadProject() throws FileNotFoundException {
+		FileChooser fileChooser = new FileChooser();
+		fileChooser.setTitle("Open Video File");
+		File chosenFile = fileChooser.showOpenDialog(stage);
+		if (chosenFile != null) {
+			project = ProjectData.loadFromFile(chosenFile);
+		}
+	}
+	
 	/**
 	 * Allows user to set an origin point on their video, which will adjust the
 	 * where the data references as the origin
