@@ -8,6 +8,7 @@ import org.opencv.core.Core;
 
 import datamodel.AnimalTrack;
 import datamodel.ProjectData;
+import javafx.stage.FileChooser;
 
 public class Analysis {
 
@@ -17,7 +18,11 @@ public class Analysis {
 		String filePath = project.getVideo().getFilePath();
 		filePath = filePath.substring(0, filePath.lastIndexOf("."));
 		System.out.println(filePath);
-		FileWriter writer = new FileWriter(new File(filePath.substring(filePath.lastIndexOf("/") + 1) + ".csv"));
+		FileChooser fileChooser = new FileChooser();
+		fileChooser.setTitle("Open Video File");
+		fileChooser.setInitialFileName("projectdata.csv");
+		File chosenFile = fileChooser.showSaveDialog(null);
+		FileWriter writer = new FileWriter(chosenFile);
 		
 		StringBuilder s = new StringBuilder();
 		
