@@ -1,6 +1,5 @@
 package edu.augustana.csc285.Curlew;
 
-//import java.awt.Color;
 import java.awt.event.MouseListener;
 import javafx.scene.paint.Color;
 
@@ -272,10 +271,10 @@ public class MainWindowController implements AutoTrackListener {
 		project.getUnassignedSegments().clear();
 		project.getUnassignedSegments().addAll(trackedSegments);
 
-		for (AnimalTrack track : trackedSegments) {
-			System.out.println(track);
+//		for (AnimalTrack track : trackedSegments) {
+//			System.out.println(track);
 //			System.out.println("  " + track.getPositions());
-		}
+//		}
 		Platform.runLater(() -> {
 			progressAutoTrack.setProgress(1.0);
 			btnAutotrack.setText("Start auto-tracking");
@@ -391,41 +390,58 @@ public class MainWindowController implements AutoTrackListener {
 		int currentFrame = project.getVideo().getCurrentFrameNum() - 1;
 		int skipToFrame = project.getVideo().getCurrentFrameNum() + 32;
 
-		if ((Integer.parseInt(textfieldStartFrame.getText()) < currentFrame
-				&& Integer.parseInt(textfieldEndFrame.getText()) > currentFrame)
-				&& !project.getUnassignedSegments().isEmpty()) {
-//		TimePoint newTimePoint = new TimePoint(actualX, actualY, project.getVideo().getCurrentFrameNum());
-			AnimalTrack closestAutoTrackSegment = project.getNearestUnassignedSegment(unscaledX, unscaledY, currentFrame,
-					skipToFrame);
-			List<TimePoint> closestPoints = closestAutoTrackSegment.getTimePointsWithinInterval(currentFrame,
-					skipToFrame);
+		// checks if the AutoTrack has run and if you are within the bounds of the autotrack
+		if ((Integer.parseInt(textfieldStartFrame.getText()) <= currentFrame && Integer.parseInt(textfieldEndFrame.getText()) >= currentFrame)
+				&& !project.getUnassignedSegments().isEmpty()) { 
+			
+			// finds the closest AutoTrack segment and creates a list of the closest points in that segment within plus or minus 5 frames of the current frame
+			AnimalTrack closestAutoTrackSegment = project.getNearestUnassignedSegment(unscaledX, unscaledY, currentFrame,skipToFrame);
+			List<TimePoint> closestPoints = closestAutoTrackSegment.getTimePointsWithinInterval(currentFrame-5,currentFrame + 5);
+			
+			// checks to make sure there is points in the list of closest points
 			if (!closestPoints.isEmpty()) {
+				// finds the TimePoint that is closest to the click location
 				TimePoint closestPoint = project.getNearestPoint(closestPoints, unscaledX, unscaledY);
-				if (closestPoint.getDistanceTo(unscaledX, unscaledY) < 50) {
-					skipToFrame = closestAutoTrackSegment.getFinalTimePoint().getFrameNum();
+				//TimePoint closestPoint = closestAutoTrackSegment.getTimePointAtTime(currentFrame);
+				// Checks to see if that point is close enough to the click location
+				if (closestPoint.getDistanceTo(unscaledX, unscaledY) < 10) { // if close enough,
+					// sets the frame that will be moved to next to the end of the autotrack segment
+					skipToFrame = closestAutoTrackSegment.getFinalTimePoint().getFrameNum()+1;
+					// adds the timepoints from the segment to the current animal
 					currentAnimal.add(closestAutoTrackSegment);
-					System.out.println("Found AutoTrack Segment! " + closestAutoTrackSegment);
-				} else {
+					// removes that segment from the unassigned segments list
+					project.getUnassignedSegments().remove(closestAutoTrackSegment);
+//					System.out.println("Found AutoTrack Segment! " + closestAutoTrackSegment);
+//					System.out.println("Closest Timepoint: " + closestPoint);
+				} else { // if not close enough, create a new TimePoint from the click location and add it to the current animal
 					TimePoint newTimePoint = new TimePoint(unscaledX, unscaledY, currentFrame);
 					currentAnimal.add(newTimePoint);
+//					System.out.println("Autotrack not close enough");
 				}
-			} else {
+			} else {// if there are no points in the list of close points,  create a new TimePoint from the click location and add it to the current animal
 				TimePoint newTimePoint = new TimePoint(unscaledX, unscaledY, currentFrame);
 				currentAnimal.add(newTimePoint);
+//				System.out.println("List of points from the segment in that time interval is empty.");
 			}
-		} else {
+		} else { // if the autotrack was never run or you are outside of the time bounds of autotrack, create a new TimePoint from the click location and add it to the current animal
 			TimePoint newTimePoint = new TimePoint(unscaledX, unscaledY, currentFrame);
 			currentAnimal.add(newTimePoint);
+//			System.out.println("Outside autotrack bounds or autotrack is not run yet");
 		}
-
-		if (skipToFrame < project.getVideo().getEndFrameNum()) {
+//		System.out.println("Clicked Point: (" + unscaledX + ", " + unscaledY + ") @" + currentFrame);
+		System.out.println("Current Animal: " + currentAnimal);
+		// if the frame that the video will be moved to is not past the last frame in the video, moved the slider and shows the next frame.
+		int endFrame = project.getVideo().getEndFrameNum();
+		if (skipToFrame < endFrame) {
 			sliderVideoTime.setValue(skipToFrame);
 			showFrameAt(skipToFrame);
-		} else {
+			System.out.println("Skipping to frame: " + skipToFrame);
+		} else { // if the frame that the video will be moved to is past the last frame in the video, it does not move the video 
 			showFrameAt(currentFrame);
+			System.out.println("End frame: " + project.getVideo().getEndFrameNum());
+			System.out.println("Unable to move to frame " + skipToFrame);
 		}
 
-//		sliderVideoTime.setValue(skipToFrame);
 
 	}
 
