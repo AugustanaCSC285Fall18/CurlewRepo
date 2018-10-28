@@ -58,8 +58,8 @@ public class AutoTracker {
 		double maxShapePixelArea= 1.5*targetShapeArea*vid.getxPixelsPerCm()*vid.getyPixelsPerCm();
 		SingleFrameShapeFinder frameAnalyzer = new SingleFrameShapeFinder(emptyFrame, brightnessTheshold, minShapePixelArea, maxShapePixelArea);
 		
-		vid.setCurrentFrameNum(vid.getStartFrameNum());
-		for (int fNum = vid.getStartFrameNum(); fNum <= vid.getEndFrameNum(); fNum++) {
+		vid.setCurrentFrameNum(vid.getStartAutroTrackFrameNum());
+		for (int fNum = vid.getStartAutroTrackFrameNum(); fNum <= vid.getEndAutoTrackFrameNum(); fNum++) {
 
 			// archive all the AnimalTracks that we haven't matched any points to for a while
 			Iterator<AnimalTrack> it = currentlyTrackingSegments.iterator();
@@ -91,7 +91,7 @@ public class AutoTracker {
 				return; 
 			}					
 			for (AutoTrackListener listener : listeners) {
-				double percentDone = ((double)fNum - vid.getStartFrameNum()) / (vid.getEndFrameNum()-vid.getStartFrameNum()+1);
+				double percentDone = ((double)fNum - vid.getStartAutroTrackFrameNum()) / (vid.getEndAutoTrackFrameNum()-vid.getStartAutroTrackFrameNum()+1);
 				listener.handleTrackedFrame(visualizationFrame, fNum, percentDone);
 			}					
 		}
