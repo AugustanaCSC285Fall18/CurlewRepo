@@ -214,14 +214,18 @@ public class MainWindowController implements AutoTrackListener {
 
 	@FXML
 	public void handleSaveProject() throws FileNotFoundException {
-		TextInputDialog fileNameDialog = new TextInputDialog("project.txt");
-		fileNameDialog.setTitle("Choose file name");
-		fileNameDialog.setContentText("Project will be saved as a text file. \nChoose a file name (i.e. example.txt):");
-		Optional<String> result = fileNameDialog.showAndWait();
-		if (result.isPresent()) {
-			File saveFile = new File(result.get());
-			project.saveToFile(saveFile);
-		}
+		FileChooser fileChooser = new FileChooser();
+		fileChooser.setTitle("Open Video File");
+		fileChooser.setInitialFileName("project.txt");
+		File chosenFile = fileChooser.showSaveDialog(stage);
+		try {
+			project.saveToFile(chosenFile);
+			Alert successfulSaveAlert = new Alert(AlertType.INFORMATION);
+			successfulSaveAlert.setTitle("Saving Project");
+			successfulSaveAlert.setHeaderText(null);
+			successfulSaveAlert.setContentText("Your save to " + chosenFile.getName() + " was successful.");
+			successfulSaveAlert.showAndWait();
+		} catch (FileNotFoundException e) {}
 	}
 	
 	/**
