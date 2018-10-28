@@ -117,4 +117,5 @@ public class AnimalTrack {
 	public void removePoint(TimePoint point) {
 		positions.remove(point);
 	}
+	
 }
