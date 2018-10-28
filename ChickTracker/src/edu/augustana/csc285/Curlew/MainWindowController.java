@@ -643,30 +643,36 @@ public class MainWindowController implements AutoTrackListener {
 	}
 
 	public void handleBtnSetFrameNum() {
-		int newFrameNum = Integer.MAX_VALUE;
-		boolean enteredNum = false;
-		String input = JOptionPane.showInputDialog(null, "Enter desired Frame Number:", "Set Frame Number",
-				JOptionPane.PLAIN_MESSAGE);
-		try {
-			newFrameNum = Integer.parseInt(input);
-			enteredNum = true;
-		} catch (NumberFormatException e) {
-			JOptionPane.showMessageDialog(null, "Please enter only numbers.", "Set Frame Number",
-					JOptionPane.ERROR_MESSAGE);
+		boolean invalidFrameNum = true;
+		String contentText = "Enter desired time (in seconds)";
+		int newFrameNum = project.getVideo().getCurrentFrameNum();
+		while (invalidFrameNum) {
+			boolean enteredNum = false;
+			TextInputDialog frameSelectionDialog = new TextInputDialog(textfieldStartFrame.getText());
+			frameSelectionDialog.setTitle("Set Time"); 
+			frameSelectionDialog.setHeaderText(null);
+			frameSelectionDialog.setContentText(contentText);
+			Optional<String> result = frameSelectionDialog.showAndWait();
+			String input = "";
+			if (result.isPresent()) {
+				input = result.get();
+			}
+			
+			try {
+				newFrameNum = Integer.parseInt(input);
+				if (newFrameNum < 0) {
+					contentText = "Number needs to be at least 0.";	
+				} else if (newFrameNum > project.getVideo().getEndFrameNum()) {
+					contentText = "Number cannot be greater than the length of the video.";
+				} else {
+					invalidFrameNum = false;
+				}
+			} catch (NumberFormatException e) {
+				contentText = "Please enter only integers.";
+			}			
 		}
-
-		if (newFrameNum < 1) {
-			JOptionPane.showMessageDialog(null, "Number needs to be at least 1.", "Set Frame Number",
-					JOptionPane.ERROR_MESSAGE);
-
-		} else if (newFrameNum < project.getVideo().getEndFrameNum()) {
-			sliderVideoTime.setValue(newFrameNum);
-			showFrameAt(newFrameNum);
-
-		} else if (enteredNum == true) {
-			JOptionPane.showMessageDialog(null, "Number cannot be greater than the number of frames.",
-					"Set Frame Number", JOptionPane.ERROR_MESSAGE);
-		}
+		sliderVideoTime.setValue(newFrameNum);
+		showFrameAt(newFrameNum);
 	}
 
 	// Our tracked points are stored as un-scaled points,
