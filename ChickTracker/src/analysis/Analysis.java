@@ -8,49 +8,69 @@ import org.opencv.core.Core;
 
 import datamodel.AnimalTrack;
 import datamodel.ProjectData;
+import datamodel.TimePoint;
+
+import javafx.stage.FileChooser;
 
 public class Analysis {
 
 	public static void exportProject(ProjectData project) throws IOException {
 		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
-		
+
 		String filePath = project.getVideo().getFilePath();
 		filePath = filePath.substring(0, filePath.lastIndexOf("."));
 		System.out.println(filePath);
-		FileWriter writer = new FileWriter(new File(filePath.substring(filePath.lastIndexOf("/") + 1) + ".csv"));
-		
+		FileChooser fileChooser = new FileChooser();
+		fileChooser.setTitle("Open Video File");
+		fileChooser.setInitialFileName("projectdata.csv");
+		File chosenFile = fileChooser.showSaveDialog(null);
+		FileWriter writer = new FileWriter(chosenFile);
+
 		StringBuilder s = new StringBuilder();
-		
+
 		for (AnimalTrack animal : project.getTracks()) {
 			s.append(animal.getId());
 			s.append(",,,,");
 		}
-		
+
 		s.append("\n");
-		
+
 		for (AnimalTrack animal : project.getTracks()) {
 			s.append("Seconds,X Coordinate, Y Coordinate,,");
 		}
-		
+
 		s.append("\n");
-		
-		for (int index = 0; index < project.getTracks().get(0).getNumPoints(); index++) {
+
+		double totalNumSeconds = project.getVideo()
+				.convertFrameNumsToSeconds(project.getVideo().getEndAutoTrackFrameNum());
+
+		System.out.println(totalNumSeconds);
+		double numFramesPerSecond = project.getVideo().getFrameRate();
+
+		int secondNumStart = (int) project.getVideo()
+				.convertFrameNumsToSeconds((project.getVideo().getStartAutroTrackFrameNum()));
+
+		// goes through every second of tracked data and displays
+		// the x y coordinates of the point each chick had that
+		// was closest to that time
+		for (int seconds = secondNumStart; seconds < totalNumSeconds; seconds++) {
+			int frameNum = (int) Math.round((seconds * numFramesPerSecond));
+
 			for (AnimalTrack animal : project.getTracks()) {
-				if (animal.getTimePointAtIndex(index) != null) {
-					s.append(animal.getTimePointAtIndex(index).getFrameNum());
-					s.append(",");
-					s.append(animal.getTimePointAtIndex(index).getX());
-					s.append(",");
-					s.append(animal.getTimePointAtIndex(index).getY());
-					s.append(",,");
-				} else {
-					s.append(",,,,");
-				}
+				TimePoint point = TimePoint.closestPointToFrame(animal, frameNum);
+				System.out.println(point);
+				s.append(seconds);
+				s.append(",");
+				s.append(point.getX());
+				s.append(",");
+				s.append(point.getY());
+				s.append(",,");
 			}
 			s.append("\n");
 		}
+
 		writer.append(s);
 		writer.close();
 	}
-	
+
 }

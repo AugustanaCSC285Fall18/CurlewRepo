@@ -1,5 +1,7 @@
 package datamodel;
 
+import java.util.List;
+
 public class TimePoint implements Comparable<TimePoint> {
 	private double x; // location
 	private double y;
@@ -94,4 +96,24 @@ public class TimePoint implements Comparable<TimePoint> {
 	public String toString() {
 		return String.format("(%.1f,%.1f@T=%d)", x, y, frameNum);
 	}
+	
+	//takes in an animal track and a frame number and
+	//checks which point in the animal track is closest
+	//to the given frame number.
+	public static TimePoint closestPointToFrame(AnimalTrack animal, int frameNum) {
+		int closestPoint = Integer.MAX_VALUE;
+		TimePoint pointAtTime = null;
+		List<TimePoint> closePoints = animal.getTimePointsWithinInterval(frameNum - 20, frameNum + 20);
+		System.out.println(closePoints);
+		for (TimePoint point: closePoints) {
+			int frameDiff = Math.abs(frameNum - point.getFrameNum());
+			if (frameDiff < closestPoint) {
+				pointAtTime = point;
+				closestPoint = point.getFrameNum();
+			}
+		}
+		System.out.println(pointAtTime);
+		return pointAtTime;
+	}
+	
 }
