@@ -151,7 +151,7 @@ public class MainWindowController implements AutoTrackListener {
 		menuBtnAnimals.setText("Animal Select");
 		btnStartManualTrack.setDisable(true);
 		btnStopManualTrack.setDisable(true);
-		JOptionPane.showMessageDialog(null, "Please choose the start point when all chicks are ", "Instructions for Tracking", JOptionPane.INFORMATION_MESSAGE);
+		JOptionPane.showMessageDialog(null, "Please choose the start time when all chicks are visible and the end time when you would like to end tracking. Then click auto tracking once.", "Instructions for Tracking", JOptionPane.INFORMATION_MESSAGE);
 		
 
 	}
@@ -416,14 +416,11 @@ public class MainWindowController implements AutoTrackListener {
 		// checks to make sure the click is between the chosen start and end frames
 		if (Integer.parseInt(textfieldStartFrame.getText()) <= currentFrame && Integer.parseInt(textfieldEndFrame.getText()) >= currentFrame) {
 			double scalingRatio = getImageScalingRatio();
-	
+			
+			// user click locations
 			double unscaledX = event.getX() / scalingRatio;
 			double unscaledY = event.getY() / scalingRatio;
-	
-			// TimePoint newTimePoint = new TimePoint(actualX, actualY,
-			// project.getVideo().getCurrentFrameNum());
-			// currentAnimal.add(newTimePoint);
-	
+
 	//		int currentFrame = project.getVideo().getCurrentFrameNum() - 1;
 			int skipToFrame = project.getVideo().getCurrentFrameNum() + 32;
 	
@@ -446,34 +443,28 @@ public class MainWindowController implements AutoTrackListener {
 						currentAnimal.add(closestAutoTrackSegment);
 						// removes that segment from the unassigned segments list
 						project.getUnassignedSegments().remove(closestAutoTrackSegment);
-	//					System.out.println("Found AutoTrack Segment! " + closestAutoTrackSegment);
-	//					System.out.println("Closest Timepoint: " + closestPoint);
 					} else { // if not close enough, create a new TimePoint from the click location and add it to the current animal
 						TimePoint newTimePoint = new TimePoint(unscaledX, unscaledY, currentFrame);
 						currentAnimal.add(newTimePoint);
-	//					System.out.println("Autotrack not close enough");
 					}
 				} else {// if there are no points in the list of close points,  create a new TimePoint from the click location and add it to the current animal
 					TimePoint newTimePoint = new TimePoint(unscaledX, unscaledY, currentFrame);
 					currentAnimal.add(newTimePoint);
-	//				System.out.println("List of points from the segment in that time interval is empty.");
 				}
 			} else { // if the autotrack was never run or you are outside of the time bounds of autotrack, create a new TimePoint from the click location and add it to the current animal
 				TimePoint newTimePoint = new TimePoint(unscaledX, unscaledY, currentFrame);
 				currentAnimal.add(newTimePoint);
-	//			System.out.println("Outside autotrack bounds or autotrack is not run yet");
 			}
-	//		System.out.println("Clicked Point: (" + unscaledX + ", " + unscaledY + ") @" + currentFrame);
-			System.out.println("Current Animal: " + currentAnimal);
+			
 			// if the frame that the video will be moved to is not past the last frame in the video, moved the slider and shows the next frame.
-			int endFrame = project.getVideo().getEndFrameNum();
+			int endFrame = project.getVideo().getEndAutoTrackFrameNum();
 			if (skipToFrame < endFrame) {
 				sliderVideoTime.setValue(skipToFrame);
 				showFrameAt(skipToFrame);
 				System.out.println("Skipping to frame: " + skipToFrame);
 			} else { // if the frame that the video will be moved to is past the last frame in the video, it does not move the video 
 				showFrameAt(currentFrame);
-				System.out.println("End frame: " + project.getVideo().getEndFrameNum());
+				System.out.println("End frame: " + endFrame);
 				System.out.println("Unable to move to frame " + skipToFrame);
 			}
 		} else if (Integer.parseInt(textfieldStartFrame.getText()) > currentFrame) {
@@ -482,6 +473,7 @@ public class MainWindowController implements AutoTrackListener {
 			showFrameAt(Integer.parseInt(textfieldStartFrame.getText()));
 		} else {
 			JOptionPane.showMessageDialog(null, "You are after chosen end frame.", "WARNING", JOptionPane.ERROR_MESSAGE);
+			
 		}
 
 	}
