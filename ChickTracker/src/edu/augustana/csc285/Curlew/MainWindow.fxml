@@ -9,6 +9,7 @@
 <?import javafx.scene.control.MenuButton?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.control.SeparatorMenuItem?>
 <?import javafx.scene.control.Slider?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.ImageView?>
@@ -142,9 +143,11 @@
                 <Menu mnemonicParsing="false" text="File">
                   <items>
                         <MenuItem mnemonicParsing="false" onAction="#handleBrowse" text="Browse" />
-                        <MenuItem mnemonicParsing="false" onAction="#handleExport" text="Export" />
+                        <SeparatorMenuItem mnemonicParsing="false" />
                         <MenuItem mnemonicParsing="false" onAction="#handleSaveProject" text="Save Project" />
                         <MenuItem mnemonicParsing="false" onAction="#handleLoadProject" text="Load Project" />
+                        <SeparatorMenuItem mnemonicParsing="false" />
+                        <MenuItem mnemonicParsing="false" onAction="#handleExport" text="Export" />
                   </items>
                 </Menu>
                 <Menu mnemonicParsing="false" text="Edit">
