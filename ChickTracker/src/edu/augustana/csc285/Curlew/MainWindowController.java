@@ -151,7 +151,7 @@ public class MainWindowController implements AutoTrackListener {
 		menuBtnAnimals.setText("Animal Select");
 		btnStartManualTrack.setDisable(true);
 		btnStopManualTrack.setDisable(true);
-		JOptionPane.showMessageDialog(null, " ", "Instructions for Tracking", JOptionPane.INFORMATION_MESSAGE);
+		JOptionPane.showMessageDialog(null, "Please choose the start point when all chicks are ", "Instructions for Tracking", JOptionPane.INFORMATION_MESSAGE);
 		
 
 	}
