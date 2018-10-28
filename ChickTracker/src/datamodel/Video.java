@@ -9,6 +9,8 @@ import org.opencv.videoio.VideoCapture;
 import org.opencv.videoio.Videoio;
 
 public class Video {
+	
+	
 
 	private Point origin;
 
@@ -17,6 +19,8 @@ public class Video {
 	private int emptyFrameNum;
 	private int startFrameNum;
 	private int endFrameNum;
+	private int videoStartFrameNum;
+	private int videoEndFrameNum;
 
 	private double xPixelsPerCm;
 	private double yPixelsPerCm;
@@ -30,6 +34,8 @@ public class Video {
 		this.emptyFrameNum = 0;
 		this.startFrameNum = 0;
 		this.endFrameNum = this.getTotalNumFrames() - 1;
+		this.videoStartFrameNum = 0;
+		this.videoEndFrameNum = this.getTotalNumFrames() - 1;
 
 		int frameWidth = (int) getVidCap().get(Videoio.CAP_PROP_FRAME_WIDTH);
 		int frameHeight = (int) getVidCap().get(Videoio.CAP_PROP_FRAME_HEIGHT);
@@ -76,8 +82,19 @@ public class Video {
 		return emptyFrameNum;
 	}
 
-	public int getEndFrameNum() {
+	/**
+	 * Gets end of AutoTracking frame num
+	 * @return
+	 */
+	public int getEndAutoTrackFrameNum() {
 		return endFrameNum;
+	}
+	/**
+	 * Gets end of total video frame num (NOT autotrack)
+	 * @return int videoEndFrameNum
+	 */
+	public int getEndFrameNum() {
+		return videoEndFrameNum;
 	}
 
 	public String getFilePath() {
@@ -94,9 +111,21 @@ public class Video {
 	public Point getOrigin() {
 		return origin;
 	}
-
-	public int getStartFrameNum() {
+	
+	/**
+	 * Gets start of AutoTracking frame num
+	 * @return
+	 */
+	public int getStartAutroTrackFrameNum() {
 		return startFrameNum;
+	}
+	
+	/**
+	 * Gets start of total video frame num (NOT autotrack)
+	 * @return videoStartFrameNum
+	 */
+	public int getStartFrameNum() {
+		return videoStartFrameNum;
 	}
 
 	public synchronized int getTotalNumFrames() {
@@ -129,18 +158,20 @@ public class Video {
 		this.emptyFrameNum = emptyFrameNum;
 	}
 
-	public void setEndFrameNum(int endFrameNum) {
+	public void setEndAutoTrackFrameNum(int endFrameNum) {
 		this.endFrameNum = endFrameNum;
 	}
-
+	
+	
 	public void setOrigin(double x, double y) {
 		origin.setLocation(x, y);
 	}
 
-	public void setStartFrameNum(int startFrameNum) {
+	public void setStartAutoTrackFrameNum(int startFrameNum) {
 		this.startFrameNum = startFrameNum;
 	}
-
+	
+	
 	public void setxPixelsPerCm(double xPixelsPerCm) {
 		this.xPixelsPerCm = xPixelsPerCm;
 	}

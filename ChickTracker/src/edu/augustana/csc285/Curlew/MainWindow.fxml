@@ -125,7 +125,7 @@
                 <Menu mnemonicParsing="false" text="File">
                   <items>
                         <MenuItem mnemonicParsing="false" onAction="#handleBrowse" text="Browse" />
-                        <MenuItem mnemonicParsing="false" onAction="#handleSave" text="Save" />
+                        <MenuItem mnemonicParsing="false" onAction="#handleExport" text="Export" />
                   </items>
                 </Menu>
                 <Menu mnemonicParsing="false" text="Edit">
