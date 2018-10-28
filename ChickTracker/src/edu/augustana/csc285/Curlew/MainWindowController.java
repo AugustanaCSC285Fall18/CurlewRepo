@@ -123,7 +123,6 @@ public class MainWindowController implements AutoTrackListener {
 	private AutoTracker autotracker;
 	private ProjectData project;
 	private Stage stage;
-	private List<AnimalTrack> animalList;
 	private ArrayList<String> animalIdList;
 	private AnimalTrack currentAnimal;
 	private boolean manualTrackActive;
@@ -136,9 +135,10 @@ public class MainWindowController implements AutoTrackListener {
 		// is for debugging purposes only, since there's no way to specify
 		// the settings in the GUI right now...
 		// loadVideo("/home/forrest/data/shara_chicks_tracking/sample1.mp4");
-		loadVideo("S:/class/cs/285/sample_videos/sample1.mp4");
-		project.getVideo().setxPixelsPerCm(6.5); // these are just rough estimates!
-		project.getVideo().setyPixelsPerCm(6.7);
+//		loadVideo("S:/class/cs/285/sample_videos/sample1.mp4");
+//		project.getVideo().setxPixelsPerCm(6.5); // these are just rough estimates!
+//		project.getVideo().setyPixelsPerCm(6.7);
+		handleBrowse();
 
 //		loadVideo("/home/forrest/data/shara_chicks_tracking/lowres/lowres2.avi");
 		// loadVideo("S:/class/cs/285/sample_videos/lowres2.mp4");
@@ -150,14 +150,14 @@ public class MainWindowController implements AutoTrackListener {
 
 		sliderVideoTime.valueProperty().addListener((obs, oldV, newV) -> showFrameAt(newV.intValue()));
 
-		animalList = new ArrayList<AnimalTrack>();
 		animalIdList = new ArrayList<String>();
 		menuBtnAnimals.getItems().clear();
 		menuBtnAnimals.setText("Animal Select");
 		btnStartManualTrack.setDisable(true);
 		btnStopManualTrack.setDisable(true);
-		
-		// Creates some basic instructions for the user to read prior to seeing the window. 
+
+		// Creates some basic instructions for the user to read prior to seeing the
+		// window.
 		Alert startUpInstructions = new Alert(AlertType.INFORMATION);
 		startUpInstructions.setTitle("Instructions for Tracking");
 		startUpInstructions.setHeaderText(null);
@@ -165,7 +165,6 @@ public class MainWindowController implements AutoTrackListener {
 				+ "Then choose the start time when all chicks are visible and the end time when you"
 				+ " would like to end tracking.\nThen click auto tracking once.");
 		startUpInstructions.showAndWait();
-		
 
 	}
 
@@ -184,6 +183,10 @@ public class MainWindowController implements AutoTrackListener {
 		// videoView.fitWidthProperty().bind(videoView.getScene().widthProperty());
 
 		calibController.sizeCenterPanel();
+
+		// resizes the stage after canvas so that buttons show no matter what size of
+		// video
+		stage.setHeight(canvas.getHeight() + 250);
 
 	}
 
@@ -209,6 +212,39 @@ public class MainWindowController implements AutoTrackListener {
 		File chosenFile = fileChooser.showOpenDialog(stage);
 		if (chosenFile != null) {
 			loadVideo(chosenFile.getPath());
+		}
+	}
+
+	@FXML
+	public void handleSaveProject() throws FileNotFoundException {
+		FileChooser fileChooser = new FileChooser();
+		fileChooser.setTitle("Open Video File");
+		fileChooser.setInitialFileName("project.txt");
+		File chosenFile = fileChooser.showSaveDialog(stage);
+		try {
+			project.saveToFile(chosenFile);
+			Alert successfulSaveAlert = new Alert(AlertType.INFORMATION);
+			successfulSaveAlert.setTitle("Saving Project");
+			successfulSaveAlert.setHeaderText(null);
+			successfulSaveAlert.setContentText("Your save to " + chosenFile.getName() + " was successful.");
+			successfulSaveAlert.showAndWait();
+		} catch (FileNotFoundException e) {
+		}
+	}
+
+	/**
+	 * Loads the project data from a previously worked on project
+	 * 
+	 * @throws FileNotFoundException
+	 */
+	@FXML
+	public void handleLoadProject() throws FileNotFoundException {
+		FileChooser fileChooser = new FileChooser();
+		fileChooser.setTitle("Open Video File");
+		File chosenFile = fileChooser.showOpenDialog(stage);
+		if (chosenFile != null) {
+			project = ProjectData.loadFromFile(chosenFile);
+			initialize();
 		}
 	}
 
@@ -314,16 +350,15 @@ public class MainWindowController implements AutoTrackListener {
 		textFieldCurFrameNum.setText(String.format("%05d", frameNum));
 	}
 
-	
 	@Override
 	public void trackingComplete(List<AnimalTrack> trackedSegments) {
 		project.getUnassignedSegments().clear();
 		project.getUnassignedSegments().addAll(trackedSegments);
 
-		//		for (AnimalTrack track : trackedSegments) {
-		//			System.out.println(track);
-		//			System.out.println("  " + track.getPositions());
-		//		}
+		// for (AnimalTrack track : trackedSegments) {
+		// System.out.println(track);
+		// System.out.println(" " + track.getPositions());
+		// }
 		Platform.runLater(() -> {
 			progressAutoTrack.setProgress(1.0);
 			btnAutotrack.setText("Start auto-tracking");
@@ -348,7 +383,7 @@ public class MainWindowController implements AutoTrackListener {
 		if (!animalName.equals("")) { // will return the empty String if user cancels the add
 			project.getTracks().add(new AnimalTrack(animalName));
 			animalIdList.add(animalName);
-	
+
 			MenuItem newItem = new MenuItem(animalName);
 			menuBtnAnimals.getItems().add(newItem);
 			// this has to be .size() == 1 not .isEmpty() == false
@@ -357,7 +392,7 @@ public class MainWindowController implements AutoTrackListener {
 			if (menuBtnAnimals.getItems().size() == 1) {
 				btnStartManualTrack.setDisable(false);
 			}
-	
+
 			newItem.setOnAction(new EventHandler<ActionEvent>() {
 				@Override
 				public void handle(ActionEvent event) {
@@ -369,17 +404,20 @@ public class MainWindowController implements AutoTrackListener {
 			});
 		}
 	}
-	
+
 	/**
 	 * Makes sure the user selects a valid name for the animal to be added.
-	 * @return a valid animal name selected by the user or the empty String if the user cancelled the window
+	 * 
+	 * @return a valid animal name selected by the user or the empty String if the
+	 *         user cancelled the window
 	 */
 	private String promptAnimalID() {
 		boolean invalidID = true;
 		String animalID = "";
 		while (invalidID) {
-			animalID = "";//resets the ID each time the user is prompted to reset the choice after a warning message
-			TextInputDialog addAnimalDialog = new TextInputDialog("Animal "+ (project.getTracks().size() + 1));
+			animalID = "";// resets the ID each time the user is prompted to reset the choice after a
+							// warning message
+			TextInputDialog addAnimalDialog = new TextInputDialog("Animal " + (project.getTracks().size() + 1));
 			addAnimalDialog.setTitle("Adding new Animal");
 			addAnimalDialog.setContentText("Enter Animal ID: ");
 			Optional<String> result = addAnimalDialog.showAndWait();
@@ -392,14 +430,15 @@ public class MainWindowController implements AutoTrackListener {
 				longIdAlert.setHeaderText("Invalid Animal ID");
 				longIdAlert.setContentText("ID is too long.");
 				longIdAlert.showAndWait();
-			} else if (animalIdList.contains(animalID)) { // if the user gave an ID that is already assigned to another animal
+			} else if (animalIdList.contains(animalID)) { // if the user gave an ID that is already assigned to another
+															// animal
 				Alert existingIdAlert = new Alert(AlertType.WARNING);
 				existingIdAlert.setTitle("WARNING");
 				existingIdAlert.setHeaderText("Invalid Animal ID");
 				existingIdAlert.setContentText("ID is already assigned to another animal.");
 				existingIdAlert.showAndWait();
 			} else { // user provided a valid ID or cancelled the window
-				invalidID = false; 
+				invalidID = false;
 			}
 		}
 		return animalID;
@@ -451,65 +490,77 @@ public class MainWindowController implements AutoTrackListener {
 	public void handleMousePressForTracking(MouseEvent event) {
 		int currentFrame = project.getVideo().getCurrentFrameNum() - 1;
 		// checks to make sure the click is between the chosen start and end frames
-		if (Integer.parseInt(textfieldStartFrame.getText()) <= currentFrame && Integer.parseInt(textfieldEndFrame.getText()) >= currentFrame) {
+		if (Integer.parseInt(textfieldStartFrame.getText()) <= currentFrame
+				&& Integer.parseInt(textfieldEndFrame.getText()) >= currentFrame) {
 			double scalingRatio = getImageScalingRatio();
-			
+
 			// user click locations
 			double unscaledX = event.getX() / scalingRatio;
 			double unscaledY = event.getY() / scalingRatio;
 
-	//		int currentFrame = project.getVideo().getCurrentFrameNum() - 1;
+			// int currentFrame = project.getVideo().getCurrentFrameNum() - 1;
 			int skipToFrame = project.getVideo().getCurrentFrameNum() + 32;
-	
-			// checks if the AutoTrack has run and if you are within the bounds of the autotrack
+
+			// checks if the AutoTrack has run and if you are within the bounds of the
+			// autotrack
 			if (!project.getUnassignedSegments().isEmpty()) {
-				// finds the closest AutoTrack segment and creates a list of the closest points in that segment within plus or minus 5 frames of the current frame
-				AnimalTrack closestAutoTrackSegment = project.getNearestUnassignedSegment(unscaledX, unscaledY, currentFrame,skipToFrame);
+				// finds the closest AutoTrack segment and creates a list of the closest points
+				// in that segment within plus or minus 5 frames of the current frame
+				AnimalTrack closestAutoTrackSegment = project.getNearestUnassignedSegment(unscaledX, unscaledY,
+						currentFrame, skipToFrame);
 				List<TimePoint> closestPoints = new ArrayList<>();
 				try {
-					closestPoints = closestAutoTrackSegment.getTimePointsWithinInterval(currentFrame-5,currentFrame + 5);
+					closestPoints = closestAutoTrackSegment.getTimePointsWithinInterval(currentFrame - 5,
+							currentFrame + 5);
 				} catch (NullPointerException e) {
-					
+
 				}
 				// checks to make sure there is points in the list of closest points
 				if (!closestPoints.isEmpty()) {
-					
+
 					// finds the TimePoint that is closest to the click location
 					TimePoint closestPoint = project.getNearestPoint(closestPoints, unscaledX, unscaledY);
-					
-					//TimePoint closestPoint = closestAutoTrackSegment.getTimePointAtTime(currentFrame);
-					
+
+					// TimePoint closestPoint =
+					// closestAutoTrackSegment.getTimePointAtTime(currentFrame);
+
 					// Checks to see if that point is close enough to the click location
 					if (closestPoint.getDistanceTo(unscaledX, unscaledY) < 10) { // if close enough,
 						// sets the frame that will be moved to next to the end of the autotrack segment
-						skipToFrame = closestAutoTrackSegment.getFinalTimePoint().getFrameNum()+1;
-						
+						skipToFrame = closestAutoTrackSegment.getFinalTimePoint().getFrameNum() + 1;
+
 						// adds the timepoints from the segment to the current animal
 						currentAnimal.add(closestAutoTrackSegment);
-						
+
 						// removes that segment from the unassigned segments list
 						project.getUnassignedSegments().remove(closestAutoTrackSegment);
-						
-					} else { // if not close enough, create a new TimePoint from the click location and add it to the current animal
+
+					} else { // if not close enough, create a new TimePoint from the click location and add
+								// it to the current animal
 						TimePoint newTimePoint = new TimePoint(unscaledX, unscaledY, currentFrame);
 						currentAnimal.add(newTimePoint);
 					}
-				} else {// if there are no points in the list of close points,  create a new TimePoint from the click location and add it to the current animal
+				} else {// if there are no points in the list of close points, create a new TimePoint
+						// from the click location and add it to the current animal
 					TimePoint newTimePoint = new TimePoint(unscaledX, unscaledY, currentFrame);
 					currentAnimal.add(newTimePoint);
 				}
-			} else { // if the autotrack was never run or you are outside of the time bounds of autotrack, create a new TimePoint from the click location and add it to the current animal
+			} else { // if the autotrack was never run or you are outside of the time bounds of
+						// autotrack, create a new TimePoint from the click location and add it to the
+						// current animal
 				TimePoint newTimePoint = new TimePoint(unscaledX, unscaledY, currentFrame);
 				currentAnimal.add(newTimePoint);
 			}
-			
-			// if the frame that the video will be moved to is not past the last frame in the video, moved the slider and shows the next frame.
+
+			// if the frame that the video will be moved to is not past the last frame in
+			// the video, moved the slider and shows the next frame.
 			int endFrame = project.getVideo().getEndAutoTrackFrameNum();
 			if (skipToFrame < endFrame) {
 				sliderVideoTime.setValue(skipToFrame);
 				showFrameAt(skipToFrame);
 				System.out.println("Skipping to frame: " + skipToFrame);
-			} else { // if the frame that the video will be moved to is past the last frame in the video, it does not move the video
+			} else { // if the frame that the video will be moved to is past the last frame in the
+						// video, it does not move the video
 				sliderVideoTime.setValue(endFrame);
 				showFrameAt(endFrame);
 				System.out.println("End frame: " + endFrame);
@@ -660,7 +711,6 @@ public class MainWindowController implements AutoTrackListener {
 		alert.showAndWait();
 	}
 
-	
 	public void handleExport() throws IOException {
 		Analysis.exportProject(project);
 	}
