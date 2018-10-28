@@ -448,7 +448,7 @@ public class MainWindowController implements AutoTrackListener {
 						// removes that segment from the unassigned segments list
 						project.getUnassignedSegments().remove(closestAutoTrackSegment);
 					} else { // if not close enough, create a new TimePoint from the click location and add it to the current animal
-						TimePoint newTimePoint = new TimeSPoint(unscaledX, unscaledY, currentFrame);
+						TimePoint newTimePoint = new TimePoint(unscaledX, unscaledY, currentFrame);
 						currentAnimal.add(newTimePoint);
 					}
 				} else {// if there are no points in the list of close points,  create a new TimePoint from the click location and add it to the current animal
