@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import javax.swing.JOptionPane;
 
@@ -313,10 +314,10 @@ public class MainWindowController implements AutoTrackListener {
 		project.getUnassignedSegments().clear();
 		project.getUnassignedSegments().addAll(trackedSegments);
 
-//		for (AnimalTrack track : trackedSegments) {
-//			System.out.println(track);
-//			System.out.println("  " + track.getPositions());
-//		}
+		//		for (AnimalTrack track : trackedSegments) {
+		//			System.out.println(track);
+		//			System.out.println("  " + track.getPositions());
+		//		}
 		Platform.runLater(() -> {
 			progressAutoTrack.setProgress(1.0);
 			btnAutotrack.setText("Start auto-tracking");
@@ -337,34 +338,20 @@ public class MainWindowController implements AutoTrackListener {
 	// seen each menu item will have its own listener. -Riley
 	@FXML
 	public void handleBtnAddAnimal() {
-
-		Object possibleAnimal = JOptionPane.showInputDialog(null, "Enter Animals's Name:", "Adding New Animal",
-				JOptionPane.PLAIN_MESSAGE);
-		if (possibleAnimal instanceof String) {
-			String newAnimal = (String) possibleAnimal;
-			if (newAnimal.length() >= 20) {
-				newAnimal = JOptionPane.showInputDialog(null, "Name was too long. Enter Valid Animals's Name:",
-						"Adding New Animal", JOptionPane.PLAIN_MESSAGE);
-			} else if (animalIdList.contains(newAnimal)) {
-				newAnimal = JOptionPane.showInputDialog(null, "ID already used. Enter Valid Animal Name:",
-						"Adding New Animal", JOptionPane.ERROR_MESSAGE);
-			}
-			if (newAnimal.length() < 1) {
-				newAnimal = "Animal " + (project.getTracks().size() + 1);
-			}
-			project.getTracks().add(new AnimalTrack(newAnimal));
-			animalIdList.add(newAnimal);
-
-			MenuItem newItem = new MenuItem(newAnimal);
+		String animalName = promptAnimalID();
+		if (!animalName.equals("")) { // will return the empty String if user cancels the add
+			project.getTracks().add(new AnimalTrack(animalName));
+			animalIdList.add(animalName);
+	
+			MenuItem newItem = new MenuItem(animalName);
 			menuBtnAnimals.getItems().add(newItem);
-
 			// this has to be .size() == 1 not .isEmpty() == false
 			// otherwise every time a new animal is added it will
 			// allow the startManualTrackBtn to be clicked
 			if (menuBtnAnimals.getItems().size() == 1) {
 				btnStartManualTrack.setDisable(false);
 			}
-
+	
 			newItem.setOnAction(new EventHandler<ActionEvent>() {
 				@Override
 				public void handle(ActionEvent event) {
@@ -375,7 +362,41 @@ public class MainWindowController implements AutoTrackListener {
 				}
 			});
 		}
-
+	}
+	
+	/**
+	 * Makes sure the user selects a valid name for the animal to be added.
+	 * @return a valid animal name selected by the user or the empty String if the user cancelled the window
+	 */
+	private String promptAnimalID() {
+		boolean invalidID = true;
+		String animalID = "";
+		while (invalidID) {
+			animalID = "";//resets the ID each time the user is prompted to reset the choice after a warning message
+			TextInputDialog addAnimalDialog = new TextInputDialog("Animal "+ (project.getTracks().size() + 1));
+			addAnimalDialog.setTitle("Adding new Animal");
+			addAnimalDialog.setContentText("Enter Animal ID: ");
+			Optional<String> result = addAnimalDialog.showAndWait();
+			if (result.isPresent()) { // if the user clicked ok
+				animalID = result.get();
+			}
+			if (animalID.length() >= 20) { // if the user gave a ID that exceeds the max character limit
+				Alert longIdAlert = new Alert(AlertType.WARNING);
+				longIdAlert.setTitle("WARNING");
+				longIdAlert.setHeaderText("Invalid Animal ID");
+				longIdAlert.setContentText("ID is too long.");
+				longIdAlert.showAndWait();
+			} else if (animalIdList.contains(animalID)) { // if the user gave an ID that is already assigned to another animal
+				Alert existingIdAlert = new Alert(AlertType.WARNING);
+				existingIdAlert.setTitle("WARNING");
+				existingIdAlert.setHeaderText("Invalid Animal ID");
+				existingIdAlert.setContentText("ID is already assigned to another animal.");
+				existingIdAlert.showAndWait();
+			} else { // user provided a valid ID or cancelled the window
+				invalidID = false; 
+			}
+		}
+		return animalID;
 	}
 
 	@FXML
@@ -397,7 +418,11 @@ public class MainWindowController implements AutoTrackListener {
 				menuBtnAnimals.setText(currentAnimal.getId());
 			}
 		} else {
-			JOptionPane.showMessageDialog(null, "Please select an animal to remove.", "WARNING", JOptionPane.ERROR_MESSAGE);
+			Alert noAnimalSelectedAlert = new Alert(AlertType.ERROR);
+			noAnimalSelectedAlert.setTitle("WARNING");
+			noAnimalSelectedAlert.setHeaderText(null);
+			noAnimalSelectedAlert.setContentText("Please select an animal to remove.");
+			noAnimalSelectedAlert.showAndWait();
 		}
 	}
 
@@ -485,12 +510,20 @@ public class MainWindowController implements AutoTrackListener {
 				System.out.println("Unable to move to frame " + skipToFrame);
 			}
 		} else if (Integer.parseInt(textfieldStartFrame.getText()) > currentFrame) {
-			JOptionPane.showMessageDialog(null, "You are before chosen start frame.", "WARNING", JOptionPane.ERROR_MESSAGE);
+			Alert noAnimalSelectedAlert = new Alert(AlertType.WARNING);
+			noAnimalSelectedAlert.setTitle("WARNING");
+			noAnimalSelectedAlert.setHeaderText(null);
+			noAnimalSelectedAlert.setContentText("You are before the chosen start frame.");
+			noAnimalSelectedAlert.showAndWait();
+			// Moves the video to display the start frame
 			sliderVideoTime.setValue(Integer.parseInt(textfieldStartFrame.getText()));
 			showFrameAt(Integer.parseInt(textfieldStartFrame.getText()));
 		} else {
-			JOptionPane.showMessageDialog(null, "You are after chosen end frame.", "WARNING", JOptionPane.ERROR_MESSAGE);
-			
+			Alert noAnimalSelectedAlert = new Alert(AlertType.WARNING);
+			noAnimalSelectedAlert.setTitle("WARNING");
+			noAnimalSelectedAlert.setHeaderText(null);
+			noAnimalSelectedAlert.setContentText("You are after the chosen end frame");
+			noAnimalSelectedAlert.showAndWait();
 		}
 
 	}
