@@ -425,18 +425,10 @@ public class MainWindowController implements AutoTrackListener {
 				animalID = result.get();
 			}
 			if (animalID.length() >= 20) { // if the user gave a ID that exceeds the max character limit
-				Alert longIdAlert = new Alert(AlertType.WARNING);
-				longIdAlert.setTitle("WARNING");
-				longIdAlert.setHeaderText("Invalid Animal ID");
-				longIdAlert.setContentText("ID is too long.");
-				longIdAlert.showAndWait();
+				showAlertMessage(AlertType.WARNING, "WARNING", "Invalid Animal ID","ID is too long.");
 			} else if (animalIdList.contains(animalID)) { // if the user gave an ID that is already assigned to another
 															// animal
-				Alert existingIdAlert = new Alert(AlertType.WARNING);
-				existingIdAlert.setTitle("WARNING");
-				existingIdAlert.setHeaderText("Invalid Animal ID");
-				existingIdAlert.setContentText("ID is already assigned to another animal.");
-				existingIdAlert.showAndWait();
+				showAlertMessage(AlertType.WARNING, "WARNING", "Invalid Animal ID", "ID is already assigned to another animal.");
 			} else { // user provided a valid ID or cancelled the window
 				invalidID = false;
 			}
@@ -463,11 +455,7 @@ public class MainWindowController implements AutoTrackListener {
 				menuBtnAnimals.setText(currentAnimal.getId());
 			}
 		} else {
-			Alert noAnimalSelectedAlert = new Alert(AlertType.ERROR);
-			noAnimalSelectedAlert.setTitle("WARNING");
-			noAnimalSelectedAlert.setHeaderText(null);
-			noAnimalSelectedAlert.setContentText("Please select an animal to remove.");
-			noAnimalSelectedAlert.showAndWait();
+			showAlertMessage(AlertType.ERROR, "WARNING", null, "Please select an animal to remove.");
 		}
 	}
 
@@ -490,99 +478,92 @@ public class MainWindowController implements AutoTrackListener {
 	public void handleMousePressForTracking(MouseEvent event) {
 		int currentFrame = project.getVideo().getCurrentFrameNum() - 1;
 		// checks to make sure the click is between the chosen start and end frames
-		if (Integer.parseInt(textfieldStartFrame.getText()) <= currentFrame
-				&& Integer.parseInt(textfieldEndFrame.getText()) >= currentFrame) {
-			double scalingRatio = getImageScalingRatio();
-
-			// user click locations
-			double unscaledX = event.getX() / scalingRatio;
-			double unscaledY = event.getY() / scalingRatio;
-
-			// int currentFrame = project.getVideo().getCurrentFrameNum() - 1;
-			int skipToFrame = project.getVideo().getCurrentFrameNum() + 32;
-
-			// checks if the AutoTrack has run and if you are within the bounds of the
-			// autotrack
-			if (!project.getUnassignedSegments().isEmpty()) {
-				// finds the closest AutoTrack segment and creates a list of the closest points
-				// in that segment within plus or minus 5 frames of the current frame
-				AnimalTrack closestAutoTrackSegment = project.getNearestUnassignedSegment(unscaledX, unscaledY,
-						currentFrame, skipToFrame);
-				List<TimePoint> closestPoints = new ArrayList<>();
-				try {
-					closestPoints = closestAutoTrackSegment.getTimePointsWithinInterval(currentFrame - 5,
-							currentFrame + 5);
-				} catch (NullPointerException e) {
-
-				}
-				// checks to make sure there is points in the list of closest points
-				if (!closestPoints.isEmpty()) {
-
-					// finds the TimePoint that is closest to the click location
-					TimePoint closestPoint = project.getNearestPoint(closestPoints, unscaledX, unscaledY);
-
-					// TimePoint closestPoint =
-					// closestAutoTrackSegment.getTimePointAtTime(currentFrame);
-
-					// Checks to see if that point is close enough to the click location
-					if (closestPoint.getDistanceTo(unscaledX, unscaledY) < 10) { // if close enough,
-						// sets the frame that will be moved to next to the end of the autotrack segment
-						skipToFrame = closestAutoTrackSegment.getFinalTimePoint().getFrameNum() + 1;
-
-						// adds the timepoints from the segment to the current animal
-						currentAnimal.add(closestAutoTrackSegment);
-
-						// removes that segment from the unassigned segments list
-						project.getUnassignedSegments().remove(closestAutoTrackSegment);
-
-					} else { // if not close enough, create a new TimePoint from the click location and add
-								// it to the current animal
+		if (currentAnimal == null) {
+			showAlertMessage(AlertType.WARNING, "WARNING", null, "Select a chick to track.");
+		} else {
+			if (Integer.parseInt(textfieldStartFrame.getText()) <= currentFrame
+					&& Integer.parseInt(textfieldEndFrame.getText()) >= currentFrame) {
+				double scalingRatio = getImageScalingRatio();
+	
+				// user click locations
+				double unscaledX = event.getX() / scalingRatio;
+				double unscaledY = event.getY() / scalingRatio;
+	
+				// int currentFrame = project.getVideo().getCurrentFrameNum() - 1;
+				int skipToFrame = project.getVideo().getCurrentFrameNum() + 32;
+	
+				// checks if the AutoTrack has run and if you are within the bounds of the
+				// autotrack
+				if (!project.getUnassignedSegments().isEmpty()) {
+					// finds the closest AutoTrack segment and creates a list of the closest points
+					// in that segment within plus or minus 5 frames of the current frame
+					AnimalTrack closestAutoTrackSegment = project.getNearestUnassignedSegment(unscaledX, unscaledY,
+							currentFrame, skipToFrame);
+					List<TimePoint> closestPoints = new ArrayList<>();
+					try {
+						closestPoints = closestAutoTrackSegment.getTimePointsWithinInterval(currentFrame - 5,
+								currentFrame + 5);
+					} catch (NullPointerException e) {
+	
+					}
+					// checks to make sure there is points in the list of closest points
+					if (!closestPoints.isEmpty()) {
+	
+						// finds the TimePoint that is closest to the click location
+						TimePoint closestPoint = project.getNearestPoint(closestPoints, unscaledX, unscaledY);
+	
+						// TimePoint closestPoint =
+						// closestAutoTrackSegment.getTimePointAtTime(currentFrame);
+	
+						// Checks to see if that point is close enough to the click location
+						if (closestPoint.getDistanceTo(unscaledX, unscaledY) < 10) { // if close enough,
+							// sets the frame that will be moved to next to the end of the autotrack segment
+							skipToFrame = closestAutoTrackSegment.getFinalTimePoint().getFrameNum() + 1;
+	
+							// adds the timepoints from the segment to the current animal
+							currentAnimal.add(closestAutoTrackSegment);
+	
+							// removes that segment from the unassigned segments list
+							project.getUnassignedSegments().remove(closestAutoTrackSegment);
+	
+						} else { // if not close enough, create a new TimePoint from the click location and add
+									// it to the current animal
+							TimePoint newTimePoint = new TimePoint(unscaledX, unscaledY, currentFrame);
+							currentAnimal.add(newTimePoint);
+						}
+					} else {// if there are no points in the list of close points, create a new TimePoint
+							// from the click location and add it to the current animal
 						TimePoint newTimePoint = new TimePoint(unscaledX, unscaledY, currentFrame);
 						currentAnimal.add(newTimePoint);
 					}
-				} else {// if there are no points in the list of close points, create a new TimePoint
-						// from the click location and add it to the current animal
+				} else { // if the autotrack was never run or you are outside of the time bounds of
+							// autotrack, create a new TimePoint from the click location and add it to the
+							// current animal
 					TimePoint newTimePoint = new TimePoint(unscaledX, unscaledY, currentFrame);
 					currentAnimal.add(newTimePoint);
 				}
-			} else { // if the autotrack was never run or you are outside of the time bounds of
-						// autotrack, create a new TimePoint from the click location and add it to the
-						// current animal
-				TimePoint newTimePoint = new TimePoint(unscaledX, unscaledY, currentFrame);
-				currentAnimal.add(newTimePoint);
+	
+				// if the frame that the video will be moved to is not past the last frame in
+				// the video, moved the slider and shows the next frame.
+				int endFrame = project.getVideo().getEndAutoTrackFrameNum();
+				if (skipToFrame < endFrame) {
+					sliderVideoTime.setValue(skipToFrame);
+					showFrameAt(skipToFrame);
+				} else { // if the frame that the video will be moved to is past the last frame in the
+							// video, it does not move the video
+					sliderVideoTime.setValue(endFrame);
+					showFrameAt(endFrame);
+					showAlertMessage(AlertType.WARNING, "ATTENTION", null, "You have reached the chosen end time.");
+				}
+			} else if (Integer.parseInt(textfieldStartFrame.getText()) > currentFrame) {
+				showAlertMessage(AlertType.WARNING, "WARNING", null, "You are before the chosen start time.");
+				// Moves the video to display the start frame
+				sliderVideoTime.setValue(Integer.parseInt(textfieldStartFrame.getText()));
+				showFrameAt(Integer.parseInt(textfieldStartFrame.getText()));
+			} else {
+				showAlertMessage(AlertType.WARNING, "WARNING", null, "You are after the chosen end time");
 			}
-
-			// if the frame that the video will be moved to is not past the last frame in
-			// the video, moved the slider and shows the next frame.
-			int endFrame = project.getVideo().getEndAutoTrackFrameNum();
-			if (skipToFrame < endFrame) {
-				sliderVideoTime.setValue(skipToFrame);
-				showFrameAt(skipToFrame);
-				System.out.println("Skipping to frame: " + skipToFrame);
-			} else { // if the frame that the video will be moved to is past the last frame in the
-						// video, it does not move the video
-				sliderVideoTime.setValue(endFrame);
-				showFrameAt(endFrame);
-				System.out.println("End frame: " + endFrame);
-				System.out.println("Unable to move to frame " + skipToFrame);
-			}
-		} else if (Integer.parseInt(textfieldStartFrame.getText()) > currentFrame) {
-			Alert noAnimalSelectedAlert = new Alert(AlertType.WARNING);
-			noAnimalSelectedAlert.setTitle("WARNING");
-			noAnimalSelectedAlert.setHeaderText(null);
-			noAnimalSelectedAlert.setContentText("You are before the chosen start frame.");
-			noAnimalSelectedAlert.showAndWait();
-			// Moves the video to display the start frame
-			sliderVideoTime.setValue(Integer.parseInt(textfieldStartFrame.getText()));
-			showFrameAt(Integer.parseInt(textfieldStartFrame.getText()));
-		} else {
-			Alert noAnimalSelectedAlert = new Alert(AlertType.WARNING);
-			noAnimalSelectedAlert.setTitle("WARNING");
-			noAnimalSelectedAlert.setHeaderText(null);
-			noAnimalSelectedAlert.setContentText("You are after the chosen end frame");
-			noAnimalSelectedAlert.showAndWait();
 		}
-
 	}
 
 	/**
@@ -715,4 +696,11 @@ public class MainWindowController implements AutoTrackListener {
 		Analysis.exportProject(project);
 	}
 
+	private void showAlertMessage(AlertType alertType, String title, String header, String contentText) {
+		Alert noAnimalSelectedAlert = new Alert(alertType);
+		noAnimalSelectedAlert.setTitle(title);
+		noAnimalSelectedAlert.setHeaderText(header);
+		noAnimalSelectedAlert.setContentText(contentText);
+		noAnimalSelectedAlert.showAndWait();
+	}
 }
