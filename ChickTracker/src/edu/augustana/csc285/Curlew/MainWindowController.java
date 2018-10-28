@@ -8,6 +8,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +22,9 @@ import org.opencv.core.Scalar;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.videoio.VideoCapture;
+
+import analysis.Analysis;
+
 import org.opencv.*;
 import javafx.scene.control.*;
 
@@ -552,8 +556,8 @@ public class MainWindowController implements AutoTrackListener {
 		alert.showAndWait();
 	}
 	
-	public void handleSave() {
-		
+	public void handleSave() throws IOException {
+		Analysis.exportProject(project);
 	}
 	
 }
