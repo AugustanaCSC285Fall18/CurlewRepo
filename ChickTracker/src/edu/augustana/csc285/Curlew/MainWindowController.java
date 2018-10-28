@@ -336,24 +336,8 @@ public class MainWindowController implements AutoTrackListener {
 	// seen each menu item will have its own listener. -Riley
 	@FXML
 	public void handleBtnAddAnimal() {
-		TextInputDialog addAnimalDialog = new TextInputDialog("Animal "+ (project.getTracks().size() + 1));
-		addAnimalDialog.setTitle("Adding new Animal");
-		addAnimalDialog.setContentText("Enter Animal ID: ");
-		Optional<String> result = addAnimalDialog.showAndWait();
-		String animalName = "";
-		if (result.isPresent()) {
-			animalName = result.get();
-		}
-		if (animalName.length() >= 20) {
-			Alert longNameAlert = new Alert(AlertType.WARNING);
-			longNameAlert.setTitle("WARNING");
-			longNameAlert.setHeaderText("Invalid Animal Name");
-			longNameAlert.setContentText("Name is too long.");
-			
-		} else if (animalIdList.contains(animalName)) {
-			
-		}
-		if (!animalName.equals("")) {
+		String animalName = promptAnimalID();
+		if (!animalName.equals("")) { // will return the empty String if user cancels the add
 			project.getTracks().add(new AnimalTrack(animalName));
 			animalIdList.add(animalName);
 	
@@ -377,6 +361,40 @@ public class MainWindowController implements AutoTrackListener {
 			});
 		}
 	}
+	
+	/**
+	 * Makes sure the user selects a valid name for the animal to be added.
+	 * @return a valid animal name selected by the user
+	 */
+	private String promptAnimalID() {
+		boolean invalidName = true;
+		String animalName = "";
+		while (invalidName) {
+			TextInputDialog addAnimalDialog = new TextInputDialog("Animal "+ (project.getTracks().size() + 1));
+			addAnimalDialog.setTitle("Adding new Animal");
+			addAnimalDialog.setContentText("Enter Animal ID: ");
+			Optional<String> result = addAnimalDialog.showAndWait();
+			if (result.isPresent()) {
+				animalName = result.get();
+			}
+			if (animalName.length() >= 20) {
+				Alert longNameAlert = new Alert(AlertType.WARNING);
+				longNameAlert.setTitle("WARNING");
+				longNameAlert.setHeaderText("Invalid Animal ID");
+				longNameAlert.setContentText("ID is too long.");
+				longNameAlert.showAndWait();
+			} else if (animalIdList.contains(animalName)) {
+				Alert existingNameAlert = new Alert(AlertType.WARNING);
+				existingNameAlert.setTitle("WARNING");
+				existingNameAlert.setHeaderText("Invalid Animal ID");
+				existingNameAlert.setContentText("ID is already assigned to another animal.");
+				existingNameAlert.showAndWait();
+			} else {
+				invalidName = false;
+			}
+		}
+		return animalName;
+	}
 
 	@FXML
 	public void handleBtnRemoveAnimal() {
@@ -397,7 +415,6 @@ public class MainWindowController implements AutoTrackListener {
 				menuBtnAnimals.setText(currentAnimal.getId());
 			}
 		} else {
-//			JOptionPane.showMessageDialog(null, "Please select an animal to remove.", "WARNING", JOptionPane.ERROR_MESSAGE);
 			Alert noAnimalSelectedAlert = new Alert(AlertType.ERROR);
 			noAnimalSelectedAlert.setTitle("WARNING");
 			noAnimalSelectedAlert.setHeaderText(null);
