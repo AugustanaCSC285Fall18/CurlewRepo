@@ -8,6 +8,13 @@ import org.opencv.core.Mat;
 import org.opencv.videoio.VideoCapture;
 import org.opencv.videoio.Videoio;
 
+/**
+ * The video object stores all the information for the entered .avi or .mp4
+ * video file.
+ * 
+ * @author Team Curlew
+ *
+ */
 public class Video {
 
 	/**
@@ -30,6 +37,12 @@ public class Video {
 	private double yPixelsPerCm;
 	private Rectangle arenaBounds;
 
+	/**
+	 * Constructs the video object
+	 * 
+	 * @param filePath The path to find the file
+	 * @throws FileNotFoundException prevents crashing if the file isn't found
+	 */
 	public Video(String filePath) throws FileNotFoundException {
 		origin = new Point();
 		this.filePath = filePath;
