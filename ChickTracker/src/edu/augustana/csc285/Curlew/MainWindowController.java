@@ -260,7 +260,7 @@ public class MainWindowController implements AutoTrackListener {
 	/**
 	 * Loads the project data from a previously worked on project
 	 * 
-	 * @throws FileNotFoundException
+	 * @throws FileNotFoundException if the selected project file is not found
 	 */
 	@FXML
 	public void handleLoadProject() throws FileNotFoundException {
