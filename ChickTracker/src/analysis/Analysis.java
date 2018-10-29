@@ -9,7 +9,6 @@ import org.opencv.core.Core;
 import datamodel.AnimalTrack;
 import datamodel.ProjectData;
 import datamodel.TimePoint;
-import edu.augustana.csc285.Curlew.MainWindowController;
 import javafx.stage.FileChooser;
 
 public class Analysis {
@@ -35,7 +34,7 @@ public class Analysis {
 
 		s.append("\n");
 
-		for (AnimalTrack animal : project.getTracks()) {
+		for (@SuppressWarnings("unused") AnimalTrack animal : project.getTracks()) {
 			s.append("Seconds,X Coordinate, Y Coordinate,,");
 		}
 
@@ -49,7 +48,7 @@ public class Analysis {
 
 		int secondNumStart = (int) project.getVideo()
 				.convertFrameNumsToSeconds((project.getVideo().getStartAutroTrackFrameNum()));
-		
+
 		// goes through every second of tracked data and displays
 		// the x y coordinates of the point each chick had that
 		// was closest to that time

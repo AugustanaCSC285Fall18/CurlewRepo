@@ -1,46 +1,28 @@
 package edu.augustana.csc285.Curlew;
 
-import java.awt.event.MouseListener;
+
 import javafx.scene.paint.Color;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import javax.swing.JOptionPane;
-
 import org.opencv.core.Mat;
-import org.opencv.core.MatOfByte;
-import org.opencv.core.Point;
-import org.opencv.core.Scalar;
-import org.opencv.imgcodecs.Imgcodecs;
-import org.opencv.imgproc.Imgproc;
-import org.opencv.videoio.VideoCapture;
-
 import analysis.Analysis;
 
-import org.opencv.*;
 import javafx.scene.control.*;
 
 import autotracking.AutoTrackListener;
 import autotracking.AutoTracker;
-import autotracking.DetectedShape;
 import datamodel.AnimalTrack;
 import datamodel.ProjectData;
 import datamodel.TimePoint;
 import datamodel.Video;
 import javafx.application.Platform;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -50,23 +32,16 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar.ButtonData;
-import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.Slider;
-import javafx.scene.control.SplitMenuButton;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
-import javafx.scene.paint.Paint;
-import javafx.scene.shape.Circle;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import javafx.stage.Window;
 import utils.UtilsForOpenCV;
 
 public class MainWindowController implements AutoTrackListener {
@@ -129,27 +104,12 @@ public class MainWindowController implements AutoTrackListener {
 	private Stage stage;
 	private ArrayList<String> animalIdList;
 	private AnimalTrack currentAnimal;
-	private boolean manualTrackActive;
 	private boolean projectAlreadyRunning = false;
 
 	private CalibrationController calibController;
 
 	@FXML
 	public void initialize() throws FileNotFoundException {
-		// FIXME: this quick loading of a specific file and specific settings
-		// is for debugging purposes only, since there's no way to specify
-		// the settings in the GUI right now...
-		// loadVideo("/home/forrest/data/shara_chicks_tracking/sample1.mp4");
-//		loadVideo("S:/class/cs/285/sample_videos/sample1.mp4");
-//		project.getVideo().setxPixelsPerCm(6.5); // these are just rough estimates!
-//		project.getVideo().setyPixelsPerCm(6.7);
-
-
-//		loadVideo("/home/forrest/data/shara_chicks_tracking/lowres/lowres2.avi");
-		// loadVideo("S:/class/cs/285/sample_videos/lowres2.mp4");
-//		project.getVideo().setXPixelsPerCm(5.5); //  these are just rough estimates!
-//		project.getVideo().setYPixelsPerCm(5.5);
-
 		if (projectAlreadyRunning == false) {
 
 			Alert alert = new Alert(AlertType.CONFIRMATION);
@@ -186,7 +146,7 @@ public class MainWindowController implements AutoTrackListener {
 				startUpInstructions.showAndWait();
 
 				projectAlreadyRunning = true;
-				
+
 				toggleButtonsOff(true);
 				btnArena.setDisable(false);
 			} else if (result.get() == buttonLoadProject) {
@@ -231,7 +191,6 @@ public class MainWindowController implements AutoTrackListener {
 //		btnOrigin.setDisable(true);
 //		menuBtnAnimals.setDisable(true);
 
-
 	}
 
 	/**
@@ -264,7 +223,6 @@ public class MainWindowController implements AutoTrackListener {
 		canvas.setOnMousePressed(null);
 		btnStartManualTrack.setDisable(false);
 		btnOrigin.setDisable(false);
-
 
 		// re-enable other buttons too, involving calibration, etc?
 	}
@@ -344,8 +302,8 @@ public class MainWindowController implements AutoTrackListener {
 	public void handleStartAutotracking() throws InterruptedException {
 		if (autotracker == null || !autotracker.isRunning()) {
 			// Video video = project.getVideo();
-			project.getVideo().setStartAutoTrackFrameNum(Integer.parseInt(textfieldStartFrame.getText()));
-			project.getVideo().setEndAutoTrackFrameNum(Integer.parseInt(textfieldEndFrame.getText()));
+			project.getVideo().setStartAutoTrackFrameNum(project.getVideo().convertSecondsToFrameNums(Double.parseDouble(textfieldStartFrame.getText())));
+			project.getVideo().setEndAutoTrackFrameNum(project.getVideo().convertSecondsToFrameNums(Double.parseDouble(textfieldEndFrame.getText())));
 			autotracker = new AutoTracker();
 			// Use Observer Pattern to give autotracker a reference to this object,
 			// and call back to methods in this class to update progress.
@@ -359,7 +317,7 @@ public class MainWindowController implements AutoTrackListener {
 			autotracker.cancelAnalysis();
 			btnAutotrack.setText("Start auto-tracking");
 		}
-		
+
 	}
 
 	// this method will get called repeatedly by the Autotracker after it analyzes
@@ -373,7 +331,8 @@ public class MainWindowController implements AutoTrackListener {
 			videoView.setImage(imgFrame);
 			progressAutoTrack.setProgress(fractionComplete);
 			sliderVideoTime.setValue(frameNumber);
-			textFieldCurFrameNum.setText(String.format("%05d", frameNumber));
+			DecimalFormat twoDForm = new DecimalFormat("#.0");
+			textFieldCurFrameNum.setText(twoDForm.format(project.getVideo().convertFrameNumsToSeconds(frameNumber)));
 		});
 	}
 
@@ -411,14 +370,13 @@ public class MainWindowController implements AutoTrackListener {
 
 			g.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
 			double scalingRatio = getImageScalingRatio();
-			// g.drawImage(curFrame, 0, 0, curFrame.getWidth() * scalingRatio,
-			// curFrame.getHeight() * scalingRatio);
 
 			drawAssignedAnimalTracks(g, scalingRatio, frameNum);
 			drawUnassignedSegments(g, scalingRatio, frameNum);
 
 		}
-		textFieldCurFrameNum.setText(String.format("%05d", frameNum));
+		DecimalFormat twoDForm = new DecimalFormat("#.0");
+		textFieldCurFrameNum.setText(twoDForm.format(project.getVideo().convertFrameNumsToSeconds(frameNum)));
 	}
 
 	@Override
@@ -426,10 +384,6 @@ public class MainWindowController implements AutoTrackListener {
 		project.getUnassignedSegments().clear();
 		project.getUnassignedSegments().addAll(trackedSegments);
 
-		// for (AnimalTrack track : trackedSegments) {
-		// System.out.println(track);
-		// System.out.println(" " + track.getPositions());
-		// }
 		Platform.runLater(() -> {
 			progressAutoTrack.setProgress(1.0);
 			btnAutotrack.setText("Start auto-tracking");
@@ -555,15 +509,15 @@ public class MainWindowController implements AutoTrackListener {
 		if (currentAnimal == null) {
 			showAlertMessage(AlertType.WARNING, "WARNING", null, "Select a chick to track.");
 		} else {
-			if (Integer.parseInt(textfieldStartFrame.getText()) <= currentFrame
-					&& Integer.parseInt(textfieldEndFrame.getText()) >= currentFrame) {
+			if (project.getVideo().convertSecondsToFrameNums(Integer.parseInt(textfieldStartFrame.getText())) <= currentFrame
+					&& project.getVideo().convertSecondsToFrameNums(Integer.parseInt(textfieldEndFrame.getText())) >= currentFrame) {
 				double scalingRatio = getImageScalingRatio();
 
-				// user click locations
+				// user click location
 				double unscaledX = event.getX() / scalingRatio;
 				double unscaledY = event.getY() / scalingRatio;
 
-				// int currentFrame = project.getVideo().getCurrentFrameNum() - 1;
+				// sets the value that the video will skip too after the click
 				int skipToFrame = project.getVideo().getCurrentFrameNum() + 32;
 
 				// checks if the AutoTrack has run and if you are within the bounds of the
@@ -578,16 +532,12 @@ public class MainWindowController implements AutoTrackListener {
 						closestPoints = closestAutoTrackSegment.getTimePointsWithinInterval(currentFrame - 5,
 								currentFrame + 5);
 					} catch (NullPointerException e) {
-
-					}
+					} // catches if the are any auto tracks left in that interval of the video
 					// checks to make sure there is points in the list of closest points
 					if (!closestPoints.isEmpty()) {
 
 						// finds the TimePoint that is closest to the click location
 						TimePoint closestPoint = project.getNearestPoint(closestPoints, unscaledX, unscaledY);
-
-						// TimePoint closestPoint =
-						// closestAutoTrackSegment.getTimePointAtTime(currentFrame);
 
 						// Checks to see if that point is close enough to the click location
 						if (closestPoint.getDistanceTo(unscaledX, unscaledY) < 10) { // if close enough,
@@ -650,8 +600,9 @@ public class MainWindowController implements AutoTrackListener {
 		btnArena.setDisable(true);
 		btnStartManualTrack.setDisable(true);
 		btnStopManualTrack.setDisable(true);
-		JOptionPane.showMessageDialog(null, "Set the horizontal by clicking bottom left of box to bottom right");
-
+		// popup message to instruct the user on how to set horizontal bounds
+		showAlertMessage(AlertType.INFORMATION, "Setting Arena Bounds", null,
+				"Set the horizontal by clicking bottom left of box to bottom right");
 		canvas.setOnMousePressed(e -> calibController.startHorizontalScaling(e));
 
 		btnAutotrack.setDisable(false);
@@ -700,12 +651,14 @@ public class MainWindowController implements AutoTrackListener {
 	 * amount, but they are.
 	 */
 	public void handleBtnJumpAhead() {
-		if (project.getVideo().getCurrentFrameNum() + 31 < project.getVideo().getEndFrameNum()) {
-			sliderVideoTime.setValue(project.getVideo().getCurrentFrameNum() + 31);
+		if (project.getVideo().getCurrentFrameNum() + 28 < project.getVideo().getEndFrameNum()) {
+			sliderVideoTime.setValue(project.getVideo().getCurrentFrameNum() + 28);
 			showFrameAt(project.getVideo().getCurrentFrameNum());
 		} else {
 			showFrameAt(project.getVideo().getCurrentFrameNum() - 1);
 		}
+		DecimalFormat twoDForm = new DecimalFormat("#.0");
+		textFieldCurFrameNum.setText(twoDForm.format(project.getVideo().convertFrameNumsToSeconds(project.getVideo().getCurrentFrameNum() - 1)));
 	}
 
 	/*
@@ -713,16 +666,19 @@ public class MainWindowController implements AutoTrackListener {
 	 * amount, but they are.
 	 */
 	public void handleBtnJumpBack() {
-		sliderVideoTime.setValue(project.getVideo().getCurrentFrameNum() - 35);
+		sliderVideoTime.setValue(project.getVideo().getCurrentFrameNum() - 32);
 		showFrameAt(project.getVideo().getCurrentFrameNum());
+		DecimalFormat twoDForm = new DecimalFormat("#.0");
+		textFieldCurFrameNum.setText(twoDForm.format(project.getVideo().convertFrameNumsToSeconds(project.getVideo().getCurrentFrameNum() - 1)));
 	}
 
 	public void handleBtnSetFrameNum() {
 		boolean invalidFrameNum = true;
 		String contentText = "Enter desired time (in seconds)";
-		int newFrameNum = project.getVideo().getCurrentFrameNum();
-		while (invalidFrameNum) {
-			boolean enteredNum = false;
+		int newTime = project.getVideo().getCurrentFrameNum();// sets new time to the current frame so it will be
+															  // unchanged if user cancels the window
+		while (invalidFrameNum) { // runs until user cancels or a valid frame number is entered
+
 			TextInputDialog frameSelectionDialog = new TextInputDialog(textfieldStartFrame.getText());
 			frameSelectionDialog.setTitle("Set Time");
 			frameSelectionDialog.setHeaderText(null);
@@ -734,10 +690,10 @@ public class MainWindowController implements AutoTrackListener {
 			}
 
 			try {
-				newFrameNum = Integer.parseInt(input);
-				if (newFrameNum < 0) {
+				newTime = Integer.parseInt(input);
+				if (newTime < 0) {
 					contentText = "Number needs to be at least 0.";
-				} else if (newFrameNum > project.getVideo().getEndFrameNum()) {
+				} else if (newTime > project.getVideo().convertSecondsToFrameNums(project.getVideo().getEndFrameNum())) {
 					contentText = "Number cannot be greater than the length of the video.";
 				} else {
 					invalidFrameNum = false;
@@ -746,8 +702,8 @@ public class MainWindowController implements AutoTrackListener {
 				contentText = "Please enter only integers.";
 			}
 		}
-		sliderVideoTime.setValue(newFrameNum);
-		showFrameAt(newFrameNum);
+		sliderVideoTime.setValue(project.getVideo().convertSecondsToFrameNums(newTime));
+		showFrameAt(project.getVideo().getCurrentFrameNum() - 1);
 	}
 
 	// Our tracked points are stored as un-scaled points,
@@ -758,14 +714,14 @@ public class MainWindowController implements AutoTrackListener {
 		double heightRatio = canvas.getHeight() / project.getVideo().getFrameHeight();
 		return Math.min(widthRatio, heightRatio);
 	}
-	
+
 	public void handleAbout() {
 		Alert alert = new Alert(AlertType.INFORMATION);
 		alert.setTitle("About Message");
 		alert.setHeaderText(null);
-		String names = "Team Curlew: Bryson Adcock, Chris Baker, Kathryn Clark, Riley Smith, Leo ;)"
+		String names = "Team Curlew: Bryson Adcock, Chris Baker, Riley Smith"
 				+ "\nProject Supervisor: Dr. Forrest Stonedahl";
-		String acknowledgements = "\n\nLeo did basically everything for the project\nJust kidding. He literally did the whole thing.";
+		String acknowledgements = "\n\nSpeical thanks to:\nKathryn Clark\nLeo Carberry\n";
 		String usedLibraries = "\nLibraries: OpenCV, JavaFX, JavaSwing, JSON, GSON";
 
 		alert.setContentText(names + acknowledgements + usedLibraries);
@@ -777,14 +733,14 @@ public class MainWindowController implements AutoTrackListener {
 		Analysis.exportProject(project, getImageScalingRatio());
 	}
 
-	private void showAlertMessage(AlertType alertType, String title, String header, String contentText) {
+	public static void showAlertMessage(AlertType alertType, String title, String header, String contentText) {
 		Alert noAnimalSelectedAlert = new Alert(alertType);
 		noAnimalSelectedAlert.setTitle(title);
 		noAnimalSelectedAlert.setHeaderText(header);
 		noAnimalSelectedAlert.setContentText(contentText);
 		noAnimalSelectedAlert.showAndWait();
 	}
-	
+
 	private void toggleButtonsOff(boolean toggle) {
 		btnStartManualTrack.setDisable(toggle);
 		btnStopManualTrack.setDisable(toggle);
