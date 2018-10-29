@@ -340,8 +340,8 @@ public class MainWindowController implements AutoTrackListener {
 	public void handleStartAutotracking() throws InterruptedException {
 		if (autotracker == null || !autotracker.isRunning()) {
 			// Video video = project.getVideo();
-			project.getVideo().setStartAutoTrackFrameNum(project.getVideo().convertSecondsToFrameNums(Integer.parseInt(textfieldStartFrame.getText())));
-			project.getVideo().setEndAutoTrackFrameNum(project.getVideo().convertSecondsToFrameNums(Integer.parseInt(textfieldEndFrame.getText())));
+			project.getVideo().setStartAutoTrackFrameNum(project.getVideo().convertSecondsToFrameNums(Double.parseDouble(textfieldStartFrame.getText())));
+			project.getVideo().setEndAutoTrackFrameNum(project.getVideo().convertSecondsToFrameNums(Double.parseDouble(textfieldEndFrame.getText())));
 			autotracker = new AutoTracker();
 			// Use Observer Pattern to give autotracker a reference to this object,
 			// and call back to methods in this class to update progress.
