@@ -138,6 +138,7 @@ public class MainWindowController implements AutoTrackListener {
 //		loadVideo("S:/class/cs/285/sample_videos/sample1.mp4");
 //		project.getVideo().setxPixelsPerCm(6.5); // these are just rough estimates!
 //		project.getVideo().setyPixelsPerCm(6.7);
+		
 		handleBrowse();
 
 //		loadVideo("/home/forrest/data/shara_chicks_tracking/lowres/lowres2.avi");
