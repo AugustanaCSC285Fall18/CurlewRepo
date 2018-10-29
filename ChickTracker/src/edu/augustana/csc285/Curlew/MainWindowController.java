@@ -1,45 +1,28 @@
 package edu.augustana.csc285.Curlew;
 
-import java.awt.event.MouseListener;
+
 import javafx.scene.paint.Color;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import org.opencv.core.Mat;
-import org.opencv.core.MatOfByte;
-import org.opencv.core.Point;
-import org.opencv.core.Scalar;
-import org.opencv.imgcodecs.Imgcodecs;
-import org.opencv.imgproc.Imgproc;
-import org.opencv.videoio.VideoCapture;
-
 import analysis.Analysis;
 
-import org.opencv.*;
 import javafx.scene.control.*;
 
 import autotracking.AutoTrackListener;
 import autotracking.AutoTracker;
-import autotracking.DetectedShape;
 import datamodel.AnimalTrack;
 import datamodel.ProjectData;
 import datamodel.TimePoint;
 import datamodel.Video;
 import javafx.application.Platform;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -49,23 +32,16 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar.ButtonData;
-import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.Slider;
-import javafx.scene.control.SplitMenuButton;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
-import javafx.scene.paint.Paint;
-import javafx.scene.shape.Circle;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import javafx.stage.Window;
 import utils.UtilsForOpenCV;
 
 public class MainWindowController implements AutoTrackListener {
@@ -128,26 +104,12 @@ public class MainWindowController implements AutoTrackListener {
 	private Stage stage;
 	private ArrayList<String> animalIdList;
 	private AnimalTrack currentAnimal;
-	private boolean manualTrackActive;
 	private boolean projectAlreadyRunning = false;
 
 	private CalibrationController calibController;
 
 	@FXML
 	public void initialize() throws FileNotFoundException {
-		// FIXME: this quick loading of a specific file and specific settings
-		// is for debugging purposes only, since there's no way to specify
-		// the settings in the GUI right now...
-		// loadVideo("/home/forrest/data/shara_chicks_tracking/sample1.mp4");
-//		loadVideo("S:/class/cs/285/sample_videos/sample1.mp4");
-//		project.getVideo().setxPixelsPerCm(6.5); // these are just rough estimates!
-//		project.getVideo().setyPixelsPerCm(6.7);
-
-//		loadVideo("/home/forrest/data/shara_chicks_tracking/lowres/lowres2.avi");
-		// loadVideo("S:/class/cs/285/sample_videos/lowres2.mp4");
-//		project.getVideo().setXPixelsPerCm(5.5); //  these are just rough estimates!
-//		project.getVideo().setYPixelsPerCm(5.5);
-
 		if (projectAlreadyRunning == false) {
 
 			Alert alert = new Alert(AlertType.CONFIRMATION);

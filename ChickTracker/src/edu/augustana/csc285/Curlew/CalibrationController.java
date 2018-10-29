@@ -1,7 +1,5 @@
 package edu.augustana.csc285.Curlew;
 
-import static org.junit.jupiter.api.Assumptions.assumingThat;
-
 import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.Optional;
