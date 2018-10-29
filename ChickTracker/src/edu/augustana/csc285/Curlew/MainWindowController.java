@@ -1,6 +1,5 @@
 package edu.augustana.csc285.Curlew;
 
-
 import javafx.scene.paint.Color;
 
 import java.io.File;
@@ -44,6 +43,12 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import utils.UtilsForOpenCV;
 
+/**
+ * The MainWindowController is the backbone of the project,
+ * it handles nearly all interactions between the user and the data
+ * @author Team Curlew
+ *
+ */
 public class MainWindowController implements AutoTrackListener {
 
 	@FXML
@@ -226,11 +231,11 @@ public class MainWindowController implements AutoTrackListener {
 
 		// re-enable other buttons too, involving calibration, etc?
 	}
-
+	
+	@FXML
 	/**
 	 * Allows user to choose the video that they are going to work on
 	 */
-	@FXML
 	public void handleBrowse() {
 		FileChooser fileChooser = new FileChooser();
 		fileChooser.setTitle("Open Video File");
@@ -241,6 +246,10 @@ public class MainWindowController implements AutoTrackListener {
 	}
 
 	@FXML
+	/**
+	 * Handles the save project button in the UI
+	 * @throws FileNotFoundException
+	 */
 	public void handleSaveProject() throws FileNotFoundException {
 		FileChooser fileChooser = new FileChooser();
 		fileChooser.setTitle("Open Video File");
@@ -302,8 +311,10 @@ public class MainWindowController implements AutoTrackListener {
 	public void handleStartAutotracking() throws InterruptedException {
 		if (autotracker == null || !autotracker.isRunning()) {
 			// Video video = project.getVideo();
-			project.getVideo().setStartAutoTrackFrameNum(project.getVideo().convertSecondsToFrameNums(Double.parseDouble(textfieldStartFrame.getText())));
-			project.getVideo().setEndAutoTrackFrameNum(project.getVideo().convertSecondsToFrameNums(Double.parseDouble(textfieldEndFrame.getText())));
+			project.getVideo().setStartAutoTrackFrameNum(
+					project.getVideo().convertSecondsToFrameNums(Double.parseDouble(textfieldStartFrame.getText())));
+			project.getVideo().setEndAutoTrackFrameNum(
+					project.getVideo().convertSecondsToFrameNums(Double.parseDouble(textfieldEndFrame.getText())));
 			autotracker = new AutoTracker();
 			// Use Observer Pattern to give autotracker a reference to this object,
 			// and call back to methods in this class to update progress.
@@ -322,7 +333,6 @@ public class MainWindowController implements AutoTrackListener {
 
 	// this method will get called repeatedly by the Autotracker after it analyzes
 	// each frame
-	@Override
 	public void handleTrackedFrame(Mat frame, int frameNumber, double fractionComplete) {
 		Image imgFrame = UtilsForOpenCV.matToJavaFXImage(frame);
 		// this method is being run by the AutoTracker's thread, so we must
@@ -393,17 +403,20 @@ public class MainWindowController implements AutoTrackListener {
 		btnStopManualTrack.setDisable(true);
 	}
 
-	// not sure if we're going to need this method but it's here
-	// just in case, don't delete or it will cause errors -Riley
+	
 	@FXML
+	/**
+	 * Prevents the option box from crashing the program
+	 */
 	public void handleMenuBtnAnimals() {
 
 	}
 
-	// this method handles the addAnimalBtn and the menuBtnAnimals
-	// objects because it makes it easier if we don't have to have
-	// another array of MenuItem objects. Even though it isn't
-	// seen each menu item will have its own listener. -Riley
+	
+	/**
+	 * Handles the menus button addAnimal and the menuBtnAnimals,
+	 * since it makes it easier to not have another array
+	 */
 	@FXML
 	public void handleBtnAddAnimal() {
 		String animalName = promptAnimalID();
@@ -509,8 +522,10 @@ public class MainWindowController implements AutoTrackListener {
 		if (currentAnimal == null) {
 			showAlertMessage(AlertType.WARNING, "WARNING", null, "Select a chick to track.");
 		} else {
-			if (project.getVideo().convertSecondsToFrameNums(Integer.parseInt(textfieldStartFrame.getText())) <= currentFrame
-					&& project.getVideo().convertSecondsToFrameNums(Integer.parseInt(textfieldEndFrame.getText())) >= currentFrame) {
+			if (project.getVideo()
+					.convertSecondsToFrameNums(Integer.parseInt(textfieldStartFrame.getText())) <= currentFrame
+					&& project.getVideo()
+							.convertSecondsToFrameNums(Integer.parseInt(textfieldEndFrame.getText())) >= currentFrame) {
 				double scalingRatio = getImageScalingRatio();
 
 				// user click location
@@ -533,7 +548,7 @@ public class MainWindowController implements AutoTrackListener {
 								currentFrame + 5);
 					} catch (NullPointerException e) {
 					} // catches if the are any auto tracks left in that interval of the video
-					// checks to make sure there is points in the list of closest points
+						// checks to make sure there is points in the list of closest points
 					if (!closestPoints.isEmpty()) {
 
 						// finds the TimePoint that is closest to the click location
@@ -658,7 +673,8 @@ public class MainWindowController implements AutoTrackListener {
 			showFrameAt(project.getVideo().getCurrentFrameNum() - 1);
 		}
 		DecimalFormat twoDForm = new DecimalFormat("#.0");
-		textFieldCurFrameNum.setText(twoDForm.format(project.getVideo().convertFrameNumsToSeconds(project.getVideo().getCurrentFrameNum() - 1)));
+		textFieldCurFrameNum.setText(twoDForm
+				.format(project.getVideo().convertFrameNumsToSeconds(project.getVideo().getCurrentFrameNum() - 1)));
 	}
 
 	/*
@@ -669,14 +685,15 @@ public class MainWindowController implements AutoTrackListener {
 		sliderVideoTime.setValue(project.getVideo().getCurrentFrameNum() - 32);
 		showFrameAt(project.getVideo().getCurrentFrameNum());
 		DecimalFormat twoDForm = new DecimalFormat("#.0");
-		textFieldCurFrameNum.setText(twoDForm.format(project.getVideo().convertFrameNumsToSeconds(project.getVideo().getCurrentFrameNum() - 1)));
+		textFieldCurFrameNum.setText(twoDForm
+				.format(project.getVideo().convertFrameNumsToSeconds(project.getVideo().getCurrentFrameNum() - 1)));
 	}
 
 	public void handleBtnSetFrameNum() {
 		boolean invalidFrameNum = true;
 		String contentText = "Enter desired time (in seconds)";
 		int newTime = project.getVideo().getCurrentFrameNum();// sets new time to the current frame so it will be
-															  // unchanged if user cancels the window
+																// unchanged if user cancels the window
 		while (invalidFrameNum) { // runs until user cancels or a valid frame number is entered
 
 			TextInputDialog frameSelectionDialog = new TextInputDialog(textfieldStartFrame.getText());
@@ -693,7 +710,8 @@ public class MainWindowController implements AutoTrackListener {
 				newTime = Integer.parseInt(input);
 				if (newTime < 0) {
 					contentText = "Number needs to be at least 0.";
-				} else if (newTime > project.getVideo().convertSecondsToFrameNums(project.getVideo().getEndFrameNum())) {
+				} else if (newTime > project.getVideo()
+						.convertSecondsToFrameNums(project.getVideo().getEndFrameNum())) {
 					contentText = "Number cannot be greater than the length of the video.";
 				} else {
 					invalidFrameNum = false;
