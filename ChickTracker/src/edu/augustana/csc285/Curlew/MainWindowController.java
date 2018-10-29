@@ -788,6 +788,5 @@ public class MainWindowController implements AutoTrackListener {
 		btnAddAnimal.setDisable(toggle);
 		btnRemoveAnimal.setDisable(toggle);
 		btnArena.setDisable(toggle);
-		btnSetBlankScreen.setDisable(toggle);
 	}
 }
