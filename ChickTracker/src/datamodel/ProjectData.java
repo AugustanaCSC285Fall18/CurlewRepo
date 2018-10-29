@@ -13,6 +13,11 @@ import com.google.gson.GsonBuilder;
 import datamodel.AnimalTrack;
 import datamodel.TimePoint;
 
+/**
+ * The class which stores all the data for the project in fields, which prevents duplicate data to be recorded
+ * @author Team Curlew
+ *
+ */
 public class ProjectData {
 	private Video video;
 	private List<AnimalTrack> tracks;
@@ -67,6 +72,13 @@ public class ProjectData {
 		return closestTrack;
 	}
 	
+	/**
+	 * Finds the nearest TimePoint and returns it
+	 * @param points, List<Points> that are being checked
+	 * @param x, double x value
+	 * @param y, double y value
+	 * @return the closest point found
+	 */
 	public TimePoint getNearestPoint(List<TimePoint> points, double x, double y) {
 		TimePoint closestPoint = null;
 		double shortestDistance = Integer.MAX_VALUE;
@@ -81,6 +93,11 @@ public class ProjectData {
 	}
 	
 
+	/**
+	 * Saves the project information to a file
+	 * @param saveFile the File to be saved
+	 * @throws FileNotFoundException prevents crash
+	 */
 	public void saveToFile(File saveFile) throws FileNotFoundException {
 		String json = toJSON();
 		PrintWriter out = new PrintWriter(saveFile);
@@ -88,17 +105,34 @@ public class ProjectData {
 		out.close();
 	}
 	
+	/**
+	 * Converts a Gson to Json through a String
+	 * @return the Json String
+	 */
 	public String toJSON() {
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();		
 		return gson.toJson(this);
 	}
 	
+	/**
+	 * Loads project data from a saved file
+	 * @param loadFile the saved project data to be loaded
+	 * @return the now loaded ProjectData
+	 * @throws FileNotFoundException prevents crashing
+	 */
 	public static ProjectData loadFromFile(File loadFile) throws FileNotFoundException {
 		@SuppressWarnings("resource")
 		String json = new Scanner(loadFile).useDelimiter("\\Z").next();
 		return fromJSON(json);
 	}
 	
+	
+	/**
+	 * Converts project data back from Json
+	 * @param jsonText the file as a Json
+	 * @return the ProjectData
+	 * @throws FileNotFoundException prevents crashing 
+	 */
 	public static ProjectData fromJSON(String jsonText) throws FileNotFoundException {
 		Gson gson = new Gson();
 		ProjectData data = gson.fromJson(jsonText, ProjectData.class);
