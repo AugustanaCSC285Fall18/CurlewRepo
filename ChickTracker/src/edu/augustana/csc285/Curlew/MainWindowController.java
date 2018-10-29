@@ -612,8 +612,7 @@ public class MainWindowController implements AutoTrackListener {
 		btnArena.setDisable(true);
 		btnStartManualTrack.setDisable(true);
 		btnStopManualTrack.setDisable(true);
-		JOptionPane.showMessageDialog(null, "Set the horizontal by clicking bottom left of box to bottom right");
-
+		showAlertMessage(AlertType.INFORMATION, "Setting Arena Bounds", null, "Set the horizontal by clicking bottom left of box to bottom right");
 		canvas.setOnMousePressed(e -> calibController.startHorizontalScaling(e));
 
 		btnAutotrack.setDisable(false);
@@ -739,7 +738,7 @@ public class MainWindowController implements AutoTrackListener {
 		Analysis.exportProject(project, getImageScalingRatio());
 	}
 
-	private void showAlertMessage(AlertType alertType, String title, String header, String contentText) {
+	public static void showAlertMessage(AlertType alertType, String title, String header, String contentText) {
 		Alert noAnimalSelectedAlert = new Alert(alertType);
 		noAnimalSelectedAlert.setTitle(title);
 		noAnimalSelectedAlert.setHeaderText(header);
