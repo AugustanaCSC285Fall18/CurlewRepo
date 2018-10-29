@@ -1,9 +1,10 @@
 package edu.augustana.csc285.Curlew;
 
+import static org.junit.jupiter.api.Assumptions.assumingThat;
+
 import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
-
-import javax.swing.JOptionPane;
+import java.util.Optional;
 
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfByte;
@@ -12,8 +13,11 @@ import org.opencv.imgcodecs.Imgcodecs;
 import datamodel.Video;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.control.Alert;
+
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.TextInputDialog;
+import javafx.scene.control.Alert;
+
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -97,15 +101,22 @@ public class CalibrationController {
 
 		// this ugly thing takes the values from our ArrayList and uses pythgorean's
 		// theorem to find the distance between the points.
-//		String numberCentimeters = JOptionPane.showInputDialog(null, "Enter distance chosen in centimeters", "Adding New Animal",
-//				JOptionPane.PLAIN_MESSAGE);
-		video.setxPixelsPerCm(calculateDistance() / 81);
+		TextInputDialog scalingXDialog = new TextInputDialog("0");
+		scalingXDialog.setTitle("Setting Arena Bounds");
+		scalingXDialog.setHeaderText(null);
+		scalingXDialog.setContentText("Enter the width of the arena in centimeters:");
+		Optional<String> result = scalingXDialog.showAndWait();
+		if (result.isPresent()) {
+			double widthCm = Double.parseDouble(result.get());
+			video.setxPixelsPerCm(calculateDistance() / widthCm);
+		}
 		GraphicsContext g = canvas.getGraphicsContext2D();
 		g.setStroke(Color.GREEN);
 		g.strokeLine(scaleCoords.get(0), scaleCoords.get(1), scaleCoords.get(2), scaleCoords.get(3));
 		scaleCoords.clear();
 		System.out.print("Entered xPixelsPerCm: " + video.getxPixelsPerCm());
-		JOptionPane.showMessageDialog(null, "Set the vertical bounds by clicking bottom right to top right");
+		// popup message to instruct the user on how to set vertical bounds
+		MainWindowController.showAlertMessage(AlertType.INFORMATION, "Setting Arena Bounds", null, "Set the vertical bounds by clicking bottom right to top right");
 		canvas.setOnMousePressed(e -> startVerticalScaling(e));
 	}
 
@@ -116,10 +127,16 @@ public class CalibrationController {
 
 		// this ugly thing takes the values from our ArrayList and uses pythgorean's
 		// theorem to find the distance between the points.
-//		String numberCentimeters = JOptionPane.showInputDialog(null, "Enter distance chosen in centimeters", "Adding New Animal",
-//				JOptionPane.PLAIN_MESSAGE);
-//		
-		video.setyPixelsPerCm(calculateDistance() / 53);
+		TextInputDialog scalingXDialog = new TextInputDialog("0");
+		scalingXDialog.setTitle("Setting Arena Bounds");
+		scalingXDialog.setHeaderText(null);
+		scalingXDialog.setContentText("Enter the height of the arena in centimeters:");
+		Optional<String> result = scalingXDialog.showAndWait();
+		if (result.isPresent()) {
+			double heightCm = Double.parseDouble(result.get());
+			video.setyPixelsPerCm(calculateDistance() / heightCm);
+			
+		}
 		GraphicsContext g = canvas.getGraphicsContext2D();
 		g.setStroke(Color.RED);
 		g.strokeLine(scaleCoords.get(0), scaleCoords.get(1), scaleCoords.get(2), scaleCoords.get(3));
@@ -140,9 +157,6 @@ public class CalibrationController {
 	 * @param event MouseEvent that records where you press the mouse
 	 */
 	public void startHorizontalScaling(MouseEvent event) {
-
-//		xOne = event.getX();
-//		yOne = event.getY();
 		scaleCoords.add(event.getX());
 		scaleCoords.add(event.getY());
 
