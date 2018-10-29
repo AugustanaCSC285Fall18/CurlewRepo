@@ -170,32 +170,6 @@ public class MainWindowController implements AutoTrackListener {
 		menuBtnAnimals.getItems().clear();
 		menuBtnAnimals.setText("Animal Select");
 
-//		btnStartManualTrack.setDisable(true);
-//		btnStopManualTrack.setDisable(true);
-//
-//		// Creates some basic instructions for the user to read prior to seeing the
-//		// window.
-//		Alert startUpInstructions = new Alert(AlertType.INFORMATION);
-//		startUpInstructions.setTitle("Instructions for Tracking");
-//		startUpInstructions.setHeaderText(null);
-//		startUpInstructions.setContentText("Please start by selecting a video file to analyze.\n\n "
-//				+ "Then, scroll to a blank frame and press the \"Set Blank Frame Button\".\n\n "
-//				+ "The blank frame will be used to prepare the autotracking feature, so be certain "
-//				+ "it has no noticeable shadows, chicks, objects etc. visible.");
-//
-//		startUpInstructions.showAndWait();
-//		btnAddAnimal.setDisable(true);
-//		btnRemoveAnimal.setDisable(true);
-//		btnStartManualTrack.setDisable(true);
-//		btnStopManualTrack.setDisable(true);
-//		btnArena.setDisable(true);
-//		btnJumpAhead.setDisable(true);
-//		btnJumpBack.setDisable(true);
-//		btnSetFrameNum.setDisable(true);
-//		btnAutotrack.setDisable(true);
-//		btnOrigin.setDisable(true);
-//		menuBtnAnimals.setDisable(true);
-
 	}
 
 	/**
@@ -226,7 +200,6 @@ public class MainWindowController implements AutoTrackListener {
 	 */
 	public void resetMouseModeAndButtons() {
 		canvas.setOnMousePressed(null);
-		btnStartManualTrack.setDisable(false);
 		btnOrigin.setDisable(false);
 
 		// re-enable other buttons too, involving calibration, etc?
@@ -269,7 +242,7 @@ public class MainWindowController implements AutoTrackListener {
 	/**
 	 * Loads the project data from a previously worked on project
 	 * 
-	 * @throws FileNotFoundException
+	 * @throws FileNotFoundException if the selected project file is not found
 	 */
 	@FXML
 	public void handleLoadProject() throws FileNotFoundException {
