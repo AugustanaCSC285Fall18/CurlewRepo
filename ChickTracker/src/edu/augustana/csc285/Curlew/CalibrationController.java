@@ -101,8 +101,6 @@ public class CalibrationController {
 
 		// this ugly thing takes the values from our ArrayList and uses pythgorean's
 		// theorem to find the distance between the points.
-//		String numberCentimeters = JOptionPane.showInputDialog(null, "Enter distance chosen in centimeters", "Adding New Animal",
-//				JOptionPane.PLAIN_MESSAGE);
 		TextInputDialog scalingXDialog = new TextInputDialog("0");
 		scalingXDialog.setTitle("Setting Arena Bounds");
 		scalingXDialog.setHeaderText(null);
@@ -129,8 +127,6 @@ public class CalibrationController {
 
 		// this ugly thing takes the values from our ArrayList and uses pythgorean's
 		// theorem to find the distance between the points.
-//		String numberCentimeters = JOptionPane.showInputDialog(null, "Enter distance chosen in centimeters", "Adding New Animal",
-//				JOptionPane.PLAIN_MESSAGE);
 		TextInputDialog scalingXDialog = new TextInputDialog("0");
 		scalingXDialog.setTitle("Setting Arena Bounds");
 		scalingXDialog.setHeaderText(null);
@@ -161,9 +157,6 @@ public class CalibrationController {
 	 * @param event MouseEvent that records where you press the mouse
 	 */
 	public void startHorizontalScaling(MouseEvent event) {
-
-//		xOne = event.getX();
-//		yOne = event.getY();
 		scaleCoords.add(event.getX());
 		scaleCoords.add(event.getY());
 
