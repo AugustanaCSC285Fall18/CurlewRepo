@@ -9,6 +9,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -306,8 +307,8 @@ public class MainWindowController implements AutoTrackListener {
 	public void handleStartAutotracking() throws InterruptedException {
 		if (autotracker == null || !autotracker.isRunning()) {
 			// Video video = project.getVideo();
-			project.getVideo().setStartAutoTrackFrameNum(Integer.parseInt(textfieldStartFrame.getText()));
-			project.getVideo().setEndAutoTrackFrameNum(Integer.parseInt(textfieldEndFrame.getText()));
+			project.getVideo().setStartAutoTrackFrameNum(project.getVideo().convertSecondsToFrameNums(Integer.parseInt(textfieldStartFrame.getText())));
+			project.getVideo().setEndAutoTrackFrameNum(project.getVideo().convertSecondsToFrameNums(Integer.parseInt(textfieldEndFrame.getText())));
 			autotracker = new AutoTracker();
 			// Use Observer Pattern to give autotracker a reference to this object,
 			// and call back to methods in this class to update progress.
@@ -335,7 +336,8 @@ public class MainWindowController implements AutoTrackListener {
 			videoView.setImage(imgFrame);
 			progressAutoTrack.setProgress(fractionComplete);
 			sliderVideoTime.setValue(frameNumber);
-			textFieldCurFrameNum.setText(String.format("%05d", frameNumber));
+			DecimalFormat twoDForm = new DecimalFormat("#.0");
+			textFieldCurFrameNum.setText(twoDForm.format(project.getVideo().convertFrameNumsToSeconds(frameNumber)));
 		});
 	}
 
@@ -380,7 +382,8 @@ public class MainWindowController implements AutoTrackListener {
 			drawUnassignedSegments(g, scalingRatio, frameNum);
 
 		}
-		textFieldCurFrameNum.setText(String.format("%05d", frameNum));
+		DecimalFormat twoDForm = new DecimalFormat("#.0");
+		textFieldCurFrameNum.setText(twoDForm.format(project.getVideo().convertFrameNumsToSeconds(frameNum)));
 	}
 
 	@Override
@@ -517,8 +520,8 @@ public class MainWindowController implements AutoTrackListener {
 		if (currentAnimal == null) {
 			showAlertMessage(AlertType.WARNING, "WARNING", null, "Select a chick to track.");
 		} else {
-			if (Integer.parseInt(textfieldStartFrame.getText()) <= currentFrame
-					&& Integer.parseInt(textfieldEndFrame.getText()) >= currentFrame) {
+			if (project.getVideo().convertSecondsToFrameNums(Integer.parseInt(textfieldStartFrame.getText())) <= currentFrame
+					&& project.getVideo().convertSecondsToFrameNums(Integer.parseInt(textfieldEndFrame.getText())) >= currentFrame) {
 				double scalingRatio = getImageScalingRatio();
 
 				// user click locations
@@ -662,12 +665,14 @@ public class MainWindowController implements AutoTrackListener {
 	 * amount, but they are.
 	 */
 	public void handleBtnJumpAhead() {
-		if (project.getVideo().getCurrentFrameNum() + 31 < project.getVideo().getEndFrameNum()) {
-			sliderVideoTime.setValue(project.getVideo().getCurrentFrameNum() + 31);
+		if (project.getVideo().getCurrentFrameNum() + 28 < project.getVideo().getEndFrameNum()) {
+			sliderVideoTime.setValue(project.getVideo().getCurrentFrameNum() + 28);
 			showFrameAt(project.getVideo().getCurrentFrameNum());
 		} else {
 			showFrameAt(project.getVideo().getCurrentFrameNum() - 1);
 		}
+		DecimalFormat twoDForm = new DecimalFormat("#.0");
+		textFieldCurFrameNum.setText(twoDForm.format(project.getVideo().convertFrameNumsToSeconds(project.getVideo().getCurrentFrameNum() - 1)));
 	}
 
 	/*
@@ -675,14 +680,16 @@ public class MainWindowController implements AutoTrackListener {
 	 * amount, but they are.
 	 */
 	public void handleBtnJumpBack() {
-		sliderVideoTime.setValue(project.getVideo().getCurrentFrameNum() - 35);
+		sliderVideoTime.setValue(project.getVideo().getCurrentFrameNum() - 32);
 		showFrameAt(project.getVideo().getCurrentFrameNum());
+		DecimalFormat twoDForm = new DecimalFormat("#.0");
+		textFieldCurFrameNum.setText(twoDForm.format(project.getVideo().convertFrameNumsToSeconds(project.getVideo().getCurrentFrameNum() - 1)));
 	}
 
 	public void handleBtnSetFrameNum() {
 		boolean invalidFrameNum = true;
 		String contentText = "Enter desired time (in seconds)";
-		int newFrameNum = project.getVideo().getCurrentFrameNum();
+		int newTime = project.getVideo().getCurrentFrameNum();
 		while (invalidFrameNum) {
 			boolean enteredNum = false;
 			TextInputDialog frameSelectionDialog = new TextInputDialog(textfieldStartFrame.getText());
@@ -696,10 +703,10 @@ public class MainWindowController implements AutoTrackListener {
 			}
 
 			try {
-				newFrameNum = Integer.parseInt(input);
-				if (newFrameNum < 0) {
+				newTime = Integer.parseInt(input);
+				if (newTime < 0) {
 					contentText = "Number needs to be at least 0.";
-				} else if (newFrameNum > project.getVideo().getEndFrameNum()) {
+				} else if (newTime > project.getVideo().convertSecondsToFrameNums(project.getVideo().getEndFrameNum())) {
 					contentText = "Number cannot be greater than the length of the video.";
 				} else {
 					invalidFrameNum = false;
@@ -708,8 +715,8 @@ public class MainWindowController implements AutoTrackListener {
 				contentText = "Please enter only integers.";
 			}
 		}
-		sliderVideoTime.setValue(newFrameNum);
-		showFrameAt(newFrameNum);
+		sliderVideoTime.setValue(project.getVideo().convertSecondsToFrameNums(newTime));
+		showFrameAt(project.getVideo().getCurrentFrameNum() - 1);
 	}
 
 	// Our tracked points are stored as un-scaled points,
