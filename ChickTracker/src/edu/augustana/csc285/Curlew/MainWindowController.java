@@ -154,6 +154,7 @@ public class MainWindowController implements AutoTrackListener {
 
 				toggleButtonsOff(true);
 				btnArena.setDisable(false);
+				
 			} else if (result.get() == buttonLoadProject) {
 				handleLoadProject();
 			} else {
@@ -169,6 +170,7 @@ public class MainWindowController implements AutoTrackListener {
 		animalIdList = new ArrayList<String>();
 		menuBtnAnimals.getItems().clear();
 		menuBtnAnimals.setText("Animal Select");
+		
 
 	}
 
@@ -374,6 +376,7 @@ public class MainWindowController implements AutoTrackListener {
 
 		toggleButtonsOff(false);
 		btnStopManualTrack.setDisable(true);
+		
 	}
 
 	
@@ -741,5 +744,6 @@ public class MainWindowController implements AutoTrackListener {
 		btnAddAnimal.setDisable(toggle);
 		btnRemoveAnimal.setDisable(toggle);
 		btnArena.setDisable(toggle);
+		//btnSetBlankScreen.setDisable(toggle);
 	}
 }
