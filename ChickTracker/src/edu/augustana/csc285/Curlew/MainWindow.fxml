@@ -158,12 +158,7 @@
                         <MenuItem mnemonicParsing="false" onAction="#handleExport" text="Export" />
                   </items>
                 </Menu>
-                <Menu mnemonicParsing="false" text="Edit">
-                  <items>
-                    <MenuItem mnemonicParsing="false" text="Delete" />
-                  </items>
-                </Menu>
-                <Menu mnemonicParsing="false" text="Help">
+                <Menu mnemonicParsing="false" text="Info">
                   <items>
                     <MenuItem mnemonicParsing="false" onAction="#handleAbout" text="About" />
                   </items>
