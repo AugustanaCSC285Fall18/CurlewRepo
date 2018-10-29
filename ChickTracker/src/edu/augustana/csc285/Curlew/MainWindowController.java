@@ -76,7 +76,7 @@ public class MainWindowController implements AutoTrackListener {
 	private GraphicsContext graphic;
 
 	@FXML
-	private Button originButton;
+	private Button btnOrigin;
 	@FXML
 	private Button btnBrowse;
 	@FXML
@@ -117,6 +117,9 @@ public class MainWindowController implements AutoTrackListener {
 	@FXML
 	private Button btnSetFrameNum;
 
+	@FXML
+	private Button btnSetBlankScreen;
+
 	public static final Color[] TRACK_COLORS = new Color[] { Color.RED, Color.BLUE, Color.GREEN, Color.CYAN,
 			Color.MAGENTA, Color.BLUEVIOLET, Color.ORANGE };
 
@@ -138,7 +141,7 @@ public class MainWindowController implements AutoTrackListener {
 //		loadVideo("S:/class/cs/285/sample_videos/sample1.mp4");
 //		project.getVideo().setxPixelsPerCm(6.5); // these are just rough estimates!
 //		project.getVideo().setyPixelsPerCm(6.7);
-		
+
 		handleBrowse();
 
 //		loadVideo("/home/forrest/data/shara_chicks_tracking/lowres/lowres2.avi");
@@ -162,10 +165,23 @@ public class MainWindowController implements AutoTrackListener {
 		Alert startUpInstructions = new Alert(AlertType.INFORMATION);
 		startUpInstructions.setTitle("Instructions for Tracking");
 		startUpInstructions.setHeaderText(null);
-		startUpInstructions.setContentText("Please set the arena bounds after selecting a video.\n"
-				+ "Then choose the start time when all chicks are visible and the end time when you"
-				+ " would like to end tracking.\nThen click auto tracking once.");
+		startUpInstructions.setContentText("Please start by selecting a video file to analyze.\n\n "
+				+ "Then, scroll to a blank frame and press the \"Set Blank Frame Button\".\n\n "
+				+ "The blank frame will be used to prepare the autotracking feature, so be certain "
+				+ "it has no noticeable shadows, chicks, objects etc. visible.");
+
 		startUpInstructions.showAndWait();
+		btnAddAnimal.setDisable(true);
+		btnRemoveAnimal.setDisable(true);
+		btnStartManualTrack.setDisable(true);
+		btnStopManualTrack.setDisable(true);
+		btnArena.setDisable(true);
+		btnJumpAhead.setDisable(true);
+		btnJumpBack.setDisable(true);
+		btnSetFrameNum.setDisable(true);
+		btnAutotrack.setDisable(true);
+		btnOrigin.setDisable(true);
+		menuBtnAnimals.setDisable(true);
 
 	}
 
@@ -188,7 +204,7 @@ public class MainWindowController implements AutoTrackListener {
 		// resizes the stage after canvas so that buttons show no matter what size of
 		// video
 		stage.setHeight(canvas.getHeight() + 250);
-		
+
 	}
 
 	/**
@@ -198,7 +214,7 @@ public class MainWindowController implements AutoTrackListener {
 	public void resetMouseModeAndButtons() {
 		canvas.setOnMousePressed(null);
 		btnStartManualTrack.setDisable(false);
-		originButton.setDisable(false);
+		btnOrigin.setDisable(false);
 
 		// re-enable other buttons too, involving calibration, etc?
 	}
@@ -249,6 +265,10 @@ public class MainWindowController implements AutoTrackListener {
 		}
 	}
 
+	public void handleSetBlankScreen() {
+		
+	}
+
 	/**
 	 * Allows user to set an origin point on their video, which will adjust the
 	 * where the data references as the origin
@@ -257,7 +277,7 @@ public class MainWindowController implements AutoTrackListener {
 	public void handleOriginButton() {
 
 		// prevents user from placing more than one origin
-		originButton.setDisable(true);
+		btnOrigin.setDisable(true);
 
 		// means that when the ImageView (videoView) is clicked, origin will be set to
 		// the point where the press occurred.
@@ -426,10 +446,11 @@ public class MainWindowController implements AutoTrackListener {
 				animalID = result.get();
 			}
 			if (animalID.length() >= 20) { // if the user gave a ID that exceeds the max character limit
-				showAlertMessage(AlertType.WARNING, "WARNING", "Invalid Animal ID","ID is too long.");
+				showAlertMessage(AlertType.WARNING, "WARNING", "Invalid Animal ID", "ID is too long.");
 			} else if (animalIdList.contains(animalID)) { // if the user gave an ID that is already assigned to another
 															// animal
-				showAlertMessage(AlertType.WARNING, "WARNING", "Invalid Animal ID", "ID is already assigned to another animal.");
+				showAlertMessage(AlertType.WARNING, "WARNING", "Invalid Animal ID",
+						"ID is already assigned to another animal.");
 			} else { // user provided a valid ID or cancelled the window
 				invalidID = false;
 			}
@@ -485,14 +506,14 @@ public class MainWindowController implements AutoTrackListener {
 			if (Integer.parseInt(textfieldStartFrame.getText()) <= currentFrame
 					&& Integer.parseInt(textfieldEndFrame.getText()) >= currentFrame) {
 				double scalingRatio = getImageScalingRatio();
-	
+
 				// user click locations
 				double unscaledX = event.getX() / scalingRatio;
 				double unscaledY = event.getY() / scalingRatio;
-	
+
 				// int currentFrame = project.getVideo().getCurrentFrameNum() - 1;
 				int skipToFrame = project.getVideo().getCurrentFrameNum() + 32;
-	
+
 				// checks if the AutoTrack has run and if you are within the bounds of the
 				// autotrack
 				if (!project.getUnassignedSegments().isEmpty()) {
@@ -505,28 +526,28 @@ public class MainWindowController implements AutoTrackListener {
 						closestPoints = closestAutoTrackSegment.getTimePointsWithinInterval(currentFrame - 5,
 								currentFrame + 5);
 					} catch (NullPointerException e) {
-	
+
 					}
 					// checks to make sure there is points in the list of closest points
 					if (!closestPoints.isEmpty()) {
-	
+
 						// finds the TimePoint that is closest to the click location
 						TimePoint closestPoint = project.getNearestPoint(closestPoints, unscaledX, unscaledY);
-	
+
 						// TimePoint closestPoint =
 						// closestAutoTrackSegment.getTimePointAtTime(currentFrame);
-	
+
 						// Checks to see if that point is close enough to the click location
 						if (closestPoint.getDistanceTo(unscaledX, unscaledY) < 10) { // if close enough,
 							// sets the frame that will be moved to next to the end of the autotrack segment
 							skipToFrame = closestAutoTrackSegment.getFinalTimePoint().getFrameNum() + 1;
-	
+
 							// adds the timepoints from the segment to the current animal
 							currentAnimal.add(closestAutoTrackSegment);
-	
+
 							// removes that segment from the unassigned segments list
 							project.getUnassignedSegments().remove(closestAutoTrackSegment);
-	
+
 						} else { // if not close enough, create a new TimePoint from the click location and add
 									// it to the current animal
 							TimePoint newTimePoint = new TimePoint(unscaledX, unscaledY, currentFrame);
@@ -543,7 +564,7 @@ public class MainWindowController implements AutoTrackListener {
 					TimePoint newTimePoint = new TimePoint(unscaledX, unscaledY, currentFrame);
 					currentAnimal.add(newTimePoint);
 				}
-	
+
 				// if the frame that the video will be moved to is not past the last frame in
 				// the video, moved the slider and shows the next frame.
 				int endFrame = project.getVideo().getEndAutoTrackFrameNum();
@@ -650,7 +671,7 @@ public class MainWindowController implements AutoTrackListener {
 		while (invalidFrameNum) {
 			boolean enteredNum = false;
 			TextInputDialog frameSelectionDialog = new TextInputDialog(textfieldStartFrame.getText());
-			frameSelectionDialog.setTitle("Set Time"); 
+			frameSelectionDialog.setTitle("Set Time");
 			frameSelectionDialog.setHeaderText(null);
 			frameSelectionDialog.setContentText(contentText);
 			Optional<String> result = frameSelectionDialog.showAndWait();
@@ -658,11 +679,11 @@ public class MainWindowController implements AutoTrackListener {
 			if (result.isPresent()) {
 				input = result.get();
 			}
-			
+
 			try {
 				newFrameNum = Integer.parseInt(input);
 				if (newFrameNum < 0) {
-					contentText = "Number needs to be at least 0.";	
+					contentText = "Number needs to be at least 0.";
 				} else if (newFrameNum > project.getVideo().getEndFrameNum()) {
 					contentText = "Number cannot be greater than the length of the video.";
 				} else {
@@ -670,7 +691,7 @@ public class MainWindowController implements AutoTrackListener {
 				}
 			} catch (NumberFormatException e) {
 				contentText = "Please enter only integers.";
-			}			
+			}
 		}
 		sliderVideoTime.setValue(newFrameNum);
 		showFrameAt(newFrameNum);
