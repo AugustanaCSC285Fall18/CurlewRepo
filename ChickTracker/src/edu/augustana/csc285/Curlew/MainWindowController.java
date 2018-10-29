@@ -757,9 +757,9 @@ public class MainWindowController implements AutoTrackListener {
 		Alert alert = new Alert(AlertType.INFORMATION);
 		alert.setTitle("About Message");
 		alert.setHeaderText(null);
-		String names = "Team Curlew: Bryson Adcock, Chris Baker, Kathryn Clark, Riley Smith, Leo ;)"
+		String names = "Team Curlew: Bryson Adcock, Chris Baker, Riley Smith"
 				+ "\nProject Supervisor: Dr. Forrest Stonedahl";
-		String acknowledgements = "\n\nLeo did basically everything for the project\nJust kidding. He literally did the whole thing.";
+		String acknowledgements = "\n\nSpeical thanks to:\nKathryn Clark\nLeo Carberry\n";
 		String usedLibraries = "\nLibraries: OpenCV, JavaFX, JavaSwing, JSON, GSON";
 
 		alert.setContentText(names + acknowledgements + usedLibraries);
