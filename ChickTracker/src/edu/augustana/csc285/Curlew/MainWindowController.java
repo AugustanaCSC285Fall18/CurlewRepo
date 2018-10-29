@@ -102,7 +102,7 @@ public class MainWindowController implements AutoTrackListener {
 	private AutoTracker autotracker;
 	private ProjectData project;
 	private Stage stage;
-	private ArrayList<String> animalIdList;
+	private ArrayList<String> animalIdList = new ArrayList<String>();
 	private AnimalTrack currentAnimal;
 	private boolean projectAlreadyRunning = false;
 
@@ -242,7 +242,17 @@ public class MainWindowController implements AutoTrackListener {
 		File chosenFile = fileChooser.showOpenDialog(stage);
 		if (chosenFile != null) {
 			project = ProjectData.loadFromFile(chosenFile);
-			initialize();
+			calibController = new CalibrationController(project.getVideo(), canvas, this, videoView);
+			sliderVideoTime.setMax(project.getVideo().getTotalNumFrames() - 1);
+			showFrameAt(0);
+			for (AnimalTrack track : project.getTracks()) {
+				String name = track.getId();
+				animalIdList.add(name);
+				int index = animalIdList.indexOf(name);
+				currentAnimal = project.getTracks().get(index);
+				menuBtnAnimals.setText(name);
+			}
+			System.out.println(project.getTracks());
 		}
 	}
 
