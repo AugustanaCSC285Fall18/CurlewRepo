@@ -1,5 +1,6 @@
 package analysis;
 
+import java.awt.Point;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -48,7 +49,13 @@ public class Analysis {
 
 		int secondNumStart = (int) project.getVideo()
 				.convertFrameNumsToSeconds((project.getVideo().getStartAutroTrackFrameNum()));
+		
+		Point origin = project.getVideo().getOrigin();
 
+		if (origin == null) {
+			origin = new Point(0,0);
+		}
+		
 		// goes through every second of tracked data and displays
 		// the x y coordinates of the point each chick had that
 		// was closest to that time
@@ -61,9 +68,9 @@ public class Analysis {
 				if (point != null) {
 					s.append(seconds);
 					s.append(",");
-					s.append(point.getX() * scalingRatio);
+					s.append(((point.getX() * scalingRatio) - origin.getX()) * project.getVideo().getxPixelsPerCm());
 					s.append(",");
-					s.append(point.getY() * scalingRatio);
+					s.append(((point.getY() * scalingRatio) - origin.getY()) * project.getVideo().getyPixelsPerCm());
 					s.append(",,");
 				} else {
 					s.append(",,,,");
