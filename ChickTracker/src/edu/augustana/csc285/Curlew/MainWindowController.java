@@ -222,7 +222,7 @@ public class MainWindowController implements AutoTrackListener {
 		// resizes the stage after canvas so that buttons show no matter what size of
 		// video
 		stage.setHeight(canvas.getHeight() + 250);
-
+		
 	}
 
 	/**

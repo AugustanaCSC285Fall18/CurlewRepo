@@ -77,6 +77,7 @@ public class CalibrationController {
 
 		canvas.setHeight(videoView.getScene().widthProperty().doubleValue() / aspectRatio);
 		canvas.setWidth(videoView.getScene().widthProperty().doubleValue());
+	
 
 	}
 
