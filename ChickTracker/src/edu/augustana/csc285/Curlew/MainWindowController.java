@@ -650,6 +650,7 @@ public class MainWindowController implements AutoTrackListener {
 		btnArena.setDisable(true);
 		btnStartManualTrack.setDisable(true);
 		btnStopManualTrack.setDisable(true);
+		// popup message to instruct the user on how to set horizontal bounds
 		showAlertMessage(AlertType.INFORMATION, "Setting Arena Bounds", null, "Set the horizontal by clicking bottom left of box to bottom right");
 		canvas.setOnMousePressed(e -> calibController.startHorizontalScaling(e));
 

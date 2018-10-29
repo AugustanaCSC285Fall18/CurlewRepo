@@ -107,8 +107,8 @@ public class CalibrationController {
 		scalingXDialog.setContentText("Enter the width of the arena in centimeters:");
 		Optional<String> result = scalingXDialog.showAndWait();
 		if (result.isPresent()) {
-			double xScaleCm = Double.parseDouble(result.get());
-			video.setxPixelsPerCm(calculateDistance() / xScaleCm);
+			double widthCm = Double.parseDouble(result.get());
+			video.setxPixelsPerCm(calculateDistance() / widthCm);
 		}
 //		video.setxPixelsPerCm(calculateDistance() / 81);
 		GraphicsContext g = canvas.getGraphicsContext2D();
@@ -116,6 +116,7 @@ public class CalibrationController {
 		g.strokeLine(scaleCoords.get(0), scaleCoords.get(1), scaleCoords.get(2), scaleCoords.get(3));
 		scaleCoords.clear();
 		System.out.print("Entered xPixelsPerCm: " + video.getxPixelsPerCm());
+		// popup message to instruct the user on how to set vertical bounds
 		MainWindowController.showAlertMessage(AlertType.INFORMATION, "Setting Arena Bounds", null, "Set the vertical bounds by clicking bottom right to top right");
 		canvas.setOnMousePressed(e -> startVerticalScaling(e));
 	}
@@ -133,8 +134,8 @@ public class CalibrationController {
 		scalingXDialog.setContentText("Enter the height of the arena in centimeters:");
 		Optional<String> result = scalingXDialog.showAndWait();
 		if (result.isPresent()) {
-			double yScaleCm = Double.parseDouble(result.get());
-			video.setyPixelsPerCm(calculateDistance() / yScaleCm);
+			double heightCm = Double.parseDouble(result.get());
+			video.setyPixelsPerCm(calculateDistance() / heightCm);
 		}
 //		video.setyPixelsPerCm(calculateDistance() / 53);
 		GraphicsContext g = canvas.getGraphicsContext2D();
