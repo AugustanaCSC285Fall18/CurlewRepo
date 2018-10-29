@@ -94,6 +94,7 @@ public class ProjectData {
 	}
 	
 	public static ProjectData loadFromFile(File loadFile) throws FileNotFoundException {
+		@SuppressWarnings("resource")
 		String json = new Scanner(loadFile).useDelimiter("\\Z").next();
 		return fromJSON(json);
 	}
