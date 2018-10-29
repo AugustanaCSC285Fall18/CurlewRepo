@@ -13,8 +13,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import javax.swing.JOptionPane;
-
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfByte;
 import org.opencv.core.Point;
@@ -144,7 +142,6 @@ public class MainWindowController implements AutoTrackListener {
 //		project.getVideo().setxPixelsPerCm(6.5); // these are just rough estimates!
 //		project.getVideo().setyPixelsPerCm(6.7);
 
-
 //		loadVideo("/home/forrest/data/shara_chicks_tracking/lowres/lowres2.avi");
 		// loadVideo("S:/class/cs/285/sample_videos/lowres2.mp4");
 //		project.getVideo().setXPixelsPerCm(5.5); //  these are just rough estimates!
@@ -186,7 +183,7 @@ public class MainWindowController implements AutoTrackListener {
 				startUpInstructions.showAndWait();
 
 				projectAlreadyRunning = true;
-				
+
 				toggleButtonsOff(true);
 				btnArena.setDisable(false);
 			} else if (result.get() == buttonLoadProject) {
@@ -231,7 +228,6 @@ public class MainWindowController implements AutoTrackListener {
 //		btnOrigin.setDisable(true);
 //		menuBtnAnimals.setDisable(true);
 
-
 	}
 
 	/**
@@ -264,7 +260,6 @@ public class MainWindowController implements AutoTrackListener {
 		canvas.setOnMousePressed(null);
 		btnStartManualTrack.setDisable(false);
 		btnOrigin.setDisable(false);
-
 
 		// re-enable other buttons too, involving calibration, etc?
 	}
@@ -359,7 +354,7 @@ public class MainWindowController implements AutoTrackListener {
 			autotracker.cancelAnalysis();
 			btnAutotrack.setText("Start auto-tracking");
 		}
-		
+
 	}
 
 	// this method will get called repeatedly by the Autotracker after it analyzes
@@ -411,8 +406,6 @@ public class MainWindowController implements AutoTrackListener {
 
 			g.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
 			double scalingRatio = getImageScalingRatio();
-			// g.drawImage(curFrame, 0, 0, curFrame.getWidth() * scalingRatio,
-			// curFrame.getHeight() * scalingRatio);
 
 			drawAssignedAnimalTracks(g, scalingRatio, frameNum);
 			drawUnassignedSegments(g, scalingRatio, frameNum);
@@ -426,10 +419,6 @@ public class MainWindowController implements AutoTrackListener {
 		project.getUnassignedSegments().clear();
 		project.getUnassignedSegments().addAll(trackedSegments);
 
-		// for (AnimalTrack track : trackedSegments) {
-		// System.out.println(track);
-		// System.out.println(" " + track.getPositions());
-		// }
 		Platform.runLater(() -> {
 			progressAutoTrack.setProgress(1.0);
 			btnAutotrack.setText("Start auto-tracking");
@@ -559,11 +548,11 @@ public class MainWindowController implements AutoTrackListener {
 					&& Integer.parseInt(textfieldEndFrame.getText()) >= currentFrame) {
 				double scalingRatio = getImageScalingRatio();
 
-				// user click locations
+				// user click location
 				double unscaledX = event.getX() / scalingRatio;
 				double unscaledY = event.getY() / scalingRatio;
 
-				// int currentFrame = project.getVideo().getCurrentFrameNum() - 1;
+				// sets the value that the video will skip too after the click
 				int skipToFrame = project.getVideo().getCurrentFrameNum() + 32;
 
 				// checks if the AutoTrack has run and if you are within the bounds of the
@@ -578,16 +567,12 @@ public class MainWindowController implements AutoTrackListener {
 						closestPoints = closestAutoTrackSegment.getTimePointsWithinInterval(currentFrame - 5,
 								currentFrame + 5);
 					} catch (NullPointerException e) {
-
-					}
+					} // catches if the are any auto tracks left in that interval of the video
 					// checks to make sure there is points in the list of closest points
 					if (!closestPoints.isEmpty()) {
 
 						// finds the TimePoint that is closest to the click location
 						TimePoint closestPoint = project.getNearestPoint(closestPoints, unscaledX, unscaledY);
-
-						// TimePoint closestPoint =
-						// closestAutoTrackSegment.getTimePointAtTime(currentFrame);
 
 						// Checks to see if that point is close enough to the click location
 						if (closestPoint.getDistanceTo(unscaledX, unscaledY) < 10) { // if close enough,
@@ -651,7 +636,8 @@ public class MainWindowController implements AutoTrackListener {
 		btnStartManualTrack.setDisable(true);
 		btnStopManualTrack.setDisable(true);
 		// popup message to instruct the user on how to set horizontal bounds
-		showAlertMessage(AlertType.INFORMATION, "Setting Arena Bounds", null, "Set the horizontal by clicking bottom left of box to bottom right");
+		showAlertMessage(AlertType.INFORMATION, "Setting Arena Bounds", null,
+				"Set the horizontal by clicking bottom left of box to bottom right");
 		canvas.setOnMousePressed(e -> calibController.startHorizontalScaling(e));
 
 		btnAutotrack.setDisable(false);
@@ -720,9 +706,9 @@ public class MainWindowController implements AutoTrackListener {
 	public void handleBtnSetFrameNum() {
 		boolean invalidFrameNum = true;
 		String contentText = "Enter desired time (in seconds)";
-		int newFrameNum = project.getVideo().getCurrentFrameNum();
-		while (invalidFrameNum) {
-			boolean enteredNum = false;
+		int newFrameNum = project.getVideo().getCurrentFrameNum();// sets new frame to the current frame so it will be
+																	// unchanged if user cancels the window
+		while (invalidFrameNum) { // runs until user cancels or a valid frame number is entered
 			TextInputDialog frameSelectionDialog = new TextInputDialog(textfieldStartFrame.getText());
 			frameSelectionDialog.setTitle("Set Time");
 			frameSelectionDialog.setHeaderText(null);
@@ -758,7 +744,7 @@ public class MainWindowController implements AutoTrackListener {
 		double heightRatio = canvas.getHeight() / project.getVideo().getFrameHeight();
 		return Math.min(widthRatio, heightRatio);
 	}
-	
+
 	public void handleAbout() {
 		Alert alert = new Alert(AlertType.INFORMATION);
 		alert.setTitle("About Message");
@@ -784,7 +770,7 @@ public class MainWindowController implements AutoTrackListener {
 		noAnimalSelectedAlert.setContentText(contentText);
 		noAnimalSelectedAlert.showAndWait();
 	}
-	
+
 	private void toggleButtonsOff(boolean toggle) {
 		btnStartManualTrack.setDisable(toggle);
 		btnStopManualTrack.setDisable(toggle);

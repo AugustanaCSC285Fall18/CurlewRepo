@@ -110,7 +110,6 @@ public class CalibrationController {
 			double widthCm = Double.parseDouble(result.get());
 			video.setxPixelsPerCm(calculateDistance() / widthCm);
 		}
-//		video.setxPixelsPerCm(calculateDistance() / 81);
 		GraphicsContext g = canvas.getGraphicsContext2D();
 		g.setStroke(Color.GREEN);
 		g.strokeLine(scaleCoords.get(0), scaleCoords.get(1), scaleCoords.get(2), scaleCoords.get(3));
@@ -136,8 +135,8 @@ public class CalibrationController {
 		if (result.isPresent()) {
 			double heightCm = Double.parseDouble(result.get());
 			video.setyPixelsPerCm(calculateDistance() / heightCm);
+			
 		}
-//		video.setyPixelsPerCm(calculateDistance() / 53);
 		GraphicsContext g = canvas.getGraphicsContext2D();
 		g.setStroke(Color.RED);
 		g.strokeLine(scaleCoords.get(0), scaleCoords.get(1), scaleCoords.get(2), scaleCoords.get(3));
