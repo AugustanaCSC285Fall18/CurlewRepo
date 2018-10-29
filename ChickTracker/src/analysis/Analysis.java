@@ -9,12 +9,12 @@ import org.opencv.core.Core;
 import datamodel.AnimalTrack;
 import datamodel.ProjectData;
 import datamodel.TimePoint;
-
+import edu.augustana.csc285.Curlew.MainWindowController;
 import javafx.stage.FileChooser;
 
 public class Analysis {
 
-	public static void exportProject(ProjectData project) throws IOException {
+	public static void exportProject(ProjectData project, Double scalingRatio) throws IOException {
 		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
 
 		String filePath = project.getVideo().getFilePath();
@@ -49,7 +49,7 @@ public class Analysis {
 
 		int secondNumStart = (int) project.getVideo()
 				.convertFrameNumsToSeconds((project.getVideo().getStartAutroTrackFrameNum()));
-
+		
 		// goes through every second of tracked data and displays
 		// the x y coordinates of the point each chick had that
 		// was closest to that time
@@ -59,12 +59,16 @@ public class Analysis {
 			for (AnimalTrack animal : project.getTracks()) {
 				TimePoint point = TimePoint.closestPointToFrame(animal, frameNum);
 				System.out.println(point);
-				s.append(seconds);
-				s.append(",");
-				s.append(point.getX());
-				s.append(",");
-				s.append(point.getY());
-				s.append(",,");
+				if (point != null) {
+					s.append(seconds);
+					s.append(",");
+					s.append(point.getX() * scalingRatio);
+					s.append(",");
+					s.append(point.getY() * scalingRatio);
+					s.append(",,");
+				} else {
+					s.append(",,,,");
+				}
 			}
 			s.append("\n");
 		}

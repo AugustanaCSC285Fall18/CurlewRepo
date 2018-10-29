@@ -49,6 +49,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
@@ -126,11 +127,12 @@ public class MainWindowController implements AutoTrackListener {
 	private ArrayList<String> animalIdList;
 	private AnimalTrack currentAnimal;
 	private boolean manualTrackActive;
+	private boolean projectAlreadyRunning = false;
 
 	private CalibrationController calibController;
 
 	@FXML
-	public void initialize() {
+	public void initialize() throws FileNotFoundException {
 		// FIXME: this quick loading of a specific file and specific settings
 		// is for debugging purposes only, since there's no way to specify
 		// the settings in the GUI right now...
@@ -138,12 +140,57 @@ public class MainWindowController implements AutoTrackListener {
 //		loadVideo("S:/class/cs/285/sample_videos/sample1.mp4");
 //		project.getVideo().setxPixelsPerCm(6.5); // these are just rough estimates!
 //		project.getVideo().setyPixelsPerCm(6.7);
-		handleBrowse();
 
 //		loadVideo("/home/forrest/data/shara_chicks_tracking/lowres/lowres2.avi");
 		// loadVideo("S:/class/cs/285/sample_videos/lowres2.mp4");
 //		project.getVideo().setXPixelsPerCm(5.5); //  these are just rough estimates!
 //		project.getVideo().setYPixelsPerCm(5.5);
+
+		if (projectAlreadyRunning == false) {
+
+			Alert alert = new Alert(AlertType.CONFIRMATION);
+			alert.setTitle("Animal Tracker Welcome Window");
+			alert.setHeaderText("Welcome to Curlew's Animal Tracker!");
+			alert.setContentText("Select an option.");
+			alert.setGraphic(null);
+
+			ButtonType buttonNewProject = new ButtonType("Create New Project");
+			ButtonType buttonLoadProject = new ButtonType("Load Existing Project");
+			ButtonType buttonTypeCancel = new ButtonType("Cancel", ButtonData.CANCEL_CLOSE);
+
+			alert.getButtonTypes().setAll(buttonNewProject, buttonLoadProject, buttonTypeCancel);
+
+			Optional<ButtonType> result = alert.showAndWait();
+			if (result.get() == buttonNewProject) {
+				Alert chooseVideo = new Alert(AlertType.INFORMATION);
+				chooseVideo.setTitle("Video Select");
+				chooseVideo.setHeaderText("Select a video to begin your project with.");
+				// chooseVideo.setContentText("I have a great message for you!");
+				chooseVideo.setGraphic(null);
+
+				chooseVideo.showAndWait();
+				handleBrowse();
+
+				// Creates some basic instructions for the user to read prior to seeing the
+				// window.
+				Alert startUpInstructions = new Alert(AlertType.INFORMATION);
+				startUpInstructions.setTitle("Instructions for Tracking");
+				startUpInstructions.setHeaderText(null);
+				startUpInstructions.setContentText("Please set the arena bounds for your selected video.\n"
+						+ "Then choose the start time when all chicks are visible and the end time when you"
+						+ " would like to end tracking.\nThen click auto tracking once.");
+				startUpInstructions.showAndWait();
+
+				projectAlreadyRunning = true;
+				
+				toggleButtonsOff(true);
+				btnArena.setDisable(false);
+			} else if (result.get() == buttonLoadProject) {
+				handleLoadProject();
+			} else {
+				// ... user chose CANCEL or closed the dialog
+			}
+		}
 
 		graphic = canvas.getGraphicsContext2D();
 		graphic.setFill(Color.BLACK);
@@ -153,18 +200,6 @@ public class MainWindowController implements AutoTrackListener {
 		animalIdList = new ArrayList<String>();
 		menuBtnAnimals.getItems().clear();
 		menuBtnAnimals.setText("Animal Select");
-		btnStartManualTrack.setDisable(true);
-		btnStopManualTrack.setDisable(true);
-
-		// Creates some basic instructions for the user to read prior to seeing the
-		// window.
-		Alert startUpInstructions = new Alert(AlertType.INFORMATION);
-		startUpInstructions.setTitle("Instructions for Tracking");
-		startUpInstructions.setHeaderText(null);
-		startUpInstructions.setContentText("Please set the arena bounds after selecting a video.\n"
-				+ "Then choose the start time when all chicks are visible and the end time when you"
-				+ " would like to end tracking.\nThen click auto tracking once.");
-		startUpInstructions.showAndWait();
 
 	}
 
@@ -196,8 +231,6 @@ public class MainWindowController implements AutoTrackListener {
 	 */
 	public void resetMouseModeAndButtons() {
 		canvas.setOnMousePressed(null);
-		btnStartManualTrack.setDisable(false);
-		originButton.setDisable(false);
 
 		// re-enable other buttons too, involving calibration, etc?
 	}
@@ -288,7 +321,7 @@ public class MainWindowController implements AutoTrackListener {
 			autotracker.cancelAnalysis();
 			btnAutotrack.setText("Start auto-tracking");
 		}
-
+		
 	}
 
 	// this method will get called repeatedly by the Autotracker after it analyzes
@@ -364,6 +397,8 @@ public class MainWindowController implements AutoTrackListener {
 			btnAutotrack.setText("Start auto-tracking");
 		});
 
+		toggleButtonsOff(false);
+		btnStopManualTrack.setDisable(true);
 	}
 
 	// not sure if we're going to need this method but it's here
@@ -425,10 +460,11 @@ public class MainWindowController implements AutoTrackListener {
 				animalID = result.get();
 			}
 			if (animalID.length() >= 20) { // if the user gave a ID that exceeds the max character limit
-				showAlertMessage(AlertType.WARNING, "WARNING", "Invalid Animal ID","ID is too long.");
+				showAlertMessage(AlertType.WARNING, "WARNING", "Invalid Animal ID", "ID is too long.");
 			} else if (animalIdList.contains(animalID)) { // if the user gave an ID that is already assigned to another
 															// animal
-				showAlertMessage(AlertType.WARNING, "WARNING", "Invalid Animal ID", "ID is already assigned to another animal.");
+				showAlertMessage(AlertType.WARNING, "WARNING", "Invalid Animal ID",
+						"ID is already assigned to another animal.");
 			} else { // user provided a valid ID or cancelled the window
 				invalidID = false;
 			}
@@ -484,14 +520,14 @@ public class MainWindowController implements AutoTrackListener {
 			if (Integer.parseInt(textfieldStartFrame.getText()) <= currentFrame
 					&& Integer.parseInt(textfieldEndFrame.getText()) >= currentFrame) {
 				double scalingRatio = getImageScalingRatio();
-	
+
 				// user click locations
 				double unscaledX = event.getX() / scalingRatio;
 				double unscaledY = event.getY() / scalingRatio;
-	
+
 				// int currentFrame = project.getVideo().getCurrentFrameNum() - 1;
 				int skipToFrame = project.getVideo().getCurrentFrameNum() + 32;
-	
+
 				// checks if the AutoTrack has run and if you are within the bounds of the
 				// autotrack
 				if (!project.getUnassignedSegments().isEmpty()) {
@@ -504,28 +540,28 @@ public class MainWindowController implements AutoTrackListener {
 						closestPoints = closestAutoTrackSegment.getTimePointsWithinInterval(currentFrame - 5,
 								currentFrame + 5);
 					} catch (NullPointerException e) {
-	
+
 					}
 					// checks to make sure there is points in the list of closest points
 					if (!closestPoints.isEmpty()) {
-	
+
 						// finds the TimePoint that is closest to the click location
 						TimePoint closestPoint = project.getNearestPoint(closestPoints, unscaledX, unscaledY);
-	
+
 						// TimePoint closestPoint =
 						// closestAutoTrackSegment.getTimePointAtTime(currentFrame);
-	
+
 						// Checks to see if that point is close enough to the click location
 						if (closestPoint.getDistanceTo(unscaledX, unscaledY) < 10) { // if close enough,
 							// sets the frame that will be moved to next to the end of the autotrack segment
 							skipToFrame = closestAutoTrackSegment.getFinalTimePoint().getFrameNum() + 1;
-	
+
 							// adds the timepoints from the segment to the current animal
 							currentAnimal.add(closestAutoTrackSegment);
-	
+
 							// removes that segment from the unassigned segments list
 							project.getUnassignedSegments().remove(closestAutoTrackSegment);
-	
+
 						} else { // if not close enough, create a new TimePoint from the click location and add
 									// it to the current animal
 							TimePoint newTimePoint = new TimePoint(unscaledX, unscaledY, currentFrame);
@@ -542,7 +578,7 @@ public class MainWindowController implements AutoTrackListener {
 					TimePoint newTimePoint = new TimePoint(unscaledX, unscaledY, currentFrame);
 					currentAnimal.add(newTimePoint);
 				}
-	
+
 				// if the frame that the video will be moved to is not past the last frame in
 				// the video, moved the slider and shows the next frame.
 				int endFrame = project.getVideo().getEndAutoTrackFrameNum();
@@ -580,6 +616,7 @@ public class MainWindowController implements AutoTrackListener {
 
 		canvas.setOnMousePressed(e -> calibController.startHorizontalScaling(e));
 
+		btnAutotrack.setDisable(false);
 	}
 
 	private void drawAssignedAnimalTracks(GraphicsContext g, double scalingRatio, int frameNum) {
@@ -649,7 +686,7 @@ public class MainWindowController implements AutoTrackListener {
 		while (invalidFrameNum) {
 			boolean enteredNum = false;
 			TextInputDialog frameSelectionDialog = new TextInputDialog(textfieldStartFrame.getText());
-			frameSelectionDialog.setTitle("Set Time"); 
+			frameSelectionDialog.setTitle("Set Time");
 			frameSelectionDialog.setHeaderText(null);
 			frameSelectionDialog.setContentText(contentText);
 			Optional<String> result = frameSelectionDialog.showAndWait();
@@ -657,11 +694,11 @@ public class MainWindowController implements AutoTrackListener {
 			if (result.isPresent()) {
 				input = result.get();
 			}
-			
+
 			try {
 				newFrameNum = Integer.parseInt(input);
 				if (newFrameNum < 0) {
-					contentText = "Number needs to be at least 0.";	
+					contentText = "Number needs to be at least 0.";
 				} else if (newFrameNum > project.getVideo().getEndFrameNum()) {
 					contentText = "Number cannot be greater than the length of the video.";
 				} else {
@@ -669,7 +706,7 @@ public class MainWindowController implements AutoTrackListener {
 				}
 			} catch (NumberFormatException e) {
 				contentText = "Please enter only integers.";
-			}			
+			}
 		}
 		sliderVideoTime.setValue(newFrameNum);
 		showFrameAt(newFrameNum);
@@ -683,7 +720,7 @@ public class MainWindowController implements AutoTrackListener {
 		double heightRatio = canvas.getHeight() / project.getVideo().getFrameHeight();
 		return Math.min(widthRatio, heightRatio);
 	}
-
+	
 	public void handleAbout() {
 		Alert alert = new Alert(AlertType.INFORMATION);
 		alert.setTitle("About Message");
@@ -699,7 +736,7 @@ public class MainWindowController implements AutoTrackListener {
 	}
 
 	public void handleExport() throws IOException {
-		Analysis.exportProject(project);
+		Analysis.exportProject(project, getImageScalingRatio());
 	}
 
 	private void showAlertMessage(AlertType alertType, String title, String header, String contentText) {
@@ -708,5 +745,16 @@ public class MainWindowController implements AutoTrackListener {
 		noAnimalSelectedAlert.setHeaderText(header);
 		noAnimalSelectedAlert.setContentText(contentText);
 		noAnimalSelectedAlert.showAndWait();
+	}
+	
+	private void toggleButtonsOff(boolean toggle) {
+		btnStartManualTrack.setDisable(toggle);
+		btnStopManualTrack.setDisable(toggle);
+		btnAutotrack.setDisable(toggle);
+		originButton.setDisable(toggle);
+		menuBtnAnimals.setDisable(toggle);
+		btnAddAnimal.setDisable(toggle);
+		btnRemoveAnimal.setDisable(toggle);
+		btnArena.setDisable(toggle);
 	}
 }
