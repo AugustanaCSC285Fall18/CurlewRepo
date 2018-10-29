@@ -77,7 +77,7 @@ public class MainWindowController implements AutoTrackListener {
 	private GraphicsContext graphic;
 
 	@FXML
-	private Button originButton;
+	private Button btnOrigin;
 	@FXML
 	private Button btnBrowse;
 	@FXML
@@ -118,6 +118,9 @@ public class MainWindowController implements AutoTrackListener {
 	@FXML
 	private Button btnSetFrameNum;
 
+	@FXML
+	private Button btnSetBlankScreen;
+
 	public static final Color[] TRACK_COLORS = new Color[] { Color.RED, Color.BLUE, Color.GREEN, Color.CYAN,
 			Color.MAGENTA, Color.BLUEVIOLET, Color.ORANGE };
 
@@ -140,6 +143,7 @@ public class MainWindowController implements AutoTrackListener {
 //		loadVideo("S:/class/cs/285/sample_videos/sample1.mp4");
 //		project.getVideo().setxPixelsPerCm(6.5); // these are just rough estimates!
 //		project.getVideo().setyPixelsPerCm(6.7);
+
 
 //		loadVideo("/home/forrest/data/shara_chicks_tracking/lowres/lowres2.avi");
 		// loadVideo("S:/class/cs/285/sample_videos/lowres2.mp4");
@@ -201,6 +205,33 @@ public class MainWindowController implements AutoTrackListener {
 		menuBtnAnimals.getItems().clear();
 		menuBtnAnimals.setText("Animal Select");
 
+//		btnStartManualTrack.setDisable(true);
+//		btnStopManualTrack.setDisable(true);
+//
+//		// Creates some basic instructions for the user to read prior to seeing the
+//		// window.
+//		Alert startUpInstructions = new Alert(AlertType.INFORMATION);
+//		startUpInstructions.setTitle("Instructions for Tracking");
+//		startUpInstructions.setHeaderText(null);
+//		startUpInstructions.setContentText("Please start by selecting a video file to analyze.\n\n "
+//				+ "Then, scroll to a blank frame and press the \"Set Blank Frame Button\".\n\n "
+//				+ "The blank frame will be used to prepare the autotracking feature, so be certain "
+//				+ "it has no noticeable shadows, chicks, objects etc. visible.");
+//
+//		startUpInstructions.showAndWait();
+//		btnAddAnimal.setDisable(true);
+//		btnRemoveAnimal.setDisable(true);
+//		btnStartManualTrack.setDisable(true);
+//		btnStopManualTrack.setDisable(true);
+//		btnArena.setDisable(true);
+//		btnJumpAhead.setDisable(true);
+//		btnJumpBack.setDisable(true);
+//		btnSetFrameNum.setDisable(true);
+//		btnAutotrack.setDisable(true);
+//		btnOrigin.setDisable(true);
+//		menuBtnAnimals.setDisable(true);
+
+
 	}
 
 	/**
@@ -222,7 +253,7 @@ public class MainWindowController implements AutoTrackListener {
 		// resizes the stage after canvas so that buttons show no matter what size of
 		// video
 		stage.setHeight(canvas.getHeight() + 250);
-		
+
 	}
 
 	/**
@@ -231,6 +262,9 @@ public class MainWindowController implements AutoTrackListener {
 	 */
 	public void resetMouseModeAndButtons() {
 		canvas.setOnMousePressed(null);
+		btnStartManualTrack.setDisable(false);
+		btnOrigin.setDisable(false);
+
 
 		// re-enable other buttons too, involving calibration, etc?
 	}
@@ -281,6 +315,10 @@ public class MainWindowController implements AutoTrackListener {
 		}
 	}
 
+	public void handleSetBlankScreen() {
+		project.getVideo().setEmptyFrameNum(project.getVideo().getCurrentFrameNum());
+	}
+
 	/**
 	 * Allows user to set an origin point on their video, which will adjust the
 	 * where the data references as the origin
@@ -289,7 +327,7 @@ public class MainWindowController implements AutoTrackListener {
 	public void handleOriginButton() {
 
 		// prevents user from placing more than one origin
-		originButton.setDisable(true);
+		btnOrigin.setDisable(true);
 
 		// means that when the ImageView (videoView) is clicked, origin will be set to
 		// the point where the press occurred.
@@ -750,7 +788,7 @@ public class MainWindowController implements AutoTrackListener {
 		btnStartManualTrack.setDisable(toggle);
 		btnStopManualTrack.setDisable(toggle);
 		btnAutotrack.setDisable(toggle);
-		originButton.setDisable(toggle);
+		btnOrigin.setDisable(toggle);
 		menuBtnAnimals.setDisable(toggle);
 		btnAddAnimal.setDisable(toggle);
 		btnRemoveAnimal.setDisable(toggle);

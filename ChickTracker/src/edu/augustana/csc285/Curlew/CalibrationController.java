@@ -6,8 +6,6 @@ import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.Optional;
 
-import javax.swing.JOptionPane;
-
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfByte;
 import org.opencv.imgcodecs.Imgcodecs;
@@ -15,8 +13,11 @@ import org.opencv.imgcodecs.Imgcodecs;
 import datamodel.Video;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.TextInputDialog;
+import javafx.scene.control.Alert;
+
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -145,6 +146,12 @@ public class CalibrationController {
 		g.strokeLine(scaleCoords.get(0), scaleCoords.get(1), scaleCoords.get(2), scaleCoords.get(3));
 		scaleCoords.clear();
 		System.out.println("Entered yPixelsPerCm: " + video.getyPixelsPerCm());
+		Alert alert = new Alert(AlertType.INFORMATION);
+		alert.setTitle("Autotracking");
+		alert.setHeaderText("Please specify the part of the video you would like to work with.");
+		alert.setContentText("Enter the beginning and end of the section.");
+
+		alert.showAndWait();
 	}
 
 	/**
